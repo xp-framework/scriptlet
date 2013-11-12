@@ -1,22 +1,17 @@
-<?php
-/* This class is part of the XP framework
+<?php namespace scriptlet\xml\workflow\checkers;
+
+/**
+ * Checks given values
  *
- * $Id$ 
+ * @purpose  Abstract base class
  */
+abstract class ParamChecker extends \lang\Object {
 
   /**
-   * Checks given values
+   * Check a given value
    *
-   * @purpose  Abstract base class
+   * @param   array value
+   * @return  string error or NULL on success
    */
-  abstract class ParamChecker extends Object {
-  
-    /**
-     * Check a given value
-     *
-     * @param   array value
-     * @return  string error or NULL on success
-     */
-    abstract public function check($value);
-  }
-?>
+  abstract public function check($value);
+}

@@ -7,7 +7,7 @@ use util\Hashmap;
  * Web application configuration
  *
  * @see   xp://xp.scriptlet.WebApplication
- * @test  xp://net.xp_framework.unittest.scriptlet.WebConfigurationTest
+ * @test  xp://scriptlet.unittest.WebConfigurationTest
  */
 class WebConfiguration extends \lang\Object {
   protected $prop= null;

@@ -1,17 +1,12 @@
-<?php
-/* This class is part of the XP framework
+<?php namespace scriptlet;
+
+
+
+/**
+ * Indicates the session is invalid
  *
- * $Id$
- */
-
-  uses('scriptlet.ScriptletException');
-
-  /**
-   * Indicates the session is invalid
-   *
-   * @see      xp://scriptlet.ScriptletException
-   * @purpose  Exception
-   */  
-  class HttpSessionInvalidException extends ScriptletException {
-  }
-?>
+ * @see      xp://scriptlet.ScriptletException
+ * @purpose  Exception
+ */  
+class HttpSessionInvalidException extends ScriptletException {
+}

@@ -1,36 +1,31 @@
-<?php
-/* This class is part of the XP framework
- *
- * $Id$ 
- */
+<?php namespace scriptlet\xml\workflow\casters;
 
-  uses('scriptlet.xml.workflow.casters.ParamCaster');
-  
+
+
+/**
+ * Casts given values to integers
+ *
+ * @test xp://scriptlet.unittest.workflow.ToIntegerTest
+ */
+class ToInteger extends ParamCaster {
+
   /**
-   * Casts given values to integers
+   * Cast a given value.
    *
-   * @test xp://net.xp_framework.unittest.scriptlet.workflow.ToIntegerTest
+   * @see     php://intval
+   * @see     xp://scriptlet.xml.workflow.casters.ParamCaster
+   * @param   string[] value
+   * @return  int[] value
    */
-  class ToInteger extends ParamCaster {
-  
-    /**
-     * Cast a given value.
-     *
-     * @see     php://intval
-     * @see     xp://scriptlet.xml.workflow.casters.ParamCaster
-     * @param   string[] value
-     * @return  int[] value
-     */
-    public function castValue($value) {
-      $return= array();
-      foreach ($value as $k => $v) {
-        if ('' == ltrim($v, ' +-0')) {
-          $return[$k]= 0;
-        } else {
-          if (0 == ($return[$k]= intval($v))) return NULL;
-        }
+  public function castValue($value) {
+    $return= array();
+    foreach ($value as $k => $v) {
+      if ('' == ltrim($v, ' +-0')) {
+        $return[$k]= 0;
+      } else {
+        if (0 == ($return[$k]= intval($v))) return null;
       }
-      return $return;
     }
+    return $return;
   }
-?>
+}

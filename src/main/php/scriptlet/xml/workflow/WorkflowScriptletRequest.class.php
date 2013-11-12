@@ -1,49 +1,43 @@
-<?php
-/* This class is part of the XP framework
+<?php namespace scriptlet\xml\workflow;
+
+use scriptlet\xml\XMLScriptletRequest;
+use peer\http\HttpConstants;
+
+
+/**
+ * Wraps request
  *
- * $Id$
+ * @see      xp://scriptlet.xml.XMLScriptletRequest
+ * @purpose  Scriptlet request wrapper
  */
+class WorkflowScriptletRequest extends XMLScriptletRequest {
+  public
+    $package      = null,
+    $state        = null;
 
-  uses(
-    'scriptlet.xml.XMLScriptletRequest',
-    'peer.http.HttpConstants'
-  );
-  
   /**
-   * Wraps request
+   * Constructor
    *
-   * @see      xp://scriptlet.xml.XMLScriptletRequest
-   * @purpose  Scriptlet request wrapper
+   * @param   string package
    */
-  class WorkflowScriptletRequest extends XMLScriptletRequest {
-    public
-      $package      = NULL,
-      $state        = NULL;
+  public function __construct($package) {
+    $this->package= $package;
+  }
 
-    /**
-     * Constructor
-     *
-     * @param   string package
-     */
-    public function __construct($package) {
-      $this->package= $package;
-    }
-
-    /**
-     * Initialize this request object - overridden from base class.
-     *
-     * @see     xp://scriptlet.xml.XMLScriptletRequest#initialize
-     */
-    public function initialize() {
-      parent::initialize();
-      if ($this->stateName) {
-        $name= implode('', array_map('ucfirst', array_reverse(explode('/', $this->stateName))));
-        try {
-          $this->state= XPClass::forName($this->package.'.'.('state.'.$name.'State'))->newInstance();
-        } catch (ClassNotFoundException $e) {
-          throw new ScriptletException('Cannot find '.$this->stateName, HttpConstants::STATUS_NOT_FOUND, $e);
-        }
+  /**
+   * Initialize this request object - overridden from base class.
+   *
+   * @see     xp://scriptlet.xml.XMLScriptletRequest#initialize
+   */
+  public function initialize() {
+    parent::initialize();
+    if ($this->stateName) {
+      $name= implode('', array_map('ucfirst', array_reverse(explode('/', $this->stateName))));
+      try {
+        $this->state= \lang\XPClass::forName($this->package.'.'.('state.'.$name.'State'))->newInstance();
+      } catch (\lang\ClassNotFoundException $e) {
+        throw new \scriptlet\ScriptletException('Cannot find '.$this->stateName, HttpConstants::STATUS_NOT_FOUND, $e);
       }
     }
   }
-?>
+}

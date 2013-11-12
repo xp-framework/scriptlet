@@ -1,18 +1,13 @@
-<?php
-/* This class is part of the XP framework
- *
- * $Id$
+<?php namespace scriptlet\xml\workflow;
+
+
+
+/**
+ * BC class for handlers which rely on old form value behavior
+ * 
+ * @see    https://github.com/xp-framework/xp-framework/issues/55
+ * @deprecated
  */
-
-  uses('scriptlet.xml.workflow.AbstractHandler');
-
-  /**
-   * BC class for handlers which rely on old form value behavior
-   * 
-   * @see    https://github.com/xp-framework/xp-framework/issues/55
-   * @deprecated
-   */
-  class Handler extends AbstractHandler {
-    public $requestOverride= TRUE;
-  }
-?>
+class Handler extends AbstractHandler {
+  public $requestOverride= true;
+}

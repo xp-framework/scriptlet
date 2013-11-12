@@ -1,52 +1,47 @@
-<?php
-/* This class is part of the XP framework
+<?php namespace scriptlet\xml\workflow\checkers;
+
+
+
+/**
+ * Checks given values for string length
  *
- * $Id$ 
+ * Error codes returned are:
+ * <ul>
+ *   <li>tooshort - if the given value's length is smaller than allowed</li>
+ *   <li>toolong - if the given value's length is greater than allowed</li>
+ * </ul>
+ *
+ * @purpose  Checker
  */
-
-  uses('scriptlet.xml.workflow.checkers.ParamChecker');
-
+class LengthChecker extends ParamChecker {
+  public
+    $minLength  = 0,
+    $maxLength  = 0;
+  
   /**
-   * Checks given values for string length
+   * Construct
    *
-   * Error codes returned are:
-   * <ul>
-   *   <li>tooshort - if the given value's length is smaller than allowed</li>
-   *   <li>toolong - if the given value's length is greater than allowed</li>
-   * </ul>
-   *
-   * @purpose  Checker
+   * @param   int min
+   * @param   int max default -1
    */
-  class LengthChecker extends ParamChecker {
-    public
-      $minLength  = 0,
-      $maxLength  = 0;
-    
-    /**
-     * Construct
-     *
-     * @param   int min
-     * @param   int max default -1
-     */
-    public function __construct($min, $max= -1) {
-      $this->minLength= $min;
-      $this->maxLength= $max;
-    }
-    
-    /**
-     * Check a given value
-     *
-     * @param   array value
-     * @return  string error or NULL on success
-     */
-    public function check($value) { 
-      foreach ($value as $v) {
-        if (strlen($v) < $this->minLength) {
-          return 'tooshort';
-        } else if (($this->maxLength > 0) && (strlen($v) > $this->maxLength)) {
-          return 'toolong';
-        }
-      }    
-    }
+  public function __construct($min, $max= -1) {
+    $this->minLength= $min;
+    $this->maxLength= $max;
   }
-?>
+  
+  /**
+   * Check a given value
+   *
+   * @param   array value
+   * @return  string error or NULL on success
+   */
+  public function check($value) { 
+    foreach ($value as $v) {
+      if (strlen($v) < $this->minLength) {
+        return 'tooshort';
+      } else if (($this->maxLength > 0) && (strlen($v) > $this->maxLength)) {
+        return 'toolong';
+      }
+    }    
+  }
+}

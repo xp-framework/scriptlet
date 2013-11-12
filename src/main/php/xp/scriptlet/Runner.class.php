@@ -12,7 +12,7 @@ use peer\http\HttpConstants;
 /**
  * Scriptlet runner
  *
- * @test   xp://net.xp_framework.unittest.scriptlet.RunnerTest
+ * @test   xp://scriptlet.unittest.RunnerTest
  */
 class Runner extends \lang\Object {
   protected

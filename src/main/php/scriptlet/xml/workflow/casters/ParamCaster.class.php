@@ -1,22 +1,17 @@
-<?php
-/* This class is part of the XP framework
+<?php namespace scriptlet\xml\workflow\casters;
+
+/**
+ * Casts given values
  *
- * $Id$ 
+ * @purpose  Abstract base class
  */
+abstract class ParamCaster extends \lang\Object {
 
   /**
-   * Casts given values
+   * Cast a given value
    *
-   * @purpose  Abstract base class
+   * @param   array value
+   * @return  array value
    */
-  abstract class ParamCaster extends Object {
-  
-    /**
-     * Cast a given value
-     *
-     * @param   array value
-     * @return  array value
-     */
-    abstract public function castValue($value);
-  }
-?>
+  abstract public function castValue($value);
+}

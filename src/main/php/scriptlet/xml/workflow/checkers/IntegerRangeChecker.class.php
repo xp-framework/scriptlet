@@ -1,54 +1,49 @@
-<?php
-/* This class is part of the XP framework
+<?php namespace scriptlet\xml\workflow\checkers;
+
+
+
+/**
+ * Checks whether given values are within an integer range
  *
- * $Id$ 
+ * Error codes returned are:
+ * <ul>
+ *   <li>toosmall - if the given value exceeds the lower boundary</li>
+ *   <li>toolarge - if the given value exceeds the upper boundary</li>
+ * </ul>
+ *
+ * @deprecated Use NumberRangeChecker instead
+ * @see      xp://scriptlet.xml.workflow.checkers.NumberRangeChecker
+ * @purpose  Checker
  */
-
-  uses('scriptlet.xml.workflow.checkers.ParamChecker');
-
+class IntegerRangeChecker extends ParamChecker {
+  public
+    $minValue  = 0,
+    $maxValue  = 0;
+  
   /**
-   * Checks whether given values are within an integer range
+   * Construct
    *
-   * Error codes returned are:
-   * <ul>
-   *   <li>toosmall - if the given value exceeds the lower boundary</li>
-   *   <li>toolarge - if the given value exceeds the upper boundary</li>
-   * </ul>
-   *
-   * @deprecated Use NumberRangeChecker instead
-   * @see      xp://scriptlet.xml.workflow.checkers.NumberRangeChecker
-   * @purpose  Checker
+   * @param   int min
+   * @param   int max
    */
-  class IntegerRangeChecker extends ParamChecker {
-    public
-      $minValue  = 0,
-      $maxValue  = 0;
-    
-    /**
-     * Construct
-     *
-     * @param   int min
-     * @param   int max
-     */
-    public function __construct($min, $max) {
-      $this->minValue= $min;
-      $this->maxValue= $max;
-    }
-    
-    /**
-     * Check a given value
-     *
-     * @param   array value
-     * @return  string error or NULL on success
-     */
-    public function check($value) { 
-      foreach ($value as $v) {
-        if ($v < $this->minValue) {
-          return 'toosmall';
-        } else if ($v > $this->maxValue) {
-          return 'toolarge';
-        }
-      }    
-    }
+  public function __construct($min, $max) {
+    $this->minValue= $min;
+    $this->maxValue= $max;
   }
-?>
+  
+  /**
+   * Check a given value
+   *
+   * @param   array value
+   * @return  string error or NULL on success
+   */
+  public function check($value) { 
+    foreach ($value as $v) {
+      if ($v < $this->minValue) {
+        return 'toosmall';
+      } else if ($v > $this->maxValue) {
+        return 'toolarge';
+      }
+    }    
+  }
+}

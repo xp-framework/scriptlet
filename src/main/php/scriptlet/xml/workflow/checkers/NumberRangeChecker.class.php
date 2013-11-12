@@ -1,52 +1,47 @@
-<?php
-/* This class is part of the XP framework
+<?php namespace scriptlet\xml\workflow\checkers;
+
+
+
+/**
+ * Checks whether given values are within an range of numbers
  *
- * $Id$
+ * Error codes returned are:
+ * <ul>
+ *   <li>toosmall - if the given value exceeds the lower boundary</li>
+ *   <li>toolarge - if the given value exceeds the upper boundary</li>
+ * </ul>
+ *
+ * @purpose  Checker
  */
-
-  uses('scriptlet.xml.workflow.checkers.ParamChecker');
-
+class NumberRangeChecker extends ParamChecker {
+  public
+    $minValue  = 0,
+    $maxValue  = 0;
+  
   /**
-   * Checks whether given values are within an range of numbers
+   * Construct
    *
-   * Error codes returned are:
-   * <ul>
-   *   <li>toosmall - if the given value exceeds the lower boundary</li>
-   *   <li>toolarge - if the given value exceeds the upper boundary</li>
-   * </ul>
-   *
-   * @purpose  Checker
+   * @param   var min either an integer or a float
+   * @param   var max either an integer or a float
    */
-  class NumberRangeChecker extends ParamChecker {
-    public
-      $minValue  = 0,
-      $maxValue  = 0;
-    
-    /**
-     * Construct
-     *
-     * @param   var min either an integer or a float
-     * @param   var max either an integer or a float
-     */
-    public function __construct($min, $max) {
-      $this->minValue= $min;
-      $this->maxValue= $max;
-    }
-    
-    /**
-     * Check a given value
-     *
-     * @param   array value
-     * @return  string error or NULL on success
-     */
-    public function check($value) { 
-      foreach ($value as $v) {
-        if ($v < $this->minValue) {
-          return 'toosmall';
-        } else if ($v > $this->maxValue) {
-          return 'toolarge';
-        }
-      }    
-    }
+  public function __construct($min, $max) {
+    $this->minValue= $min;
+    $this->maxValue= $max;
   }
-?>
+  
+  /**
+   * Check a given value
+   *
+   * @param   array value
+   * @return  string error or NULL on success
+   */
+  public function check($value) { 
+    foreach ($value as $v) {
+      if ($v < $this->minValue) {
+        return 'toosmall';
+      } else if ($v > $this->maxValue) {
+        return 'toolarge';
+      }
+    }    
+  }
+}

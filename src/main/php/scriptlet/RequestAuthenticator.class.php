@@ -1,26 +1,21 @@
-<?php
-/* This class is part of the XP framework
+<?php namespace scriptlet;
+
+/**
+ * This interface describes objects that take care of request
+ * authentication.
  *
- * $Id$ 
+ * @see      xp://scriptlet.HttpScriptlet#getAuthenticator
+ * @purpose  Authentication for scriptlets
  */
+interface RequestAuthenticator {
 
   /**
-   * This interface describes objects that take care of request
-   * authentication.
+   * Authenticate a request
    *
-   * @see      xp://scriptlet.HttpScriptlet#getAuthenticator
-   * @purpose  Authentication for scriptlets
+   * @param   scriptlet.HttpScriptletRequest request
+   * @param   scriptlet.HttpScriptletResponse response
+   * @param   scriptlet.xml.workflow.Context context
+   * @return  bool
    */
-  interface RequestAuthenticator {
-  
-    /**
-     * Authenticate a request
-     *
-     * @param   scriptlet.HttpScriptletRequest request
-     * @param   scriptlet.HttpScriptletResponse response
-     * @param   scriptlet.xml.workflow.Context context
-     * @return  bool
-     */
-    public function authenticate($request, $response, $context);
-  }
-?>
+  public function authenticate($request, $response, $context);
+}

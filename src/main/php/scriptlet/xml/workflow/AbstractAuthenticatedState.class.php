@@ -1,26 +1,21 @@
-<?php
-/* This class is part of the XP framework
- *
- * $Id$ 
- */
+<?php namespace scriptlet\xml\workflow;
 
-  uses('scriptlet.xml.workflow.AbstractState');
+
+
+/**
+ * Authenticated state
+ *
+ * @purpose  Base class for states needing an authentication
+ */
+class AbstractAuthenticatedState extends AbstractState {
 
   /**
-   * Authenticated state
+   * Returns whether we need an authentication. Always returns
+   * TRUE in this implementation.
    *
-   * @purpose  Base class for states needing an authentication
+   * @return  bool
    */
-  class AbstractAuthenticatedState extends AbstractState {
-  
-    /**
-     * Returns whether we need an authentication. Always returns
-     * TRUE in this implementation.
-     *
-     * @return  bool
-     */
-    public function requiresAuthentication() {
-      return TRUE;
-    }
+  public function requiresAuthentication() {
+    return true;
   }
-?>
+}

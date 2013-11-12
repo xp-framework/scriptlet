@@ -1,78 +1,71 @@
-<?php
-/* This class is part of the XP framework
- *
- * $Id$ 
- */
+<?php namespace scriptlet\xml\portlet;
 
-  uses(
-    'util.Properties',
-    'xml.Node',
-    'scriptlet.xml.portlet.RunData'
-  );
+use util\Properties;
+use xml\Node;
+
+
+/**
+ * A portlet is an implementation of a small control (rendered from its 
+ * XML data) that is available to a client application.
+ *
+ * @purpose  Interface
+ */
+interface Portlet {
 
   /**
-   * A portlet is an implementation of a small control (rendered from its 
-   * XML data) that is available to a client application.
+   * Get portlet's name
    *
-   * @purpose  Interface
+   * @return  string name
    */
-  interface Portlet {
+  public function getName();
   
-    /**
-     * Get portlet's name
-     *
-     * @return  string name
-     */
-    public function getName();
-    
-    /**
-     * Set portlet's name
-     *
-     * @param   string name
-     */
-    public function setName($name);
-  
-    /**
-     * Initialize portlet
-     *
-     * @param   util.Properties properties
-     */
-    public function init($properties);
-    
-    /**
-     * Set an attribut by name
-     *
-     * @param   string name
-     * @param   var value
-     * @param   scriptlet.xml.portlet.RunData rundata
-     */
-    public function setAttribute($name, $value, $rundata);
+  /**
+   * Set portlet's name
+   *
+   * @param   string name
+   */
+  public function setName($name);
 
-    /**
-     * Get an attribute by name. Returns default value if the specified 
-     * value is non-existant.
-     *
-     * @param   string name
-     * @param   var default
-     * @param   scriptlet.xml.portlet.RunData rundata
-     * @return  var
-     */
-    public function getAttribute($name, $default, $rundata);
-    
-    /**
-     * Retrieve portlet content as Node object
-     *
-     * @param   scriptlet.xml.portlet.RunData rundata
-     * @return  xml.Node
-     */
-    public function getContent($rundata);
-
-    /**
-     * Retrieve whether this portlet provides customization mechanisms
-     *
-     * @return  bool
-     */
-    public function providesCustomization();
+  /**
+   * Initialize portlet
+   *
+   * @param   util.Properties properties
+   */
+  public function init($properties);
   
-  }
-?>
+  /**
+   * Set an attribut by name
+   *
+   * @param   string name
+   * @param   var value
+   * @param   scriptlet.xml.portlet.RunData rundata
+   */
+  public function setAttribute($name, $value, $rundata);
+
+  /**
+   * Get an attribute by name. Returns default value if the specified 
+   * value is non-existant.
+   *
+   * @param   string name
+   * @param   var default
+   * @param   scriptlet.xml.portlet.RunData rundata
+   * @return  var
+   */
+  public function getAttribute($name, $default, $rundata);
+  
+  /**
+   * Retrieve portlet content as Node object
+   *
+   * @param   scriptlet.xml.portlet.RunData rundata
+   * @return  xml.Node
+   */
+  public function getContent($rundata);
+
+  /**
+   * Retrieve whether this portlet provides customization mechanisms
+   *
+   * @return  bool
+   */
+  public function providesCustomization();
+
+}

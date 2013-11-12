@@ -1,47 +1,38 @@
-<?php
-/* This class is part of the XP framework
- *
- * $Id: ToValidXMLString.class.php
- */
+<?php namespace scriptlet\xml\workflow\checkers;
 
-  uses(
-    'scriptlet.xml.workflow.checkers.ParamChecker',
-    'xml.Node',
-    'xml.parser.XMLParser'
-  );
+use xml\Node;
+use xml\parser\XMLParser;
+
+/**
+ * Removes illegal characters from given string(s) and checks input for well formed XML
+ *
+ * @see  xp://scriptlet.unittest.workflow.WellformedXMLCheckerTest
+ */
+class WellformedXMLChecker extends ParamChecker {
 
   /**
-   * Removes illegal characters from given string(s)
+   * Cast a given value
    *
-   * @see       xp://net.xp_framework.unittest.scriptlet.workflow.WellformedXMLCheckerTest
-   * @purpose   Check input for well formed XML
+   * Error codes returned are:
+   * <ul>
+   *   <li>invalid_chars - if input contains characters not allowed for XML</li>
+   *   <li>not_well_formed - if input cannot be parsed to XML</li>
+   * </ul>
+   *
+   * @param   array value
+   * @return  string error or array on success
    */
-  class WellformedXMLChecker extends ParamChecker {
-
-    /**
-     * Cast a given value
-     *
-     * Error codes returned are:
-     * <ul>
-     *   <li>invalid_chars - if input contains characters not allowed for XML</li>
-     *   <li>not_well_formed - if input cannot be parsed to XML</li>
-     * </ul>
-     *
-     * @param   array value
-     * @return  string error or array on success
-     */
-    public function check($value) { 
-      foreach ($value as $v) {
-        if (strlen($v) > strcspn($v, Node::XML_ILLEGAL_CHARS)) return 'invalid_chars';
-        try {
-          $p= new XMLParser();
-          $p->parse('<doc>'.$v.'</doc>');
-        } catch (XMLFormatException $e) {
-          return 'not_well_formed';
-        }
+  public function check($value) { 
+    foreach ($value as $v) {
+      if (strlen($v) > strcspn($v, Node::XML_ILLEGAL_CHARS)) return 'invalid_chars';
+      try {
+        $p= new XMLParser();
+        $p->parse('<doc>'.$v.'</doc>');
+      } catch (\xml\XMLFormatException $e) {
+        return 'not_well_formed';
       }
-      
-      return NULL;
     }
+    
+    return null;
   }
-?>
+}
