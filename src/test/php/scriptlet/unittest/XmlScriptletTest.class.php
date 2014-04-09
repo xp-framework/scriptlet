@@ -20,6 +20,7 @@ class XmlScriptletTest extends ScriptletTestCase {
    *
    */
   public function setUp() {
+    unset($_SERVER['STATE']);
     foreach (array('dom', 'xsl') as $ext) {
       if (!extension_loaded($ext)) {
         throw new \unittest\PrerequisitesNotMetError($ext.' extension not loaded');
@@ -117,7 +118,7 @@ class XmlScriptletTest extends ScriptletTestCase {
     }');
     $s->service($req, $res);
     $this->assertEquals(HttpConstants::STATUS_FOUND, $res->statusCode);
-    
+
     // Check URL from Location: header contains the session ID
     with ($redirect= new URL(substr($res->headers[0], strlen('Location: ')))); {
       $this->assertEquals('http', $redirect->getScheme());
@@ -310,7 +311,7 @@ class XmlScriptletTest extends ScriptletTestCase {
     $this->assertEquals(HttpConstants::STATUS_OK, $res->statusCode);
     $this->assertEquals(
       '<?xml version="1.0" encoding="iso-8859-1"?>'."\n".
-      "<html>\n  <body>state=static, page=home, lang=en_US, product=, sess=, query=</body>\n</html>\n",
+      "<html>\n  <body>state=static, page=home, lang=en_US, product=xp, sess=, query=</body>\n</html>\n",
       $res->getContent()
     );
   }
@@ -333,7 +334,7 @@ class XmlScriptletTest extends ScriptletTestCase {
     $this->assertEquals(HttpConstants::STATUS_OK, $res->statusCode);
     $this->assertEquals(
       '<?xml version="1.0" encoding="iso-8859-1"?>'."\n".
-      "<html>\n  <body>state=home, page=home, lang=en_US, product=, sess=, query=</body>\n</html>\n",
+      "<html>\n  <body>state=home, page=home, lang=en_US, product=xp, sess=, query=</body>\n</html>\n",
       $res->getContent()
     );
   }
@@ -379,7 +380,7 @@ class XmlScriptletTest extends ScriptletTestCase {
     $this->assertEquals(HttpConstants::STATUS_OK, $res->statusCode);
     $this->assertEquals(
       '<?xml version="1.0" encoding="iso-8859-1"?>'."\n".
-      "<html>\n  <body>state=static, page=home, lang=en_US, product=, sess=, query=a=b</body>\n</html>\n",
+      "<html>\n  <body>state=static, page=home, lang=en_US, product=xp, sess=, query=a=b</body>\n</html>\n",
       $res->getContent()
     );
   }

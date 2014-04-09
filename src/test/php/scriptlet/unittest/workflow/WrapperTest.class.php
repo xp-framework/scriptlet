@@ -96,7 +96,7 @@ class WrapperTest extends \unittest\TestCase {
     $this->assertEquals(null, $this->wrapper->getParamInfo('orderdate', PARAM_POSTCHECK));
     $this->assertEquals('core:string', $this->wrapper->getParamInfo('orderdate', PARAM_TYPE));
     $this->assertEquals(array(), $this->wrapper->getParamInfo('orderdate', PARAM_VALUES));
-    $this->assertClass($this->wrapper->getParamInfo('orderdate', PARAM_CASTER), 'scriptlet.xml.workflow.casters.ToDate');
+    $this->assertInstanceOf('scriptlet.xml.workflow.casters.ToDate', $this->wrapper->getParamInfo('orderdate', PARAM_CASTER));
   }
 
   /**
@@ -111,7 +111,7 @@ class WrapperTest extends \unittest\TestCase {
     $this->assertEquals(null, $this->wrapper->getParamInfo('shirt_size', PARAM_CASTER));
     $this->assertEquals('core:string', $this->wrapper->getParamInfo('shirt_size', PARAM_TYPE));
     $this->assertEquals(array(), $this->wrapper->getParamInfo('shirt_size', PARAM_VALUES));
-    $this->assertClass($this->wrapper->getParamInfo('shirt_size', PARAM_POSTCHECK), 'scriptlet.xml.workflow.checkers.OptionChecker');
+    $this->assertInstanceOf('scriptlet.xml.workflow.checkers.OptionChecker',$this->wrapper->getParamInfo('shirt_size', PARAM_POSTCHECK));
   }
 
   /**

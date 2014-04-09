@@ -77,7 +77,7 @@ class WorkflowApiTest extends TestCase {
     $request= new MockRequest($this->scriptlet->package, ucfirst($this->name), '{
       public function setup($request, $response, $context) {
         parent::setup($request, $response, $context);
-        throw new IllegalAccessException("Access denied");
+        throw new \lang\IllegalAccessException("Access denied");
       }
     }');
     try {
@@ -85,7 +85,7 @@ class WorkflowApiTest extends TestCase {
       $this->fail('Expected exception not caught', null, 'ScriptletException');
     } catch (\scriptlet\ScriptletException $expected) {
       $this->assertEquals(403, $expected->statusCode);
-      $this->assertClass($expected->getCause(), 'lang.IllegalAccessException');
+      $this->assertInstanceOf('lang.IllegalAccessException', $expected->getCause());
     }
   }
 
@@ -98,7 +98,7 @@ class WorkflowApiTest extends TestCase {
     $request= new MockRequest($this->scriptlet->package, ucfirst($this->name), '{
       public function setup($request, $response, $context) {
         parent::setup($request, $response, $context);
-        throw new IllegalStateException("Misconfigured");
+        throw new \lang\IllegalStateException("Misconfigured");
       }
     }');
     try {
@@ -106,7 +106,7 @@ class WorkflowApiTest extends TestCase {
       $this->fail('Expected exception not caught', null, 'ScriptletException');
     } catch (\scriptlet\ScriptletException $expected) {
       $this->assertEquals(500, $expected->statusCode);
-      $this->assertClass($expected->getCause(), 'lang.IllegalStateException');
+      $this->assertInstanceOf('lang.IllegalStateException', $expected->getCause());
     }
   }
 
@@ -119,7 +119,7 @@ class WorkflowApiTest extends TestCase {
     $request= new MockRequest($this->scriptlet->package, ucfirst($this->name), '{
       public function setup($request, $response, $context) {
         parent::setup($request, $response, $context);
-        throw new IllegalArgumentException("Query string format");
+        throw new \lang\IllegalArgumentException("Query string format");
       }
     }');
     try {
@@ -127,7 +127,7 @@ class WorkflowApiTest extends TestCase {
       $this->fail('Expected exception not caught', null, 'ScriptletException');
     } catch (\scriptlet\ScriptletException $expected) {
       $this->assertEquals(406, $expected->statusCode);
-      $this->assertClass($expected->getCause(), 'lang.IllegalArgumentException');
+      $this->assertInstanceOf('lang.IllegalArgumentException', $expected->getCause());
     }
   }
 }

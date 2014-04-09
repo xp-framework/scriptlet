@@ -135,7 +135,7 @@ class HttpSessionTest extends TestCase {
     $fixture= new \lang\Object();
     $hash= $fixture->hashCode();
     $this->session->putValue('foo', $fixture);
-    $this->assertClass($fixture, 'lang.Object');
+    $this->assertInstanceOf('lang.Object', $fixture);
     $this->assertEquals($hash, $fixture->hashCode());
   }
   

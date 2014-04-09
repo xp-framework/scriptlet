@@ -26,7 +26,7 @@ class HttpScriptletResponseTest extends TestCase {
    */
   #[@test]
   public function noHeaders() {
-    $this->assertEmpty($this->r->headers);
+    $this->assertEquals([], $this->r->headers);
   }
 
   /**

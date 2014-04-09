@@ -35,7 +35,7 @@ class ToFileDataTest extends TestCase {
     );
 
     $casted= $this->caster()->castValue($data);
-    $this->assertArray($casted);
+    $this->assertInstanceOf('var[]', $casted);
     $this->assertEquals(1, count($casted));
     $this->assertInstanceOf('scriptlet.xml.workflow.FileData', $casted[0]);
     $this->assertInstanceOf('io.File', $casted[0]->getFile());
@@ -60,7 +60,7 @@ class ToFileDataTest extends TestCase {
     );
 
     $casted= $this->caster()->castValue($data);
-    $this->assertArray($casted);
+    $this->assertInstanceOf('var[]', $casted);
     $this->assertEquals(2, count($casted));
     
     $this->assertInstanceOf('scriptlet.xml.workflow.FileData', $casted[0]);

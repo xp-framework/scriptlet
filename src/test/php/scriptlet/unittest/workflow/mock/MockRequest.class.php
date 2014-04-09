@@ -28,7 +28,7 @@ class MockRequest extends WorkflowScriptletRequest {
     // That way, the classloader will already know this class in 
     // WorkflowScriptletRequest::initialize() and be able to load
     // and instantiate it.
-    $stateName= 'Mock·'.($i++).$stateName;
+    $stateName= 'Mock__'.($i++).$stateName;
     $this->state= \lang\ClassLoader::getDefault()->defineClass(
       $package.'.mock.state.'.$stateName.'State', 
       'scriptlet.xml.workflow.AbstractState',
