@@ -132,8 +132,8 @@ class RunnerTest extends TestCase {
         $response->write("  <li>ENV.ADMINS = ".$request->getEnvValue("ADMINS")."</li>");
         $response->write("</ul>");
 
-        $config= \util\PropertyManager::getInstance()->getProperties("debug")->getFileName();
-        $response->write("<h2>".strtr($config, DIRECTORY_SEPARATOR, "/")."</h2>");
+        $config= \util\PropertyManager::getInstance()->getProperties("debug");
+        $response->write("<h2>".$config->getClassName()."</h2>");
       }
     }');
     self::$exitScriptlet= \lang\ClassLoader::defineClass('ExitScriptlet', 'scriptlet.HttpScriptlet', array(), '{
@@ -560,7 +560,7 @@ class RunnerTest extends TestCase {
     preg_match_all('#<li>(ENV\..+)</li>#U', $content, $env);
 
     $this->assertEquals('Debugging @ today', $params[1], 'params');
-    $this->assertEquals('/var/www/etc/dev/debug.ini', $config[1], 'config');
+    $this->assertEquals('util.Properties', $config[1], 'config');
     $this->assertEquals(
       array('ENV.DOMAIN = example.com', 'ENV.ADMINS = admin@example.com,root@localhost'),
       $env[1],
@@ -700,5 +700,25 @@ class RunnerTest extends TestCase {
 
     // Assert
     $this->assertEquals('<h1>Welcome, we are open</h1>', $content);
+  }
+
+  #[@test]
+  public function properties() {
+    $r= new Runner('/var/www', 'dev');
+    $r->mapApplication('/debug', create(new \xp\scriptlet\WebApplication('debug'))
+      ->withScriptlet(self::$debugScriptlet->getName())
+      ->withConfig('res://user')
+      ->withArguments(array('Debugging', 'today'))
+    );
+
+    ob_start();
+    $_REQUEST= [];
+    $content= $r->run('/debug');
+    $_REQUEST= array();
+    $content= ob_get_contents();
+    ob_end_clean();
+
+    preg_match('#<h2>(.+)</h2>#', $content, $config);
+    $this->assertEquals('util.CompositeProperties', $config[1], 'config');
   }
 }

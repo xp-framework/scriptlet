@@ -21,6 +21,7 @@ class Runner extends \lang\Object {
     $mappings   = null;
 
   static function __static() {
+    \lang\XPClass::forName('lang.ResourceProvider');
     if (!function_exists('getallheaders')) {
       eval('function getallheaders() {
         $headers= array();
@@ -125,7 +126,7 @@ class Runner extends \lang\Object {
   public function expand($value) {
     return strtr($value, array(
       '{WEBROOT}' => $this->webroot,
-      '{PROFILE}' => $this->profile,
+      '{PROFILE}' => $this->profile
     ));
   }
   
@@ -148,7 +149,7 @@ class Runner extends \lang\Object {
     foreach (explode('|', $application->getConfig()) as $element) {
       $expanded= $this->expand($element);
       if (0 == strncmp('res://', $expanded, 6)) {
-        $pm->appendSource(new ResourcePropertySource($expanded));
+        $pm->appendSource(new ResourcePropertySource(substr($expanded, 6)));
       } else {
         $pm->appendSource(new FilesystemPropertySource($expanded));
       }
