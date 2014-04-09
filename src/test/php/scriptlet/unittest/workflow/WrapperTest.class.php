@@ -29,7 +29,7 @@ class WrapperTest extends \unittest\TestCase {
     $this->wrapper->registerParamInfo(
       'orderdate',
       OCCURRENCE_OPTIONAL,
-      Date::fromString('1977-12-14'),
+      new Date('1977-12-14'),
       array('scriptlet.xml.workflow.casters.ToDate')
     );
     $this->wrapper->registerParamInfo(
@@ -91,7 +91,7 @@ class WrapperTest extends \unittest\TestCase {
   #[@test]
   public function orderDateParamInfo() {
     $this->assertEquals(OCCURRENCE_OPTIONAL, $this->wrapper->getParamInfo('orderdate', PARAM_OCCURRENCE));
-    $this->assertEquals(Date::fromString('1977-12-14'), $this->wrapper->getParamInfo('orderdate', PARAM_DEFAULT));
+    $this->assertEquals(new Date('1977-12-14'), $this->wrapper->getParamInfo('orderdate', PARAM_DEFAULT));
     $this->assertEquals(null, $this->wrapper->getParamInfo('orderdate', PARAM_PRECHECK));
     $this->assertEquals(null, $this->wrapper->getParamInfo('orderdate', PARAM_POSTCHECK));
     $this->assertEquals('core:string', $this->wrapper->getParamInfo('orderdate', PARAM_TYPE));
