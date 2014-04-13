@@ -1,6 +1,7 @@
 <?php namespace xp\scriptlet;
 
 use io\File;
+use io\Folder;
 use io\IOException;
 use util\MimeType;
 use peer\Socket;
@@ -18,7 +19,7 @@ class FileHandler extends AbstractUrlHandler {
    * @param   var notFound what to do if file is not found (default: send error)
    */
   public function __construct($docroot, $notFound= null) {
-    $this->docroot= realpath($docroot);
+    $this->docroot= new Folder($docroot);
     if (null === $notFound) {
       $this->notFound= function($handler, $socket, $path) {
         $handler->sendErrorMessage($socket, 404, 'Not found', $path);
@@ -54,17 +55,15 @@ class FileHandler extends AbstractUrlHandler {
    */
   public function handleRequest($method, $query, array $headers, $data, Socket $socket) {
     $url= parse_url($query);
-    $absolutePath= $this->docroot.strtr(
+    $f= new File($this->docroot, strtr(
       preg_replace('#\.\./?#', '/', urldecode($url['path'])), 
       '/', 
       DIRECTORY_SEPARATOR
-    );
-
-    if (!is_file($absolutePath)) {
+    ));
+    if (!is_file($f->getURI())) {
       return call_user_func($this->notFound, $socket, $url['path']);
     }
 
-    $f= new File($absolutePath);
     $lastModified= $f->lastModified();
 
     // Implement If-Modified-Since/304 Not modified
@@ -104,6 +103,6 @@ class FileHandler extends AbstractUrlHandler {
    * @return  string
    */
   public function toString() {
-    return $this->getClassName().'<'.$this->docroot.', '.\xp::stringOf($this->notFound).'>';
+    return $this->getClassName().'<'.$this->docroot->toString().', '.\xp::stringOf($this->notFound).'>';
   }
 }
