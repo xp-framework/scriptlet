@@ -64,9 +64,8 @@ class FileHandler extends AbstractUrlHandler {
       return call_user_func($this->notFound, $socket, $url['path']);
     }
 
-    $lastModified= $f->lastModified();
-
     // Implement If-Modified-Since/304 Not modified
+    $lastModified= $f->lastModified();
     if ($mod= $this->header($headers, 'If-Modified-Since')) {
       $d= strtotime($mod);
       if ($lastModified <= $d) {

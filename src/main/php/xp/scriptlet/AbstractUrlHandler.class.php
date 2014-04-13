@@ -32,9 +32,15 @@ abstract class AbstractUrlHandler extends \lang\Object {
    * @param   peer.Socket socket
    * @param   int sc the status code
    * @param   string message status message
-   * @param   string body the body
+   * @param   string reason the reason
    */
-  protected function sendErrorMessage(Socket $socket, $sc, $message, $body) {
+  protected function sendErrorMessage(Socket $socket, $sc, $message, $reason) {
+    $package= create(new \lang\XPClass(__CLASS__))->getPackage();
+    $errorPage= ($package->providesResource('error'.$status.'.html')
+      ? $package->getResource('error'.$status.'.html')
+      : $package->getResource('error500.html')
+    );
+    $body= str_replace('<xp:value-of select="reason"/>', $reason, $errorPage);
     $this->sendHeader($socket, $sc, $message, array(
       'Content-Type'    => 'text/html',
       'Content-Length'  => strlen($body),

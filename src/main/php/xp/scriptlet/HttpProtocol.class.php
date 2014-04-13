@@ -2,6 +2,7 @@
 
 use io\IOException;
 use util\cmd\Console;
+use peer\Socket;
 
 /**
  * HTTP protocol implementation
@@ -16,7 +17,11 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
    * @return  bool
    */
   public function initialize() {
-    // Intentionally empty
+    $this->handlers['default'][':error']= newinstance('xp.scriptlet.AbstractUrlHandler', [], [
+      'handleRequest' => function($method, $query, array $headers, $data, Socket $socket) {
+        $this->sendErrorMessage($socket, 400, 'Bad Request', 'Cannot handle request');
+      }
+    ]);
   }
 
   /**
@@ -99,8 +104,8 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
     
     // Log request
     sscanf($headers['Host'], '%[^:]:%d', $host, $port);
-    Console::$out->writeLinef(
-      '[%.3f %s %s @ %s] %s %s (%d bytes)',
+    Console::$out->writef(
+      '[%.3f %s %s @ %s] %s %s (%d bytes): ',
       memory_get_usage() / 1024,
       date('Y-m-d H:i:s'), 
       @$headers['User-Agent'],
@@ -116,30 +121,18 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
       if (preg_match($pattern, $query)) {
         try {
           if (false === $handler->handleRequest($method, $query, $headers, $body, $socket)) continue;
+          Console::$out->writeLine('OK');
         } catch (IOException $e) {
           Console::$err->writeLine('Connection closed ~ ', $e);
-          return $socket->close();
         }
         \xp::gc();
         $socket->close();
         return;
       }
     }
-    
-    // Cannot find any handler 
-    try {
-      $r= '<h1>Could not handle request (Host: '.$host.')</h1><xmp>'.\xp::stringOf($this->handlers).'</xmp>';
-      $socket->write("HTTP/1.1 500 Internal Server Error\r\n");
-      $socket->write("Content-type: text/html\r\n");
-      $socket->write("Content-length: ".strlen($r)."\r\n");
-      $socket->write("\r\n");
-      $socket->write($r);
-    } catch (IOException $e) {
-      Console::$err->writeLine($e);
-      return $socket->close();
-    }
 
-    // Close socket, ignoring any keep-alive headers for the moment
+    // Unhandled
+    $handlers[':error']->handleRequest($method, $query, $headers, $body, $socket);
     $socket->close();
   }
 
