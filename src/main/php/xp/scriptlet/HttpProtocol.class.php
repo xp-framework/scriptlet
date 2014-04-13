@@ -132,6 +132,7 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
     }
 
     // Unhandled
+    Console::$err->writeLine('Unhandled (', $this->handlers, ')');
     $handlers[':error']->handleRequest($method, $query, $headers, $body, $socket);
     $socket->close();
   }
