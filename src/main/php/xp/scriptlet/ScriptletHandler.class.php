@@ -38,7 +38,7 @@ class ScriptletHandler extends AbstractUrlHandler {
    *
    * @param   string method request method
    * @param   string query query string
-   * @param   array<string, string> headers request headers
+   * @param   [:string] headers request headers
    * @param   string data post data
    * @param   peer.Socket socket
    */
