@@ -50,8 +50,17 @@ class Server extends \lang\Object {
 
     with ($pm= PropertyManager::getInstance(), $protocol= $server->setProtocol(new HttpProtocol())); {
       $conf= new WebConfiguration(new \util\Properties($configd.DIRECTORY_SEPARATOR.'web.ini'));
-      foreach ($conf->staticResources($args[2]) as $pattern => $location) {
-        $protocol->setUrlHandler('default', '#'.strtr($pattern, ['#' => '\\#']).'#', new FileHandler($expand($location)));
+
+      $resources= $conf->staticResources($args[2]);
+      if (null === $resources) {
+        $protocol->setUrlHandler('default', '#^/#', new FileHandler(
+          $expand('{DOCUMENT_ROOT}'),
+          $notFound= function() { return false; }
+        ));
+      } else {
+        foreach ($conf->staticResources($args[2]) as $pattern => $location) {
+          $protocol->setUrlHandler('default', '#'.strtr($pattern, ['#' => '\\#']).'#', new FileHandler($expand($location)));
+        }
       }
       foreach ($conf->mappedApplications($args[2]) as $url => $application) {
         $protocol->setUrlHandler('default', '/' == $url ? '##' : '#^('.preg_quote($url, '#').')($|/.+)#', new ScriptletHandler(

@@ -1,7 +1,6 @@
 <?php namespace xp\scriptlet;
 
 use io\File;
-use io\FileNotFoundException;
 use io\IOException;
 use util\MimeType;
 use peer\Socket;
@@ -16,9 +15,17 @@ class FileHandler extends AbstractUrlHandler {
    * Constructor
    *
    * @param   string docroot document root
+   * @param   var notFound what to do if file is not found (default: send error)
    */
-  public function __construct($docroot) {
+  public function __construct($docroot, $notFound= null) {
     $this->docroot= realpath($docroot);
+    if (null === $notFound) {
+      $this->notFound= function($handler, $socket, $path) {
+        $handler->sendErrorMessage($socket, 404, 'Not found', $path);
+      };
+    } else {
+      $this->notFound= $notFound;
+    }
   }
   
   /**
@@ -53,12 +60,10 @@ class FileHandler extends AbstractUrlHandler {
       DIRECTORY_SEPARATOR
     );
 
-    // Ensure what is trying to be accessed is a file
     if (!is_file($absolutePath)) {
-      $this->sendErrorMessage($socket, 403, 'Forbidden', $url['path'].': Not a file');
-      return;
+      return call_user_func($this->notFound, $socket, $url['path']);
     }
-    
+
     $f= new File($absolutePath);
     $lastModified= $f->lastModified();
 
@@ -73,9 +78,6 @@ class FileHandler extends AbstractUrlHandler {
     
     try {
       $f->open(FILE_MODE_READ);
-    } catch (FileNotFoundException $e) {
-      $this->sendErrorMessage($socket, 404, 'Not found', $e->getMessage());
-      return;
     } catch (IOException $e) {
       $this->sendErrorMessage($socket, 500, 'Internal server error', $e->getMessage());
       $f->close();
@@ -102,6 +104,6 @@ class FileHandler extends AbstractUrlHandler {
    * @return  string
    */
   public function toString() {
-    return $this->getClassName().'<'.$this->docroot.'>';
+    return $this->getClassName().'<'.$this->docroot.', '.\xp::stringOf($this->notFound).'>';
   }
 }

@@ -146,6 +146,7 @@ class WebConfiguration extends \lang\Object {
    * @return  [:string]
    */
   public function staticResources($profile= null) {
-    return $this->prop->readHash('static', 'resources', array())->toArray();
+    $hash= $this->prop->readHash('static', 'resources', null);
+    return null === $hash ? null : $hash->toArray();
   }
 }

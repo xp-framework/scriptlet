@@ -110,15 +110,12 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
       strlen($body)
     );
 
-    // Check for vhost
     $host= strtolower($host);
     $handlers= isset($this->handlers[$host]) ? $this->handlers[$host] : $this->handlers['default'];
-
-    // Construct response 
     foreach ($handlers as $pattern => $handler) {
       if (preg_match($pattern, $query)) {
         try {
-          $handler->handleRequest($method, $query, $headers, $body, $socket);
+          if (false === $handler->handleRequest($method, $query, $headers, $body, $socket)) continue;
         } catch (IOException $e) {
           Console::$err->writeLine('Connection closed ~ ', $e);
           return $socket->close();
