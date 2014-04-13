@@ -66,7 +66,7 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
     // Read header
     $header= '';
     try {
-      while (false === ($p= strpos($header, "\r\n\r\n"))) {
+      while (false === ($p= strpos($header, "\r\n\r\n")) && !$socket->eof()) {
         $header.= $socket->readBinary(1024);
       }
     } catch (IOException $e) {
@@ -123,7 +123,7 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
           if (false === $handler->handleRequest($method, $query, $headers, $body, $socket)) continue;
           Console::$out->writeLine('OK');
         } catch (IOException $e) {
-          Console::$err->writeLine('Connection closed ~ ', $e);
+          Console::$out->writeLine('Error ', $e->compoundMessage());
         }
         \xp::gc();
         $socket->close();
