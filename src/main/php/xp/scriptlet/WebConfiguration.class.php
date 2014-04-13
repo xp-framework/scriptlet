@@ -138,4 +138,14 @@ class WebConfiguration extends \lang\Object {
 
     return $apps;
   }
+
+  /**
+   * Gets all static resources
+   *
+   * @param   string profile
+   * @return  [:string]
+   */
+  public function staticResources($profile= null) {
+    return $this->prop->readHash('static', 'resources', array())->toArray();
+  }
 }
