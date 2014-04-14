@@ -407,4 +407,11 @@ class HttpScriptletRequest extends \lang\Object implements Request {
     }
     return $this->inputStream;
   }
+
+  /**
+   * Destructor
+   */
+  public function __destruct() {
+    $this->inputStream && delete($this->inputStream);
+  }
 }
