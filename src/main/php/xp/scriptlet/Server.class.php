@@ -2,6 +2,8 @@
 
 use util\cmd\Console;
 use util\PropertyManager;
+use util\ResourcePropertySource;
+use util\FilesystemPropertySource;
 use lang\XPClass;
 
 /**
@@ -13,6 +15,10 @@ class Server extends \lang\Object {
     'prefork' => 'peer.server.PreforkingServer',
     'fork'    => 'peer.server.ForkingServer'
   ];
+
+  static function __static() {
+    \lang\XPClass::forName('lang.ResourceProvider');
+  }
 
   /**
    * Entry point method. Receives the following arguments from xpws:
@@ -70,7 +76,14 @@ class Server extends \lang\Object {
             'DOCUMENT_ROOT' => getenv('DOCUMENT_ROOT')
           ]))
         ));
-        $pm->configure($expand($application->getConfig()));
+        foreach (explode('|', $application->getConfig()) as $element) {
+          $expanded= $expand($element);
+          if (0 == strncmp('res://', $expanded, 6)) {
+            $pm->appendSource(new ResourcePropertySource(substr($expanded, 6)));
+          } else {
+            $pm->appendSource(new FilesystemPropertySource($expanded));
+          }
+        }
       }
 
       Console::writeLine($protocol);
