@@ -13,7 +13,7 @@ abstract class AbstractUrlHandler extends \lang\Object {
    * @param   peer.Socket socket
    * @param   int sc the status code
    * @param   string message status message
-   * @param   array<string, string> headers
+   * @param   [:string] headers
    */
   protected function sendHeader(Socket $socket, $sc, $message, array $headers) {
     $socket->write('HTTP/1.1 '.$sc.' '.$message."\r\n");
@@ -25,7 +25,7 @@ abstract class AbstractUrlHandler extends \lang\Object {
     }
     $socket->write("\r\n");
   }
-  
+
   /**
    * Send a HTTP error message
    *
@@ -47,7 +47,6 @@ abstract class AbstractUrlHandler extends \lang\Object {
     ));
     $socket->write($body);
   }
-  
 
   /**
    * Handle a single request

@@ -22,7 +22,7 @@ class Server extends \lang\Object {
 
   /**
    * Entry point method. Receives the following arguments from xpws:
-   * 
+   *
    * - The web root - defaults to $CWD
    * - The configuration directory - defaults to "etc"
    * - The server profile - default to "dev"
@@ -41,7 +41,7 @@ class Server extends \lang\Object {
       Console::writeLine('*** Unkown server mode "', $args[4], '", supported: ', self::$modes);
       return 2;
     }
-    
+
     $expand= function($in) use($webroot, $profile) {
       return strtr($in, [
         '{WEBROOT}'       => $webroot,

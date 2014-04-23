@@ -35,7 +35,6 @@ class ScriptletOutputStream extends \lang\Object implements \io\streams\OutputSt
    */
   public function flush() {
     $this->response->flush();
- 
   }
 
   /**

@@ -32,7 +32,7 @@ class ScriptletHandler extends AbstractUrlHandler {
     $this->response= $class->getMethod('_response')->setAccessible(true);
     $this->env= $env;
   }
-  
+
   /**
    * Handle a single request
    *
@@ -54,7 +54,7 @@ class ScriptletHandler extends AbstractUrlHandler {
     $request->env['REQUEST_URI']= $query;
     $request->env['QUERY_STRING']= substr($query, strpos($query, '?')+ 1);
     $request->env['HTTP_HOST']= $url->getHost();
-    if ('https' === $url->getScheme()) { 
+    if ('https' === $url->getScheme()) {
       $request->env['HTTPS']= 'on';
     }
     if (isset($headers['Authorization'])) {
@@ -65,7 +65,7 @@ class ScriptletHandler extends AbstractUrlHandler {
       }
     }
     $request->setHeaders($headers);
-        
+
     try {
       $this->scriptlet->service($request, $response);
     } catch (ScriptletException $e) {

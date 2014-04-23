@@ -41,7 +41,7 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
   public function handleDisconnect($socket) {
     $socket->close();
   }
-  
+
   /**
    * Supply a URL handler for a given regex
    *
@@ -56,7 +56,7 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
   }
 
   /**
-   * Handle request by searching for all handlers, and invoking the 
+   * Handle request by searching for all handlers, and invoking the correct handler
    *
    * @param  string $host
    * @param  string $method
@@ -90,7 +90,6 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
    * @return  mixed
    */
   public function handleData($socket) {
-
     $header= '';
     try {
       while (false === ($p= strpos($header, "\r\n\r\n")) && !$socket->eof()) {
@@ -100,7 +99,7 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
       Console::$err->writeLine($e);
       return $socket->close();
     }
-    
+
     if (4 != sscanf($header, '%s %[^ ] HTTP/%d.%d', $method, $query, $major, $minor)) {
       Console::$err->writeLine('Malformed request "', addcslashes($header, "\0..\17"), '" from ', $socket->host);
       return $socket->close();
@@ -111,7 +110,7 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
       sscanf($t, "%[^:]: %[^\n]", $name, $value);
       $headers[$name]= $value;
     } while ($t= strtok("\r\n"));
-    
+
     $body= '';
     try {
       if (isset($headers['Content-length'])) {
@@ -124,16 +123,16 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
       Console::$err->writeLine($e);
       return $socket->close();
     }
-    
+
     sscanf($headers['Host'], '%[^:]:%d', $host, $port);
     Console::$out->writef(
       '[%.3f %s %s @ %s] %s %s (%d bytes): ',
       memory_get_usage() / 1024,
-      date('Y-m-d H:i:s'), 
+      date('Y-m-d H:i:s'),
       @$headers['User-Agent'],
       $host,
-      $method, 
-      $query, 
+      $method,
+      $query,
       strlen($body)
     );
 
@@ -156,7 +155,7 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
     Console::$err->writeLine('* ', $socket->host, '~', $e);
     $socket->close();
   }
-  
+
   /**
    * Returns a string representation of this object
    *
