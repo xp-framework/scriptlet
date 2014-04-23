@@ -4,6 +4,9 @@ use util\cmd\Console;
 use util\PropertyManager;
 use util\ResourcePropertySource;
 use util\FilesystemPropertySource;
+use util\log\Logger;
+use util\log\context\EnvironmentAware;
+use rdbms\ConnectionManager;
 use lang\XPClass;
 
 /**
@@ -86,6 +89,10 @@ class Server extends \lang\Object {
         }
       }
 
+      $l= Logger::getInstance();
+      $pm->hasProperties('log') && $l->configure($pm->getProperties('log'));
+      $cm= ConnectionManager::getInstance();
+      $pm->hasProperties('database') && $cm->configure($pm->getProperties('database'));
       Console::writeLine($protocol);
     }
     $server->init();
