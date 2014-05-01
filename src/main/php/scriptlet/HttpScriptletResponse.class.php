@@ -17,7 +17,8 @@ use peer\http\HttpConstants;
 class HttpScriptletResponse extends \lang\Object implements Response {
   protected
     $uri=             null,
-    $committed=       false;
+    $committed=       false,
+    $outputStream=    null;
   
   public
     $version=         '1.1',
@@ -118,21 +119,10 @@ class HttpScriptletResponse extends \lang\Object implements Response {
    * @param   io.streams.OutputStream
    */
   public function getOutputStream() {
-    return newinstance('io.streams.OutputStream', array($this), '{
-      protected $response;
-      public function __construct($r) {
-        $this->response= $r;
-      }
-      public function write($arg) {
-        $this->response->write($arg);
-      }
-      public function flush() {
-        $this->response->flush();
-      }
-      public function close() {
-        $this->response->flush();
-      }
-    }');
+    if (null === $this->outputStream) {
+      $this->outputStream= new ScriptletOutputStream($this);
+    }
+    return $this->outputStream;
   }
   
   /**
