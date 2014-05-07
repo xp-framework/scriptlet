@@ -1,10 +1,7 @@
 <?php namespace scriptlet\unittest;
 
-
-
 use unittest\TestCase;
 use xp\scriptlet\WebConfiguration;
-
 
 /**
  * TestCase
@@ -13,12 +10,8 @@ use xp\scriptlet\WebConfiguration;
  */
 class WebConfigurationTest extends TestCase {
 
-  /**
-   * Verifies configure() method with all possible settings
-   *
-   */
   #[@test]
-  public function configure() {
+  public function configure_with_all_possible_settings() {
     with ($p= \util\Properties::fromString('')); {
       $p->writeSection('app');
       $p->writeString('app', 'map.service', '/service');
@@ -33,67 +26,51 @@ class WebConfigurationTest extends TestCase {
       $p->writeString('app::service@dev', 'debug', 'STACKTRACE|ERRORS');
 
       $this->assertEquals(
-        array('/service' => create(new \xp\scriptlet\WebApplication('service'))
+        ['/service' => (new \xp\scriptlet\WebApplication('service'))
           ->withConfig('{WEBROOT}/etc/{PROFILE}')
           ->withScriptlet('ServiceScriptlet')
           ->withEnvironment(array('ROLE' => 'admin', 'CLUSTER' => 'a'))
           ->withDebug(\xp\scriptlet\WebDebug::STACKTRACE | \xp\scriptlet\WebDebug::ERRORS)
           ->withArguments(array('a', 'b'))
-        ),
-        create(new WebConfiguration($p))->mappedApplications('dev')
+        ],
+        (new WebConfiguration($p))->mappedApplications('dev')
       );
     }
   }
 
-  /**
-   * Verifies unknown debug flag in configuration raises an exception
-   *
-   */
   #[@test, @expect(class= 'lang.IllegalArgumentException', withMessage= 'No flag named WebDebug::UNKNOWN')]
-  public function configureWithUnknownDebugFlag() {
+  public function configure_with_unknown_debug_flags_raises_exception() {
     with ($p= \util\Properties::fromString('')); {
       $p->writeSection('app');
       $p->writeString('app', 'map.service', '/service');
       $p->writeSection('app::service');
       $p->writeString('app::service', 'debug', 'UNKNOWN');
 
-      create(new WebConfiguration($p))->mappedApplications();
+      (new WebConfiguration($p))->mappedApplications();
     }
   }
 
-  /**
-   * Verifies that empty configured mappings produce correct result
-   *
-   */
   #[@test, @expect(class= 'lang.IllegalStateException', withMessage= 'Web misconfigured: "app" section missing or broken')]
-  public function emptyMappings() {
+  public function configure_with_empty_mappings_raises_exception() {
     with ($p= \util\Properties::fromString('')); {
       $p->writeSection('app');
 
-      create(new WebConfiguration($p))->mappedApplications();
+      (new WebConfiguration($p))->mappedApplications();
     }
   }
 
-  /**
-   * Verifies that empty configured mappings produce correct result
-   *
-   */
   #[@test, @expect(class= 'lang.IllegalStateException', withMessage= 'Web misconfigured: "app" section missing or broken')]
-  public function appSectionWithoutValidMappings() {
+  public function configure_with_invalid_mappings_raises_exception() {
     with ($p= \util\Properties::fromString('')); {
       $p->writeSection('app');
       $p->writeString('app', 'not.a.mapping', 1);
 
-      create(new WebConfiguration($p))->mappedApplications();
+      (new WebConfiguration($p))->mappedApplications();
     }
   }
 
-  /**
-   * Verifies that old-style configured mappings produce correct result
-   *
-   */
   #[@test]
-  public function oldStyleMappings() {
+  public function old_style_mappings_via_pipe_syntax_supported() {
     with ($p= \util\Properties::fromString('')); {
       $p->writeSection('app');
       $p->writeString('app', 'mappings', '/service:service|/:global');
@@ -103,32 +80,24 @@ class WebConfigurationTest extends TestCase {
 
       $this->assertEquals(
         array(
-          '/service' => create(new \xp\scriptlet\WebApplication('service'))->withConfig('{WEBROOT}/etc'), 
-          '/'        => create(new \xp\scriptlet\WebApplication('global'))->withConfig('{WEBROOT}/etc')
+          '/service' => (new \xp\scriptlet\WebApplication('service'))->withConfig('{WEBROOT}/etc'), 
+          '/'        => (new \xp\scriptlet\WebApplication('global'))->withConfig('{WEBROOT}/etc')
         ),
-        create(new WebConfiguration($p))->mappedApplications()
+        (new WebConfiguration($p))->mappedApplications()
       );
     }
   }
 
-  /**
-   * Verifies that old-style configured mappings produce correct result
-   *
-   */
   #[@test, @expect(class= 'lang.IllegalStateException', withMessage= 'Web misconfigured: Section app::service mapped by /service missing')]
-  public function oldStyleMappingWithoutCorrespondingSection() {
+  public function old_style_mappings_without_corresponding_section_raises_exception() {
     with ($p= \util\Properties::fromString('')); {
       $p->writeSection('app');
       $p->writeString('app', 'mappings', '/service:service');
 
-      create(new WebConfiguration($p))->mappedApplications();
+      (new WebConfiguration($p))->mappedApplications();
     }
   }
 
-  /**
-   * Verifies that configured mappings produce correct result
-   *
-   */
   #[@test]
   public function mappings() {
     with ($p= \util\Properties::fromString('')); {
@@ -140,26 +109,22 @@ class WebConfigurationTest extends TestCase {
       $p->writeSection('app::global');
 
       $this->assertEquals(
-        array(
-          '/service' => create(new \xp\scriptlet\WebApplication('service'))->withConfig('{WEBROOT}/etc'), 
-          '/'        => create(new \xp\scriptlet\WebApplication('global'))->withConfig('{WEBROOT}/etc')
-        ),
-        create(new WebConfiguration($p))->mappedApplications()
+        [
+          '/service' => (new \xp\scriptlet\WebApplication('service'))->withConfig('{WEBROOT}/etc'), 
+          '/'        => (new \xp\scriptlet\WebApplication('global'))->withConfig('{WEBROOT}/etc')
+        ],
+        (new WebConfiguration($p))->mappedApplications()
       );
     }
   }
 
-  /**
-   * Verifies that old-style configured mappings produce correct result
-   *
-   */
   #[@test, @expect(class= 'lang.IllegalStateException', withMessage= 'Web misconfigured: Section app::service mapped by /service missing')]
-  public function mappingWithoutCorrespondingSection() {
+  public function mappings_without_corresponding_section_raises_exception() {
     with ($p= \util\Properties::fromString('')); {
       $p->writeSection('app');
       $p->writeString('app', 'map.service', '/service');
 
-      create(new WebConfiguration($p))->mappedApplications();
+      (new WebConfiguration($p))->mappedApplications();
     }
   }
 }
