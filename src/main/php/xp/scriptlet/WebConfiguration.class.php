@@ -9,7 +9,7 @@ use util\Hashmap;
  * @see   xp://xp.scriptlet.WebApplication
  * @test  xp://scriptlet.unittest.WebConfigurationTest
  */
-class WebConfiguration extends \lang\Object {
+class WebConfiguration extends \lang\Object implements WebLayout {
   protected $prop= null;
   
   /**

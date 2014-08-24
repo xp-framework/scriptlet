@@ -3,11 +3,15 @@
 use util\PropertyManager;
 use util\FilesystemPropertySource;
 use util\ResourcePropertySource;
+use util\Properties;
 use util\log\Logger;
 use util\log\context\EnvironmentAware;
 use rdbms\ConnectionManager;
 use scriptlet\HttpScriptlet;
 use peer\http\HttpConstants;
+use lang\XPClass;
+use lang\reflect\Module;
+use inject\XPInjector;
 
 /**
  * Scriptlet runner
@@ -21,7 +25,7 @@ class Runner extends \lang\Object {
     $mappings   = null;
 
   static function __static() {
-    \lang\XPClass::forName('lang.ResourceProvider');
+    XPClass::forName('lang.ResourceProvider');
     if (!function_exists('getallheaders')) {
       eval('function getallheaders() {
         $headers= array();
@@ -33,25 +37,32 @@ class Runner extends \lang\Object {
       }');
     }
   }
-  
+
   /**
    * Creates a new scriptlet runner
    *
-   * @param   string webroot
-   * @param   string profile
+   * @param   string $webroot
+   * @param   string $profile
+   * @param   xp.scriptlet.WebLayout $layout
    */
-  public function __construct($webroot, $profile= null) {
+  public function __construct($webroot, $profile= null, WebLayout $layout= null) {
     $this->webroot= $webroot;
     $this->profile= $profile;
+    if ($layout) {
+      foreach ($layout->mappedApplications($this->profile) as $url => $application) {
+        $this->mapApplication($url, $application);
+      }
+    }
   }
   
   /**
    * Configure this runner with a web.ini
    *
-   * @param   util.Properties conf
+   * @param   util.Properties $conf
    * @throws  lang.IllegalStateException if the web is misconfigured
+   * @deprecated Pass in layout to constructor instead
    */
-  public function configure(\util\Properties $conf) {
+  public function configure(Properties $conf) {
     $conf= new WebConfiguration($conf);
     foreach ($conf->mappedApplications($this->profile) as $url => $application) {
       $this->mapApplication($url, $application);
@@ -70,9 +81,16 @@ class Runner extends \lang\Object {
    * @param   string[] args
    */
   public static function main(array $args) {
-    $r= new self($args[0], $args[2]);
-    $r->configure(new \util\Properties($args[1].DIRECTORY_SEPARATOR.'web.ini'));
-    $r->run($args[3]);
+    $layout= [];
+    foreach (WebModule::$loaded as $module) {
+      $layouts[]= $module->layout();
+    }
+    if (file_exists($ini= $args[1].DIRECTORY_SEPARATOR.'web.ini')) {
+      $layouts[]= new WebConfiguration(new Properties($ini));
+    }
+
+    $self= new self($args[0], $args[2], new CompositeLayout($layouts));
+    $self->run($args[3]);
   }
   
   /**
@@ -133,11 +151,9 @@ class Runner extends \lang\Object {
   /**
    * Creates the scriptlet instance for the given URL and runs it
    *
-   * @param   string url default '/'
+   * @param   string $url
    */
   public function run($url= '/') {
-  
-    // Determine which scriptlet should be run
     $application= $this->applicationAt($url);
 
     // Determine debug level
@@ -154,7 +170,7 @@ class Runner extends \lang\Object {
         $pm->appendSource(new FilesystemPropertySource($expanded));
       }
     }
-    
+
     $l= Logger::getInstance();
     $pm->hasProperties('log') && $l->configure($pm->getProperties('log'));
 
@@ -177,20 +193,15 @@ class Runner extends \lang\Object {
     }
 
     // Instantiate and initialize
+    $inject= new XPInjector();
     $cat= $l->getCategory('scriptlet');
     $instance= null;
     $e= null;
     try {
-      $class= \lang\XPClass::forName($application->getScriptlet());
-      if (!$class->hasConstructor()) {
-        $instance= $class->newInstance();
-      } else {
-        $args= array();
-        foreach ($application->getArguments() as $arg) {
-          $args[]= $this->expand($arg);
-        }
-        $instance= $class->getConstructor()->newInstance($args);
-      }
+      $instance= $inject->newInstance(
+        XPClass::forName($application->getScriptlet()),
+        array_map([$this, 'expand'], $application->getArguments())
+      );
       
       if ($flags & WebDebug::TRACE && $instance instanceof \util\log\Traceable) {
         $instance->setTrace($cat);
