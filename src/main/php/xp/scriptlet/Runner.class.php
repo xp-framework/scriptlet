@@ -3,6 +3,7 @@
 use util\PropertyManager;
 use util\FilesystemPropertySource;
 use util\ResourcePropertySource;
+use util\Properties;
 use util\log\Logger;
 use util\log\context\EnvironmentAware;
 use rdbms\ConnectionManager;
@@ -24,7 +25,7 @@ class Runner extends \lang\Object {
     $mappings   = null;
 
   static function __static() {
-    \lang\XPClass::forName('lang.ResourceProvider');
+    XPClass::forName('lang.ResourceProvider');
     if (!function_exists('getallheaders')) {
       eval('function getallheaders() {
         $headers= array();
@@ -44,7 +45,6 @@ class Runner extends \lang\Object {
    * @param   string $profile
    * @param   xp.scriptlet.WebLayout $layout
    */
-  #[@$webroot: inject(name= 'webroot'), @$profile: inject(name= 'profile'), @$layout: inject]
   public function __construct($webroot, $profile= null, WebLayout $layout= null) {
     $this->webroot= $webroot;
     $this->profile= $profile;
@@ -62,7 +62,7 @@ class Runner extends \lang\Object {
    * @throws  lang.IllegalStateException if the web is misconfigured
    * @deprecated Pass in layout to constructor instead
    */
-  public function configure(\util\Properties $conf) {
+  public function configure(Properties $conf) {
     $conf= new WebConfiguration($conf);
     foreach ($conf->mappedApplications($this->profile) as $url => $application) {
       $this->mapApplication($url, $application);
@@ -81,15 +81,16 @@ class Runner extends \lang\Object {
    * @param   string[] args
    */
   public static function main(array $args) {
-    $inject= new Injector();
-    $inject->bind('string', $args[0], 'webroot');
-    $inject->bind('string', $args[2], 'profile');
-    $inject->bind('xp.scriptlet.WebLayout', new WebConfiguration(new \util\Properties($args[1].DIRECTORY_SEPARATOR.'web.ini')));
+    $layout= [];
     foreach (WebModule::$loaded as $module) {
-      $module->bind($inject);
+      $layouts[]= $module->layout();
+    }
+    if (file_exists($ini= $args[1].DIRECTORY_SEPARATOR.'web.ini')) {
+      $layouts[]= new WebConfiguration(new Properties($ini));
     }
 
-    $inject->newInstance(XPClass::forName('xp.scriptlet.Runner'))->run($args[3]);
+    $self= new self($args[0], $args[2], new CompositeLayout($layouts));
+    $self->run($args[3]);
   }
   
   /**
@@ -150,11 +151,9 @@ class Runner extends \lang\Object {
   /**
    * Creates the scriptlet instance for the given URL and runs it
    *
-   * @param   string url default '/'
+   * @param   string $url
    */
   public function run($url= '/') {
-  
-    // Determine which scriptlet should be run
     $application= $this->applicationAt($url);
 
     // Determine debug level

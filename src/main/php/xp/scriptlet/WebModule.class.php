@@ -11,14 +11,6 @@ abstract class WebModule extends \lang\reflect\Module {
   }
 
   /** @return xp.scriptlet.WebLayout */
-  protected abstract function webLayout();
+  public abstract function layout();
 
-  /**
-   * Bind
-   *
-   * @param  inject.Injector $inject
-   */
-  public function bind($inject) {
-    $inject->bind('xp.scriptlet.WebLayout', $this->webLayout());
-  }
 }
