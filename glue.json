@@ -4,6 +4,8 @@
   "require" : {
     "xp-framework/xml"   : "~6.0",
     "xp-framework/http"  : "~6.0",
-    "xp-framework/rdbms" : "~6.0"
+    "xp-framework/rdbms" : "~6.0",
+    "xp-framework/mail"  : "~6.0",
+    "xp-forge/inject"    : ">=0.1"
   }
 }
