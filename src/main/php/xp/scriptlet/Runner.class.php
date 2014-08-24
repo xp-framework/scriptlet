@@ -8,6 +8,9 @@ use util\log\context\EnvironmentAware;
 use rdbms\ConnectionManager;
 use scriptlet\HttpScriptlet;
 use peer\http\HttpConstants;
+use lang\XPClass;
+use lang\reflect\Module;
+use inject\Injector;
 
 /**
  * Scriptlet runner
@@ -33,23 +36,31 @@ class Runner extends \lang\Object {
       }');
     }
   }
-  
+
   /**
    * Creates a new scriptlet runner
    *
-   * @param   string webroot
-   * @param   string profile
+   * @param   string $webroot
+   * @param   string $profile
+   * @param   xp.scriptlet.WebLayout $layout
    */
-  public function __construct($webroot, $profile= null) {
+  #[@$webroot: inject(name= 'webroot'), @$profile: inject(name= 'profile'), @$layout: inject]
+  public function __construct($webroot, $profile= null, WebLayout $layout= null) {
     $this->webroot= $webroot;
     $this->profile= $profile;
+    if ($layout) {
+      foreach ($layout->mappedApplications($this->profile) as $url => $application) {
+        $this->mapApplication($url, $application);
+      }
+    }
   }
   
   /**
    * Configure this runner with a web.ini
    *
-   * @param   util.Properties conf
+   * @param   util.Properties $conf
    * @throws  lang.IllegalStateException if the web is misconfigured
+   * @deprecated Pass in layout to constructor instead
    */
   public function configure(\util\Properties $conf) {
     $conf= new WebConfiguration($conf);
@@ -70,9 +81,15 @@ class Runner extends \lang\Object {
    * @param   string[] args
    */
   public static function main(array $args) {
-    $r= new self($args[0], $args[2]);
-    $r->configure(new \util\Properties($args[1].DIRECTORY_SEPARATOR.'web.ini'));
-    $r->run($args[3]);
+    $inject= new Injector();
+    $inject->bind('string', $args[0], 'webroot');
+    $inject->bind('string', $args[2], 'profile');
+    $inject->bind('xp.scriptlet.WebLayout', new WebConfiguration(new \util\Properties($args[1].DIRECTORY_SEPARATOR.'web.ini')));
+    foreach (WebModule::$loaded as $module) {
+      $module->bind($inject);
+    }
+
+    $inject->newInstance(XPClass::forName('xp.scriptlet.Runner'))->run($args[3]);
   }
   
   /**
