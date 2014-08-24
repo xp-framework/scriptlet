@@ -11,7 +11,7 @@ use scriptlet\HttpScriptlet;
 use peer\http\HttpConstants;
 use lang\XPClass;
 use lang\reflect\Module;
-use inject\Injector;
+use inject\XPInjector;
 
 /**
  * Scriptlet runner
@@ -170,7 +170,7 @@ class Runner extends \lang\Object {
         $pm->appendSource(new FilesystemPropertySource($expanded));
       }
     }
-    
+
     $l= Logger::getInstance();
     $pm->hasProperties('log') && $l->configure($pm->getProperties('log'));
 
@@ -193,20 +193,15 @@ class Runner extends \lang\Object {
     }
 
     // Instantiate and initialize
+    $inject= new XPInjector();
     $cat= $l->getCategory('scriptlet');
     $instance= null;
     $e= null;
     try {
-      $class= \lang\XPClass::forName($application->getScriptlet());
-      if (!$class->hasConstructor()) {
-        $instance= $class->newInstance();
-      } else {
-        $args= array();
-        foreach ($application->getArguments() as $arg) {
-          $args[]= $this->expand($arg);
-        }
-        $instance= $class->getConstructor()->newInstance($args);
-      }
+      $instance= $inject->newInstance(
+        XPClass::forName($application->getScriptlet()),
+        array_map([$this, 'expand'], $application->getArguments())
+      );
       
       if ($flags & WebDebug::TRACE && $instance instanceof \util\log\Traceable) {
         $instance->setTrace($cat);
