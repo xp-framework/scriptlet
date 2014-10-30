@@ -203,13 +203,13 @@ class HttpScriptletResponse extends \lang\Object implements Response {
       header(strtr($header, array("\r" => '', "\n" => "\n\t")), false);
     }
 
-    $this->committed= true;
-
     // Flush buffer if not empty
+    ob_start(null, 8192);
     if (null !== $this->content) {
       echo $this->content;
       $this->content= null;
     }
+    $this->committed= true;
   }
 
   /**
@@ -252,8 +252,9 @@ class HttpScriptletResponse extends \lang\Object implements Response {
    *
    */
   public function sendContent() {
-    if (null !== ($content= $this->getContent())) {
-      echo $content;
+    echo $this->getContent();
+    if ($this->committed) {
+      ob_end_flush();
     }
   }
   
