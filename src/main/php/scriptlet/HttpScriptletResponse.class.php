@@ -2,7 +2,6 @@
  
 use peer\http\HttpConstants;
 
- 
 /**
  * Defines the response sent from the webserver to the client,
  * consisting from response headers and an optional body.
@@ -184,8 +183,10 @@ class HttpScriptletResponse extends \lang\Object implements Response {
   }
 
   /**
-   * Flushes this response, that is, writes all headers to the outputstream
+   * Flushes this response, that is, writes all headers to the output stream.
    *
+   * @return void
+   * @throws lang.IllegalStateException if response has previously been flushed
    */
   public function flush() {
     if ($this->committed) {
