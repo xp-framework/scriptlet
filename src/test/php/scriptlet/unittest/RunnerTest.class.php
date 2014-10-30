@@ -49,7 +49,7 @@ class RunnerTest extends TestCase {
       }
       
       public function doGet($request, $response) {
-        throw new IllegalAccessException("No shoes, no shorts, no service");
+        throw new \lang\IllegalAccessException("No shoes, no shorts, no service");
       }
     }');
     self::$welcomeScriptlet= \lang\ClassLoader::defineClass('WelcomeScriptlet', 'scriptlet.HttpScriptlet', array(), '{
