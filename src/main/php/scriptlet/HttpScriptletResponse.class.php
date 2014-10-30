@@ -23,8 +23,28 @@ class HttpScriptletResponse extends \lang\Object implements Response {
     $version=         '1.1',
     $content=         null,
     $statusCode=      HttpConstants::STATUS_OK,
-    $headers=         array();
-  
+    $headers=         array(),
+    $sendHeaders=     null,
+    $sendContent=     null;
+
+  /**
+   * Constructor
+   */
+  public function __construct() {
+    $this->sendHeaders= function($version, $statusCode, $headers) {
+      if ('cgi' === PHP_SAPI) {
+        header('Status: '.$statusCode);
+      } else {
+        header(sprintf('HTTP/%s %d', $version, $statusCode));
+      }
+
+      foreach ($headers as $header) {
+        header(strtr($header, array("\r" => '', "\n" => "\n\t")), false);
+      }
+    };
+    $this->sendContent= null;   // Uses "echo"
+  }
+
   /**
    * Set URI of request which is currently answered by the response
    *
@@ -174,7 +194,7 @@ class HttpScriptletResponse extends \lang\Object implements Response {
    */
   public function getHeader($name, $default= null) {
     foreach ($this->headers as $line) {
-      if (0 == strncasecmp($name.': ', $line, strlen($name)+ 2)) {
+      if (0 === strncasecmp($name.': ', $line, strlen($name)+ 2)) {
         return substr($line, strlen($name)+ 2);
       }
     }
@@ -194,18 +214,11 @@ class HttpScriptletResponse extends \lang\Object implements Response {
       throw new \lang\IllegalStateException('Headers have already been sent at: '.$file.', line '.$line);
     }
 
-    if ('cgi' === PHP_SAPI) {
-      header('Status: '.$this->statusCode);
-    } else {
-      header(sprintf('HTTP/%s %d', $this->version, $this->statusCode));
-    }
-
-    foreach ($this->headers as $header) {
-      header(strtr($header, array("\r" => '', "\n" => "\n\t")), false);
-    }
+    $f= $this->sendHeaders;
+    $f($this->version, $this->statusCode, $this->headers);
 
     // Flush buffer if not empty
-    ob_start(null, 8192);
+    ob_start($this->sendContent, 8192);
     if (null !== $this->content) {
       echo $this->content;
       $this->content= null;
@@ -250,7 +263,6 @@ class HttpScriptletResponse extends \lang\Object implements Response {
   /**
    * Sends content to STDOUT (which, on a webserver, is equivalent
    * to "send data to client").
-   *
    */
   public function sendContent() {
     echo $this->getContent();

@@ -84,9 +84,9 @@ class FileHandler extends AbstractUrlHandler {
 
     // Send OK header and data in 8192 byte chunks
     $this->sendHeader($socket, 200, 'OK', array(
-      'Last-Modified'   => gmdate('D, d M Y H:i:s T', $lastModified),
-      'Content-Type'    => MimeType::getByFileName($f->getFilename()),
-      'Content-Length'  => $f->size(),
+      'Last-Modified: '.gmdate('D, d M Y H:i:s T', $lastModified),
+      'Content-Type: '.MimeType::getByFileName($f->getFilename()),
+      'Content-Length: '.$f->size(),
     ));
     while (!$f->eof()) {
       $socket->write($f->read(8192));

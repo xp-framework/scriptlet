@@ -65,6 +65,15 @@ class ScriptletHandler extends AbstractUrlHandler {
       }
     }
     $request->setHeaders($headers);
+    $request->setParams($url->getParams());
+
+    // Rewire response
+    $response->sendHeaders= function($version, $statusCode, $headers) use($socket) {
+      $this->sendHeader($socket, $statusCode, '', $headers);
+    };
+    $response->sendContent= function($content) use($socket) {
+      $socket->write($content);
+    };
 
     try {
       $this->scriptlet->service($request, $response);
@@ -74,13 +83,7 @@ class ScriptletHandler extends AbstractUrlHandler {
       return;
     }
 
-    $h= [];
-    foreach ($response->headers as $header) {
-      list($name, $value)= explode(': ', $header, 2);
-      $h[$name]= $value;
-    }
-    $this->sendHeader($socket, $response->statusCode, '', $h);
-    $socket->write($response->getContent());
+    $response->sendContent();
   }
 
   /**
