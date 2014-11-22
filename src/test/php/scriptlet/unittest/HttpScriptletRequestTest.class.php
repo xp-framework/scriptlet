@@ -39,6 +39,12 @@ class HttpScriptletRequestTest extends \unittest\TestCase {
     $this->assertEquals('b', $r->getParam($name));
   }
 
+  #[@test, @values(['%DCber', '%C3%9Cber'])]
+  public function get_param_encoded_as($encoded) {
+    $r= $this->newRequest('GET', 'http://localhost/?coder='.$encoded, []);
+    $this->assertEquals('Über', $r->getParam('coder'));
+  }
+
   #[@test, @values(['', '?other=value'])]
   public function get_non_existant_param($query) {
     $r= $this->newRequest('GET', 'http://localhost/'.$query, []);
@@ -75,10 +81,22 @@ class HttpScriptletRequestTest extends \unittest\TestCase {
     $this->assertEquals([true, ['1', '2']], [$r->hasParam('a'), $r->getParam('a')]);
   }
 
+  #[@test, @values(['%DCber', '%C3%9Cber'])]
+  public function get_array_param_encoded_as($encoded) {
+    $r= $this->newRequest('GET', 'http://localhost/?coder[]='.$encoded, []);
+    $this->assertEquals(['Über'], $r->getParam('coder'));
+  }
+
   #[@test]
   public function has_param_and_get_param_with_hash_params() {
     $r= $this->newRequest('GET', 'http://localhost/?a[one]=1&a[two]=2', []);
     $this->assertEquals([true, ['one' => '1', 'two' => '2']], [$r->hasParam('a'), $r->getParam('a')]);
+  }
+
+  #[@test, @values(['%DCber', '%C3%9Cber'])]
+  public function get_hash_param_encoded_as($encoded) {
+    $r= $this->newRequest('GET', 'http://localhost/?coder[uber]='.$encoded, []);
+    $this->assertEquals(['uber' => 'Über'], $r->getParam('coder'));
   }
 
   #[@test]

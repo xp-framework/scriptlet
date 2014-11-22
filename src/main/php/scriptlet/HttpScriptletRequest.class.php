@@ -2,23 +2,21 @@
 
 use peer\http\HttpConstants;
 
-
 /**
  * Defines the request sent by the client to the server
  *
  * An instance of this object is passed to the do* methods by
- * the <pre>process</pre> method.
+ * the `process` method.
  *
- * @test     xp://scriptlet.unittest.HttpScriptletRequestTest
- * @see      xp://scriptlet.HttpScriptlet
- * @purpose  Wrap request
+ * @test  xp://scriptlet.unittest.HttpScriptletRequestTest
+ * @see   xp://scriptlet.HttpScriptlet
  */  
 class HttpScriptletRequest extends \lang\Object implements Request {
   public
     $url=             null,
-    $env=             array(),
-    $headers=         array(),
-    $params=          array(),
+    $env=             [],
+    $headers=         [],
+    $params=          [],
     $data=            null,
     $method=          HttpConstants::GET,
     $session=         null;
@@ -28,14 +26,15 @@ class HttpScriptletRequest extends \lang\Object implements Request {
 
   protected
     $inputStream=     null,
-    $paramlookup=     array(),
-    $headerlookup=    array();
+    $paramlookup=     [],
+    $headerlookup=    [];
   
   /**
    * Initialize this request object. Does nothing in this default 
    * implementation, nevertheless, it is a good idea to call 
    * parent::initialize() if you override this method.
    *
+   * @return void
    */
   public function initialize() {
   }
@@ -100,7 +99,7 @@ class HttpScriptletRequest extends \lang\Object implements Request {
   public function getCookies() {
     $this->initCookies();
 
-    $r= array();
+    $r= [];
     foreach ($this->cookies as $name => $cookie) {
       $r[]= $cookie;
     }
@@ -114,7 +113,7 @@ class HttpScriptletRequest extends \lang\Object implements Request {
   protected function initCookies() {
     if (is_array($this->cookies)) return;
 
-    $this->cookies= array();
+    $this->cookies= [];
     foreach ($_COOKIE as $name => $value) {
       $this->cookies[$name]= new Cookie($name, $value);
     }
@@ -272,16 +271,41 @@ class HttpScriptletRequest extends \lang\Object implements Request {
   public function getSessionId() {
     return $this->getParam('psessionid');
   }
-  
+
+  /**
+   * Imports a request parameter
+   *
+   * @param  string $value
+   * @return string
+   */
+  protected function importParam($value) {
+    if (false === iconv('utf-8', \xp::ENCODING, $value)) {
+      \xp::gc(__FILE__, __LINE__ - 1);
+      return iconv('iso-8859-1', \xp::ENCODING, $value);
+    }
+    return $value;
+  }
+
   /**
    * Sets request parameters
    *
-   * @param   [:string] params
+   * @param   [:string] $params
+   * @param   bool $import Whether these parameters are imported from the request
    */
-  public function setParams($params) {
-    $this->params= $this->paramlookup= array();
-    foreach ($params as $name => $value) {
-      $this->setParam($name, $value);
+  public function setParams($params, $import= true) {
+    $this->params= $this->paramlookup= [];
+    if ($import) {
+      foreach ($params as $name => $value) {
+        if (is_array($value)) {
+          $this->setParam($name, array_map([$this, 'importParam'], $value));
+        } else {
+          $this->setParam($name, $this->importParam($value));
+        }
+      }
+    } else {
+      foreach ($params as $name => $value) {
+        $this->setParam($name, $value);
+      }
     }
   }
 
@@ -300,7 +324,7 @@ class HttpScriptletRequest extends \lang\Object implements Request {
    * @param   [:string] headers
    */
   public function setHeaders($headers) {
-    $this->headers= $this->headerlookup= array();
+    $this->headers= $this->headerlookup= [];
     foreach ($headers as $name => $value) {
       $this->addHeader($name, $value);
     }
