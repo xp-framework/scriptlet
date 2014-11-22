@@ -1,17 +1,15 @@
 <?php namespace scriptlet\unittest;
 
-use unittest\TestCase;
 use peer\URL;
 use scriptlet\HttpScriptletRequest;
-
+use scriptlet\Cookie;
 
 /**
  * TestCase
  *
- * @see      xp://scriptlet.HttpScriptletRequest
- * @purpose  Unittest
+ * @see   xp://scriptlet.HttpScriptletRequest
  */
-class HttpScriptletRequestTest extends TestCase {
+class HttpScriptletRequestTest extends \unittest\TestCase {
 
   /**
    * Creates a new request object
@@ -24,7 +22,7 @@ class HttpScriptletRequestTest extends TestCase {
    */
   protected function newRequest($method, $url, array $headers) {
     $u= parse_url($url);
-    isset($u['query']) ? parse_str($u['query'], $params) : $params= array();
+    isset($u['query']) ? parse_str($u['query'], $params) : $params= [];
   
     $r= new HttpScriptletRequest();
     $r->method= $method;
@@ -35,446 +33,246 @@ class HttpScriptletRequestTest extends TestCase {
     return $r;
   }
 
-  /**
-   * Test hasParam()
-   *
-   */
-  #[@test]
-  public function doesNotHaveNonExistantParam() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
-    $this->assertFalse($r->hasParam('a'));
+  #[@test, @values(['paramname', 'ParamName', 'PARAMNAME'])]
+  public function get_param($name) {
+    $r= $this->newRequest('GET', 'http://localhost/?paramname=b', []);
+    $this->assertEquals('b', $r->getParam($name));
   }
 
-  /**
-   * Test getParam()
-   *
-   */
-  #[@test]
-  public function getNonExistantParam() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
-    $this->assertNull($r->getParam('a'));
+  #[@test, @values(['', '?other=value'])]
+  public function get_non_existant_param($query) {
+    $r= $this->newRequest('GET', 'http://localhost/'.$query, []);
+    $this->assertNull($r->getParam('any'));
   }
 
-  /**
-   * Test getParam()
-   *
-   */
-  #[@test]
-  public function getNonExistantParamDefault() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
-    $this->assertEquals('default', $r->getParam('a', 'default'));
+  #[@test, @values(['', '?other=value'])]
+  public function get_non_existant_param_with_default($query) {
+    $r= $this->newRequest('GET', 'http://localhost/'.$query, []);
+    $this->assertEquals('default', $r->getParam('any', 'default'));
   }
 
-  /**
-   * Test hasParam()
-   *
-   */
-  #[@test]
-  public function hasOneParam() {
-    $r= $this->newRequest('GET', 'http://localhost/?a=b', array());
-    $this->assertTrue($r->hasParam('a'));
+  #[@test, @values(['paramname', 'ParamName', 'PARAMNAME'])]
+  public function has_param($name) {
+    $r= $this->newRequest('GET', 'http://localhost/?paramname=b', []);
+    $this->assertTrue($r->hasParam($name));
   }
 
-  /**
-   * Test getParam()
-   *
-   */
-  #[@test]
-  public function getOneParamLowerCaseParamMixedCaseQuery() {
-    $r= $this->newRequest('GET', 'http://localhost/?paramname=b', array());
-    $this->assertEquals('b', $r->getParam('ParamName'));
+  #[@test, @values(['', '?other=value'])]
+  public function does_not_have_non_existant_param($query) {
+    $r= $this->newRequest('GET', 'http://localhost/'.$query, []);
+    $this->assertFalse($r->hasParam('any'));
   }
 
-  /**
-   * Test hasParam()
-   *
-   */
-  #[@test]
-  public function hasOneParamLowerCaseParamMixedCaseQuery() {
-    $r= $this->newRequest('GET', 'http://localhost/?paramname=b', array());
-    $this->assertTrue($r->hasParam('ParamName'));
+  #[@test, @values(['a', 'b'])]
+  public function has_param_and_get_param_with_two_params($name) {
+    $r= $this->newRequest('GET', 'http://localhost/?a=value&b=value', []);
+    $this->assertEquals([true, 'value'], [$r->hasParam($name), $r->getParam($name)]);
   }
 
-  /**
-   * Test getParam()
-   *
-   */
   #[@test]
-  public function getOneParamMixedCaseParamLowerCaseQuery() {
-    $r= $this->newRequest('GET', 'http://localhost/?ParamName=b', array());
-    $this->assertEquals('b', $r->getParam('paramname'));
+  public function has_param_and_get_param_with_array_params() {
+    $r= $this->newRequest('GET', 'http://localhost/?a[]=1&a[]=2', []);
+    $this->assertEquals([true, ['1', '2']], [$r->hasParam('a'), $r->getParam('a')]);
   }
 
-  /**
-   * Test hasParam()
-   *
-   */
   #[@test]
-  public function hasOneParamMixedCaseParamLowerCaseQuery() {
-    $r= $this->newRequest('GET', 'http://localhost/?ParamName=b', array());
-    $this->assertTrue($r->hasParam('paramname'));
+  public function has_param_and_get_param_with_hash_params() {
+    $r= $this->newRequest('GET', 'http://localhost/?a[one]=1&a[two]=2', []);
+    $this->assertEquals([true, ['one' => '1', 'two' => '2']], [$r->hasParam('a'), $r->getParam('a')]);
   }
 
-  /**
-   * Test getParam()
-   *
-   */
   #[@test]
-  public function getOneParam() {
-    $r= $this->newRequest('GET', 'http://localhost/?a=b', array());
-    $this->assertEquals('b', $r->getParam('a'));
+  public function has_param_and_get_param_with_valueless_param() {
+    $r= $this->newRequest('GET', 'http://localhost/?a', []);
+    $this->assertEquals([true, ''], [$r->hasParam('a'), $r->getParam('a')]);
   }
 
-  /**
-   * Test hasParam() and getParam() methods
-   *
-   */
-  #[@test]
-  public function twoParams() {
-    with ($r= $this->newRequest('GET', 'http://localhost/?a=b&c=d', array())); {
-      $this->assertTrue($r->hasParam('a'));
-      $this->assertEquals('b', $r->getParam('a'));
-      $this->assertTrue($r->hasParam('c'));
-      $this->assertEquals('d', $r->getParam('c'));
-    }
+  #[@test, @values(['a', 'b'])]
+  public function has_param_and_get_param_with_two_valueless_params($name) {
+    $r= $this->newRequest('GET', 'http://localhost/?a&b', []);
+    $this->assertEquals([true, ''], [$r->hasParam($name), $r->getParam($name)]);
   }
 
-  /**
-   * Test hasParam() and getParam() methods
-   *
-   */
   #[@test]
-  public function oneParamWithArrayValue() {
-    with ($r= $this->newRequest('GET', 'http://localhost/?a[]=1&a[]=2', array())); {
-      $this->assertTrue($r->hasParam('a'));
-      $this->assertEquals(array('1', '2'), $r->getParam('a'));
-    }
+  public function has_param_and_get_param_with_dotted_param() {
+    $r= $this->newRequest('GET', 'http://localhost/?login.SessionId=4711', []);
+    $this->assertEquals([true, '4711'], [$r->hasParam('login.SessionId'), $r->getParam('login.SessionId')]);
   }
 
-  /**
-   * Test hasParam() and getParam() methods
-   *
-   */
-  #[@test]
-  public function oneParamWithHashValue() {
-    with ($r= $this->newRequest('GET', 'http://localhost/?a[one]=1&a[two]=2', array())); {
-      $this->assertTrue($r->hasParam('a'));
-      $this->assertEquals(array('one' => '1', 'two' => '2'), $r->getParam('a'));
-    }
-  }
-
-  /**
-   * Test hasParam() and getParam() methods
-   *
-   */
-  #[@test]
-  public function oneParamWithoutValue() {
-    with ($r= $this->newRequest('GET', 'http://localhost/?a', array())); {
-      $this->assertTrue($r->hasParam('a'));
-      $this->assertEquals('', $r->getParam('a'));
-    }
-  }
-
-  /**
-   * Test hasParam() and getParam() methods
-   *
-   */
-  #[@test]
-  public function twoParamsWithoutValue() {
-    with ($r= $this->newRequest('GET', 'http://localhost/?a&b', array())); {
-      $this->assertTrue($r->hasParam('a'));
-      $this->assertEquals('', $r->getParam('a'));
-      $this->assertTrue($r->hasParam('b'));
-      $this->assertEquals('', $r->getParam('b'));
-    }
-  }
-
-  /**
-   * Test hasParam() and getParam() methods
-   *
-   */
-  #[@test]
-  public function dottedParam() {
-    with ($r= $this->newRequest('GET', 'http://localhost/?login.SessionId=4711', array())); {
-      $this->assertTrue($r->hasParam('login.SessionId'));
-      $this->assertEquals('4711', $r->getParam('login.SessionId'));
-    }
-  }
-
-  /**
-   * Test hasParam() and setParam() methods
-   *
-   */
   #[@test]
   public function setParamAndHasParamRoundtrip() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
     $r->setParam('a', 'b');
     $this->assertTrue($r->hasParam('a'));
   }
 
-  /**
-   * Test getParam() and setParam() methods
-   *
-   */
   #[@test]
   public function setParamAndGetParamRoundtrip() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
     $r->setParam('a', 'b');
     $this->assertEquals('b', $r->getParam('a'));
   }
 
-  /**
-   * Test getParam() and setParam() methods
-   *
-   */
   #[@test]
   public function setParamAndgetParamRoundtripMixedCaseHeaderLowerCaseQuery() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
     $r->setParam('ParamName', 'b');
     $this->assertEquals('b', $r->getParam('paramname'));
   }
 
-  /**
-   * Test getParam() and setParam() methods
-   *
-   */
   #[@test]
   public function setParamAndgetParamRoundtripLowerCaseHeaderMixedCaseQuery() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
     $r->setParam('paramname', 'b');
     $this->assertEquals('b', $r->getParam('ParamName'));
   }
 
-  /**
-   * Test
-   *
-   */
   #[@test]
   public function paramsEmpty() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
-    $this->assertEquals(array(), $r->getParams());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
+    $this->assertEquals([], $r->getParams());
   }
 
-  /**
-   * Test getParams()
-   *
-   */
   #[@test]
   public function params() {
-    $r= $this->newRequest('GET', 'http://localhost/?CustomerId=1&Sort=ASC', array());
-    $this->assertEquals(array('CustomerId' => '1', 'Sort' => 'ASC'), $r->getParams());
+    $r= $this->newRequest('GET', 'http://localhost/?CustomerId=1&Sort=ASC', []);
+    $this->assertEquals(['CustomerId' => '1', 'Sort' => 'ASC'], $r->getParams());
   }
 
-  /**
-   * Test getParams()
-   *
-   */
   #[@test]
   public function paramsLowerCase() {
-    $r= $this->newRequest('GET', 'http://localhost/?CustomerId=1&Sort=ASC', array());
-    $this->assertEquals(array('customerid' => '1', 'sort' => 'ASC'), $r->getParams(CASE_LOWER));
+    $r= $this->newRequest('GET', 'http://localhost/?CustomerId=1&Sort=ASC', []);
+    $this->assertEquals(['customerid' => '1', 'sort' => 'ASC'], $r->getParams(CASE_LOWER));
   }
 
-  /**
-   * Test
-   *
-   */
   #[@test]
   public function headersEmpty() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
-    $this->assertEquals(array(), $r->getHeaders());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
+    $this->assertEquals([], $r->getHeaders());
   }
 
-  /**
-   * Test getHeaders()
-   *
-   */
   #[@test]
   public function headers() {
-    $headers= array('Referer' => 'http://example.com/', 'User-Agent' => 'XP');
+    $headers= ['Referer' => 'http://example.com/', 'User-Agent' => 'XP'];
     $r= $this->newRequest('GET', 'http://localhost/', $headers);
     $this->assertEquals($headers, $r->getHeaders());
   }
 
-  /**
-   * Test getHeader()
-   *
-   */
   #[@test]
   public function getHeader() {
-    $r= $this->newRequest('GET', 'http://localhost/', array(
+    $r= $this->newRequest('GET', 'http://localhost/', [
       'Referer' => 'http://example.com/'
-    ));
+    ]);
     $this->assertEquals('http://example.com/', $r->getHeader('Referer'));
   }
 
-  /**
-   * Test getHeader()
-   *
-   */
   #[@test]
   public function getNonExistantHeader() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
     $this->assertNull($r->getHeader('User-Agent'));
   }
 
-  /**
-   * Test getHeader()
-   *
-   */
   #[@test]
   public function getNonExistantHeaderDefault() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
     $this->assertEquals('default', $r->getHeader('User-Agent', 'default'));
   }
 
-  /**
-   * Test
-   *
-   */
   #[@test]
   public function headerLookupCaseInsensitive() {
-    $r= $this->newRequest('GET', 'http://localhost/', array(
+    $r= $this->newRequest('GET', 'http://localhost/', [
       'UPPERCASE' => 1,
-    ));
+    ]);
 
     $this->assertEquals(1, $r->getHeader('uppercase'));
     $this->assertEquals(1, $r->getHeader('UpPeRCaSe'));
   }
 
-  /**
-   * Test getHeader() and addHeader() methods
-   *
-   */
   #[@test]
   public function addHeaderAndGetHeadersRoundtrip() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
     $r->addHeader('a', 'b');
-    $this->assertEquals(array('a' => 'b'), $r->getHeaders());
+    $this->assertEquals(['a' => 'b'], $r->getHeaders());
   }
 
-  /**
-   * Test getHeader() and addHeader() methods
-   *
-   */
   #[@test]
   public function addHeaderOverwritingAndGetHeadersRoundtrip() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
     $r->addHeader('a', 'b');
     $r->addHeader('A', 'c');
-    $this->assertEquals(array('a' => 'c'), $r->getHeaders());
+    $this->assertEquals(['a' => 'c'], $r->getHeaders());
   }
 
-  /**
-   * Test getHeader() and addHeader() methods
-   *
-   */
   #[@test]
   public function addHeaderAndGetHeaderRoundtrip() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
     $r->addHeader('a', 'b');
     $this->assertEquals('b', $r->getHeader('a'));
   }
 
-  /**
-   * Test getHeader() and addHeader() methods
-   *
-   */
   #[@test]
   public function addHeaderOverwritingAndGetHeaderRoundtrip() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
     $r->addHeader('a', 'b');
     $r->addHeader('a', 'c');
     $this->assertEquals('c', $r->getHeader('a'));
   }
 
-  /**
-   * Test getHeader() and addHeader() methods
-   *
-   */
   #[@test]
   public function addHeaderOverwritingCaseInsensitiveAndGetHeaderRoundtrip() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
     $r->addHeader('a', 'b');
     $r->addHeader('A', 'c');
     $this->assertEquals('c', $r->getHeader('a'));
   }
 
-  /**
-   * Test getHeader() and addHeader() methods
-   *
-   */
   #[@test]
   public function addHeaderAndGetHeaderRoundtripMixedCaseHeaderLowerCaseQuery() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
     $r->addHeader('HeaderName', 'b');
     $this->assertEquals('b', $r->getHeader('headername'));
   }
 
-  /**
-   * Test getHeader() and addHeader() methods
-   *
-   */
   #[@test]
   public function addHeaderAndGetHeaderRoundtripLowerCaseHeaderMixedCaseQuery() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
     $r->addHeader('headername', 'b');
     $this->assertEquals('b', $r->getHeader('HeaderName'));
   }
 
-  /**
-   * Test initially cookies are empty
-   *
-   */
   #[@test]
   public function cookiesInitiallyEmpty() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
-    $this->assertEquals(array(), $r->getCookies());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
+    $this->assertEquals([], $r->getCookies());
   }
 
-  /**
-   * Test adding cookies works
-   *
-   */
   #[@test]
   public function addCookie() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
 
-    $this->assertInstanceOf('scriptlet.Cookie', $r->addCookie(new \scriptlet\Cookie('cookie', 'value')));
+    $this->assertInstanceOf('scriptlet.Cookie', $r->addCookie(new Cookie('cookie', 'value')));
   }
 
-  /**
-   * Test hasCookie finds added cookie
-   *
-   */
   #[@test]
   public function hasCookieDetectsAddedCookie() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
 
-    $r->addCookie(new \scriptlet\Cookie('cookie', 'value'));
+    $r->addCookie(new Cookie('cookie', 'value'));
     $this->assertTrue($r->hasCookie('cookie'));
   }
 
-  /**
-   * Test
-   *
-   */
   #[@test]
   public function getCookieReturnsCookie() {
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
 
-    $r->addCookie(new \scriptlet\Cookie('cookie', 'value'));
+    $r->addCookie(new Cookie('cookie', 'value'));
     $this->assertEquals('value', $r->getCookie('cookie')->getValue());
   }
 
-  /**
-   * Test
-   *
-   */
   #[@test]
   public function methodName() {
     $_COOKIE['name']= 'value';
-    $r= $this->newRequest('GET', 'http://localhost/', array());
+    $r= $this->newRequest('GET', 'http://localhost/', []);
 
     $this->assertEquals('value', $r->getCookie('name')->getValue());
   }
