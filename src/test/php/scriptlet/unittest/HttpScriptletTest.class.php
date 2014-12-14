@@ -58,21 +58,6 @@ class HttpScriptletTest extends ScriptletTestCase {
     }');
   }
 
-  /**
-   * Helper method
-   *
-   * @param   string method
-   * @param   string expect
-   */
-  protected function assertHandlerForMethodTriggered($method) {
-    $req= $this->newRequest($method, new URL('http://localhost/'));
-    $res= new HttpScriptletResponse();
-
-    self::$helloScriptlet->service($req, $res);
-    $this->assertEquals(HttpConstants::STATUS_OK, $res->statusCode);
-    $this->assertEquals('Hello '.$method, $res->getContent());
-  }
-
   #[@test, @expect(class= 'scriptlet.ScriptletException', withMessage= 'Unknown HTTP method: "LOOK"')]
   public function illegalHttpVerb() {
     $req= $this->newRequest('LOOK', new URL('http://localhost/'));
@@ -82,49 +67,14 @@ class HttpScriptletTest extends ScriptletTestCase {
     $s->service($req, $res);
   }
 
-  #[@test]
-  public function doGet() {
-    $this->assertHandlerForMethodTriggered('GET');
-  }
+  #[@test, @values(['GET', 'HEAD', 'POST', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT', 'PUT', 'PATCH'])]
+  public function handler_for_method($method) {
+    $req= $this->newRequest($method, new URL('http://localhost/'));
+    $res= new HttpScriptletResponse();
 
-  #[@test]
-  public function doHead() {
-    $this->assertHandlerForMethodTriggered('HEAD');
-  }
-
-  #[@test]
-  public function doPost() {
-    $this->assertHandlerForMethodTriggered('POST');
-  }
-
-  #[@test]
-  public function doDelete() {
-    $this->assertHandlerForMethodTriggered('DELETE');
-  }
-
-  #[@test]
-  public function doOptions() {
-    $this->assertHandlerForMethodTriggered('OPTIONS');
-  }
-
-  #[@test]
-  public function doTrace() {
-    $this->assertHandlerForMethodTriggered('TRACE');
-  }
-
-  #[@test]
-  public function doConnect() {
-    $this->assertHandlerForMethodTriggered('CONNECT');
-  }
-
-  #[@test]
-  public function doPut() {
-    $this->assertHandlerForMethodTriggered('PUT');
-  }
-
-  #[@test]
-  public function doPatch() {
-    $this->assertHandlerForMethodTriggered('PATCH');
+    self::$helloScriptlet->service($req, $res);
+    $this->assertEquals(HttpConstants::STATUS_OK, $res->statusCode);
+    $this->assertEquals('Hello '.$method, $res->getContent());
   }
 
   #[@test, @expect(class= 'scriptlet.ScriptletException', withMessage= 'HTTP method "DELETE" not supported')]
