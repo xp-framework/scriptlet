@@ -132,9 +132,7 @@ class HttpScriptletTest extends ScriptletTestCase {
     $req= $this->newRequest('DELETE', new URL('http://localhost/'));
     $res= new HttpScriptletResponse();
     
-    $s= newinstance('scriptlet.HttpScriptlet', [], [
-      'doGet' => function($request, $response) { throw new IllegalStateException('Should not be reached'); }
-    ]);
+    $s= newinstance('scriptlet.HttpScriptlet', [], []);
     $s->service($req, $res);
   }
 
