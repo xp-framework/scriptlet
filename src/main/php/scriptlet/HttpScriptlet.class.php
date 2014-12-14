@@ -405,18 +405,7 @@ class HttpScriptlet extends \lang\Object {
     // site). Exceptions thrown are wrapped in a ScriptletException
     // with status code 403 ("Forbidden").
     if ($auth= $this->getAuthenticator($request)) {
-      try {
-        $r= $auth->authenticate($request, $response, null);
-      } catch (ScriptletException $e) {
-        throw $e;
-      } catch (\lang\XPException $e) {
-        throw new ScriptletException(
-          'Authentication failed: '.$e->getMessage(),
-          HttpConstants::STATUS_FORBIDDEN,
-          $e
-        );
-      }
-      if (false === $r) return;
+      array_unshift($this->filters, new AuthenticationFilter($auth));
     }
 
     // Call method handler and, in case the method handler returns anything
