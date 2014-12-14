@@ -4,8 +4,8 @@
  * This interface describes objects that take care of request
  * authentication.
  *
- * @see      xp://scriptlet.HttpScriptlet#getAuthenticator
- * @purpose  Authentication for scriptlets
+ * @see   xp://scriptlet.HttpScriptlet#getAuthenticator
+ * @test  xp://scriptlet.unittest.RequestAuthenticatorTest
  */
 interface RequestAuthenticator {
 

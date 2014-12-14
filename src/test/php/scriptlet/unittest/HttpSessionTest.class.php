@@ -5,7 +5,6 @@ use unittest\TestCase;
 use util\Date;
 use io\Folder;
 
-
 /**
  * TestCase for scriptlet.HttpSession class.
  *
@@ -14,18 +13,13 @@ use io\Folder;
 class HttpSessionTest extends TestCase {
   protected $session= null;
 
-  /**
-   * Helper method to create the testing session object.
-   *
-   * @return  scriptlet.HttpSession
-   */
-  protected function _session() {
-    return new HttpSession();
-  }
+  /** @return  scriptlet.HttpSession */
+  protected function _session() { return new HttpSession(); }
 
   /**
    * Setup testcase environment for next testcase
    *
+   * @return void
    */
   public function setUp() {
     $this->session= $this->_session();
@@ -35,9 +29,10 @@ class HttpSessionTest extends TestCase {
    * Cleanup last testcase run. Invalidate old sessions and
    * remove environment leftovers
    *
+   * @return void
    */
   public function tearDown() {
-    if (is('scriptlet.HttpSession', $this->session) && $this->session->isValid()) {
+    if ($this->session->isValid()) {
       $this->session->invalidate();
     }
   }
@@ -45,6 +40,7 @@ class HttpSessionTest extends TestCase {
   /**
    * Session mess: Set session save path
    *
+   * @return void
    */
   #[@beforeClass]
   public static function setSessionSavePath() {
@@ -54,6 +50,7 @@ class HttpSessionTest extends TestCase {
   /**
    * Session mess: Cleanup session save path
    *
+   * @return void
    */
   #[@afterClass]
   public static function cleanupSessionSavePath() {
@@ -63,30 +60,18 @@ class HttpSessionTest extends TestCase {
     }
   }
 
-  /**
-   * Test session creation
-   *
-   */
   #[@test]
-  public function testCreate() {
+  public function create() {
     $this->session->initialize(null);
     $this->assertTrue($this->session->isValid());
   }
   
-  /**
-   * Test isNew() method
-   *
-   */
   #[@test]
-  public function testNew() {
+  public function isNew() {
     $this->session->initialize(null);
     $this->assertTrue($this->session->isNew());
   }
   
-  /**
-   * Test reattaching of sessions
-   *
-   */
   #[@test]
   public function reattach() {
     $this->session->initialize(null);
@@ -96,10 +81,6 @@ class HttpSessionTest extends TestCase {
     $this->assertFalse($copy->isNew());
   }
   
-  /**
-   * Test invalidating of session
-   *
-   */
   #[@test]
   public function invalidate() {
     $this->session->initialize(null);
@@ -108,27 +89,19 @@ class HttpSessionTest extends TestCase {
     $this->session->invalidate();
     $this->assertFalse($this->session->isValid());
   }
-  
-  /**
-   * Test fetching of registered session keys
-   *
-   */
+
   #[@test]
   public function valueNames() {
     $this->session->initialize(null);
-    $this->session->putValue('foo', $f= 1);
-    $this->session->putValue('bar', $f= 2);
+    $this->session->putValue('foo', 1);
+    $this->session->putValue('bar', 2);
     
     $this->assertEquals(
-      array('foo', 'bar'),
+      ['foo', 'bar'],
       $this->session->getValueNames()
     );
   }
 
-  /**
-   * Test fetching of registered session keys
-   *
-   */
   #[@test]
   public function putDoesNotOverwriteValue() {
     $this->session->initialize(null);
@@ -139,12 +112,8 @@ class HttpSessionTest extends TestCase {
     $this->assertEquals($hash, $fixture->hashCode());
   }
   
-  /**
-   * Test resetting of sessions
-   *
-   */
   #[@test]
-  public function testReset() {
+  public function reset() {
     $this->session->initialize(null);
     $this->session->putValue('foo', $f= null);
     $this->assertEquals(1, sizeof($this->session->getValueNames()));
@@ -153,64 +122,23 @@ class HttpSessionTest extends TestCase {
     $this->assertEquals(0, sizeof($this->session->getValueNames()));
   }
 
-  /**
-   * Test round trip
-   *
-   */
-  #[@test]
-  public function stringRoundtrip() {
+  #[@test, @values([
+  #  [0], [1], [1.0], [-0.5], [true], [false],
+  #  [null], [''], ['Test'],
+  #  [[]], [[1, 2, 3]], [['test' => 'Bar']],
+  #  [new Date('1977-12-14')]
+  #])]
+  public function roundtrip($value) {
     $this->session->initialize(null);
-    $this->session->putValue('foo', 'FOO');
-    $this->assertEquals('FOO', $this->session->getValue('foo'));
-  }
-
-  /**
-   * Test round trip
-   *
-   */
-  #[@test]
-  public function intRoundtrip() {
-    $this->session->initialize(null);
-    $this->session->putValue('foo', 1);
-    $this->assertEquals(1, $this->session->getValue('foo'));
-  }
-
-  /**
-   * Test round trip
-   *
-   */
-  #[@test]
-  public function arrayRoundtrip() {
-    $this->session->initialize(null);
-    $this->session->putValue('foo', array(1, 2, 3));
-    $this->assertEquals(array(1, 2, 3), $this->session->getValue('foo'));
-  }
-
-  /**
-   * Test round trip
-   *
-   */
-  #[@test]
-  public function objectRoundtrip() {
-    $this->session->initialize(null);
-    $this->session->putValue('foo', new Date('1977-12-14'));
-    $this->assertEquals(new Date('1977-12-14'), $this->session->getValue('foo'));
+    $this->session->putValue('foo', $value);
+    $this->assertEquals($value, $this->session->getValue('foo'));
   }
   
-  /**
-   * Test session fixation protection (users may not pass
-   * arbitrary names as session ids)
-   *
-   */
   #[@test, @ignore('Creates an unremovable file sess_ILLEGALSESSIONID')]
   public function testIllegalConstruct() {
     $this->assertFalse($this->session->initialize('ILLEGALSESSIONID'));
   }
   
-  /**
-   * Test access protection on invalid sessions
-   *
-   */
   #[@test, @ignore('Creates an unremovable file sess_ILLEGALSESSIONID'), @expect('lang.IllegalStateException')]
   public function testIllegalSessionAccess() {
     $this->session->initialize('ILLEGALSESSIONID');
