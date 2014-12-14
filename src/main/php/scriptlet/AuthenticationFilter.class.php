@@ -4,8 +4,9 @@ use lang\Throwable;
 use peer\http\HttpConstants;
 
 /**
- * Filters wrap around the request processing.
+ * Request authentication filter.
  *
+ * @see   xp://scriptlet.HttpScriptlet#getAuthenticator
  * @test  xp://scriptlet.unittest.RequestAuthenticatorTest
  */
 class AuthenticationFilter extends \lang\Object implements Filter {
@@ -21,7 +22,9 @@ class AuthenticationFilter extends \lang\Object implements Filter {
   }
 
   /**
-   * Filters request and response,
+   * Filters request and response, invoking the given authenticator's
+   * `authenticate()` method and proceeding only if this method neither
+   * returns false nor throws an exception.
    *
    * @param  scriptlet.Request $request
    * @param  scriptlet.Response $response
