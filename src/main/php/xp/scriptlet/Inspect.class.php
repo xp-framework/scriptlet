@@ -29,6 +29,9 @@ class Inspect extends \lang\Object {
     foreach ($layout->mappedApplications($profile) as $url => $app) {
       Console::writeLine('  Route<', $url, '*> => ', \xp::stringOf($app, '  '));
     }
+    foreach ($layout->staticResources($profile) as $url => $path) {
+      Console::writeLine('  Route<', $url, '*> => io.Path(', $path, ')');
+    }
     Console::writeLine('}');
   }
 }
