@@ -19,7 +19,9 @@ The simplest form of answering an HTTP request in XP Framework goes like
 this:
 
 ```php
-class MyScriptlet extends \scriptlet\HttpScriptlet {
+namespace com\example\web;
+
+class HelloScriptlet extends \scriptlet\HttpScriptlet {
 
   /**
    * Perform GET request
@@ -47,3 +49,14 @@ $something" when something was given as GET-parameter "name".
 
 Override `doPost()` or any of the other methods named after HTTP request types 
 to serve these request types, as well.
+
+Running it
+----------
+Use the `xpws` runner to serve your scriptlet:
+
+```sh
+$ xpws -c com.example.web.HelloScriptlet
+[xpws-dev#7312] running localhost:8080 @ /path/to/web/project - Press <Enter> to exit
+```
+
+Now open http://localhost:8080/ in your browser.
