@@ -38,14 +38,7 @@ class Source extends \lang\Object {
       }
 
       if ($class->isSubclassOf('scriptlet.HttpScriptlet')) {
-        $this->layout= newinstance('xp.scriptlet.WebLayout', [], [
-          'mappedApplications' => function($profile= null) use($class) {
-            return ['/' => (new WebApplication('default'))->withScriptlet($class->getName())];
-          },
-          'staticResources' => function($profile= null) {
-            return ['^/static' => '{DOCUMENT_ROOT}'];
-          }
-        ]);
+        $this->layout= new SingleScriptlet($class->getName());
       } else if ($class->isSubclassOf('xp.scriptlet.WebLayout')) {
         $this->layout= $class->newInstance();
       } else {

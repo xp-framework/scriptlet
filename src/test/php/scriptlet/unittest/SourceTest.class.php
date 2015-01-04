@@ -31,7 +31,7 @@ class SourceTest extends \unittest\TestCase {
 
   #[@test]
   public function from_fully_qualified_scriptlet_name() {
-    $this->assertInstanceOf('xp.scriptlet.WebLayout', (new Source(':'.self::$scriptlet->getName()))->layout());
+    $this->assertInstanceOf('xp.scriptlet.SingleScriptlet', (new Source(':'.self::$scriptlet->getName()))->layout());
   }
 
   #[@test]
