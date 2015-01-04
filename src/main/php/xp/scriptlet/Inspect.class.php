@@ -10,28 +10,25 @@ class Inspect extends \lang\Object {
 
   /**
    * Entry point method. Gets passed the following arguments from "xpws -i":
-   * <ol>
-   *   <li>The web root - defaults to $CWD</li>
-   *   <li>The configuration directory - defaults to "etc"</li>
-   *   <li>The server profile - default to "dev"</li>
-   *   <li>The server address - default to "localhost:8080"</li>
-   * </ol>
+   *
+   * 1. The web root - a directory
+   * 2. The application source - either a directory or ":" + f.q.c.Name
+   * 3. The server profile - any name, really, defaulting to "dev"
+   * 4. The server address - default to "localhost:8080"
    *
    * @param   string[] args
    */
   public static function main(array $args) {
     $webroot= isset($args[0]) ? realpath($args[0]) : getcwd();
-    $configd= isset($args[1]) ? $args[1] : 'etc';
+    $source= isset($args[1]) ? $args[1] : 'etc';
     $profile= isset($args[2]) ? $args[2] : 'dev';
     $address= isset($args[3]) ? $args[3] : 'localhost:8080';
     Console::writeLine('xpws-', $profile, ' @ ', $address, ', ', $webroot, ' {');
 
-    // Dump configured applications
-    $conf= new WebConfiguration(new Properties($configd.DIRECTORY_SEPARATOR.'web.ini'));
-    foreach ($conf->mappedApplications($profile) as $url => $app) {
+    $layout= (new Source($source))->layout();
+    foreach ($layout->mappedApplications($profile) as $url => $app) {
       Console::writeLine('  Route<', $url, '*> => ', \xp::stringOf($app, '  '));
     }
-
     Console::writeLine('}');
   }
 }

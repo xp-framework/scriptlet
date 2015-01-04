@@ -8,6 +8,7 @@ use util\log\context\EnvironmentAware;
 use rdbms\ConnectionManager;
 use scriptlet\HttpScriptlet;
 use peer\http\HttpConstants;
+use lang\XPClass;
 
 /**
  * Scriptlet runner
@@ -21,7 +22,7 @@ class Runner extends \lang\Object {
     $mappings   = null;
 
   static function __static() {
-    \lang\XPClass::forName('lang.ResourceProvider');
+    XPClass::forName('lang.ResourceProvider');
     if (!function_exists('getallheaders')) {
       eval('function getallheaders() {
         $headers= array();
@@ -48,31 +49,36 @@ class Runner extends \lang\Object {
   /**
    * Configure this runner with a web.ini
    *
-   * @param   util.Properties conf
+   * @param   util.Properties $conf
    * @throws  lang.IllegalStateException if the web is misconfigured
    */
   public function configure(\util\Properties $conf) {
-    $conf= new WebConfiguration($conf);
-    foreach ($conf->mappedApplications($this->profile) as $url => $application) {
-      $this->mapApplication($url, $application);
-    }
+    $this->layout(new WebConfiguration($conf));
   }
-  
+
+  /**
+   * Sets layout to use
+   *
+   * @param   xp.scriptlet.WebLayout $layout
+   * @return  self This
+   */
+  public function layout(WebLayout $layout) {
+    $this->mappings= $layout->mappedApplications($this->profile);
+    return $this;
+  }
+
   /**
    * Entry point method. Receives the following arguments from web.php:
-   * <ol>
-   *   <li>The web root</li>
-   *   <li>The configuration directory</li>
-   *   <li>The server profile</li>
-   *   <li>The script URL</li>
-   * </ol>
+   * 
+   * 1. The web root - a directory
+   * 2. The application source - either a directory or ":" + f.q.c.Name
+   * 3. The server profile - any name, really, defaulting to "dev"
+   * 4. The script URL - the resolved path, including leading "/"
    *
    * @param   string[] args
    */
   public static function main(array $args) {
-    $r= new self($args[0], $args[2]);
-    $r->configure(new \util\Properties($args[1].DIRECTORY_SEPARATOR.'web.ini'));
-    $r->run($args[3]);
+    (new self($args[0], $args[2]))->layout((new Source($args[1]))->layout())->run($args[3]);
   }
   
   /**
