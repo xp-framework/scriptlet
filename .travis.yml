@@ -10,7 +10,13 @@ php:
 before_script:
   - wget 'https://github.com/xp-framework/xp-runners/releases/download/v5.1.0/setup' -O - | php
   - wget 'https://github.com/xp-framework/core/releases/download/v6.0.0beta1/xp-rt-6.0.0beta1.xar'
+  - wget 'https://github.com/xp-framework/http/archive/master.zip' -O http.zip
+  - wget 'https://github.com/xp-framework/xml/archive/master.zip' -O xml.zip
+  - wget 'https://github.com/xp-framework/rdbms/archive/master.zip' -O rdbms.zip
+  - wget 'https://github.com/xp-framework/mail/archive/master.zip' -O mail.zip
+  - ls -1 *.zip | xargs unzip -d depend
   - ls -1 *.xar > boot.pth
+  - find depend -type d -name php > depend.pth
   - echo "[runtime]" >> xp.ini
   - echo "date.timezone=Europe/Berlin" >> xp.ini
 
