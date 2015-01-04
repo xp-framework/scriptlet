@@ -20,6 +20,11 @@ class SourceTest extends \unittest\TestCase {
   }
 
   #[@test]
+  public function from_dash() {
+    $this->assertInstanceOf('xp.scriptlet.WebLayout', (new Source('-'))->layout());
+  }
+
+  #[@test]
   public function from_directory() {
     $this->assertInstanceOf('xp.scriptlet.WebConfiguration', (new Source('etc'))->layout());
   }

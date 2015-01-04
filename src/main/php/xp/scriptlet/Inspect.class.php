@@ -23,14 +23,15 @@ class Inspect extends \lang\Object {
     $source= isset($args[1]) ? $args[1] : 'etc';
     $profile= isset($args[2]) ? $args[2] : 'dev';
     $address= isset($args[3]) ? $args[3] : 'localhost:8080';
-    Console::writeLine('xpws-', $profile, ' @ ', $address, ', ', $webroot, ' {');
+    Console::writeLine('@Path<', $webroot, '>');
+    Console::writeLine('xpws-', $profile, ' @ ', $address, ' {');
 
     $layout= (new Source($source))->layout();
-    foreach ($layout->mappedApplications($profile) as $url => $app) {
-      Console::writeLine('  Route<', $url, '*> => ', \xp::stringOf($app, '  '));
+    foreach ($layout->staticResources($profile) as $pattern => $path) {
+      Console::writeLine('  route(', $pattern, ') -> xp.scriptlet.StaticContent(', $path, '/$1)');
     }
-    foreach ($layout->staticResources($profile) as $url => $path) {
-      Console::writeLine('  Route<', $url, '*> => io.Path(', $path, ')');
+    foreach ($layout->mappedApplications($profile) as $url => $app) {
+      Console::writeLine('  route(', ('/' === $url ? '' : '^'.$url), '*) -> ', \xp::stringOf($app, '  '));
     }
     Console::writeLine('}');
   }

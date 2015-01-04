@@ -20,7 +20,16 @@ class Source extends \lang\Object {
    * @throws lang.IllegalArgumentException
    */
   public function __construct($source) {
-    if (':' === $source{0}) {
+    if ('-' === $source) {
+      $this->layout= newinstance('xp.scriptlet.WebLayout', [], [
+        'mappedApplications' => function($profile= null) {
+          return [];
+        },
+        'staticResources' => function($profile= null) {
+          return ['^/' => '{DOCUMENT_ROOT}'];
+        }
+      ]);
+    } else if (':' === $source{0}) {
       $name= substr($source, 1);
       try {
         $class= XPClass::forName($name);
@@ -31,7 +40,7 @@ class Source extends \lang\Object {
       if ($class->isSubclassOf('scriptlet.HttpScriptlet')) {
         $this->layout= newinstance('xp.scriptlet.WebLayout', [], [
           'mappedApplications' => function($profile= null) use($class) {
-            return ['^/' => (new WebApplication('default'))->withScriptlet($class->getName())];
+            return ['/' => (new WebApplication('default'))->withScriptlet($class->getName())];
           },
           'staticResources' => function($profile= null) {
             return ['^/static' => '{DOCUMENT_ROOT}'];
