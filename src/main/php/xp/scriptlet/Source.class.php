@@ -12,6 +12,7 @@ use lang\CLassLoadingException;
  * @test  xp://scriptlet.unittest.SourceTest
  */
 class Source extends \lang\Object {
+  private $layout;
 
   /**
    * Creates a new instance
@@ -21,14 +22,7 @@ class Source extends \lang\Object {
    */
   public function __construct($source) {
     if ('-' === $source) {
-      $this->layout= newinstance('xp.scriptlet.WebLayout', [], [
-        'mappedApplications' => function($profile= null) {
-          return [];
-        },
-        'staticResources' => function($profile= null) {
-          return ['^/' => '{DOCUMENT_ROOT}'];
-        }
-      ]);
+      $this->layout= new ServeDocumentRootStatically();
     } else if (':' === $source{0}) {
       $name= substr($source, 1);
       try {

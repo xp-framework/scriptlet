@@ -21,7 +21,7 @@ class SourceTest extends \unittest\TestCase {
 
   #[@test]
   public function from_dash() {
-    $this->assertInstanceOf('xp.scriptlet.WebLayout', (new Source('-'))->layout());
+    $this->assertInstanceOf('xp.scriptlet.ServeDocumentRootStatically', (new Source('-'))->layout());
   }
 
   #[@test]
