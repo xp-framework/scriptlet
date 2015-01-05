@@ -8,6 +8,11 @@
 class SingleScriptlet extends \lang\Object implements WebLayout {
   private $scriptlet;
 
+  /**
+   * Creates a new instance
+   *
+   * @param  string $scripltet
+   */
   public function __construct($scriptlet) {
     $this->scriptlet= $scriptlet;
   }
