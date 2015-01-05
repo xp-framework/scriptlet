@@ -202,9 +202,17 @@ class Runner extends \lang\Object {
         $instance->setTrace($cat);
       }
       $instance->init();
-    
+
+      // Set up request and response
+      $request= $instance->request();
+      $request->method= $_SERVER['REQUEST_METHOD'];
+      $request->env= $_ENV;
+      $request->setHeaders(getallheaders());
+      $request->setParams($_REQUEST);
+      $response= $instance->response();
+
       // Service
-      $response= $instance->process();
+      $instance->service($request, $response);
     } catch (\scriptlet\ScriptletException $e) {
       $cat->error($e);
 
@@ -217,7 +225,6 @@ class Runner extends \lang\Object {
       }
     } catch (\lang\SystemExit $e) {
       if (0 === $e->getCode()) {
-        $response= new \scriptlet\HttpScriptletResponse();
         $response->setStatus(HttpConstants::STATUS_OK);
         if ($message= $e->getMessage()) $response->setContent($message);
       } else {

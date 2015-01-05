@@ -42,7 +42,7 @@ class HttpScriptlet extends \lang\Object {
   protected function _request() {
     return new HttpScriptletRequest();
   }
-  
+
   /**
    * Create a session object. Override this method to define
    * your own session object
@@ -72,7 +72,13 @@ class HttpScriptlet extends \lang\Object {
   protected function _url($url) {
     return new HttpScriptletURL($url);
   }
-  
+
+  /** @return scriptlet.Request */
+  public function request() { return $this->_request(); }
+
+  /** @return scriptlet.Response */
+  public function response() { return $this->_response(); }
+
   /**
    * Get authenticator for a certain request. Returns NULL in this default
    * implementation to indicate no authentication is required.
@@ -288,18 +294,6 @@ class HttpScriptlet extends \lang\Object {
   public function finalize() { }
   
   /**
-   * Set the request from the environment.
-   *
-   * @deprecated  Uses raw environment
-   * @param   scriptlet.HttpRequest request
-   */
-  protected function _setupRequest($request) {
-    $request->method= $request->getEnvValue('REQUEST_METHOD');
-    $request->setHeaders(getallheaders());
-    $request->setParams(array_merge($_GET, $_POST));
-  }    
-  
-  /**
    * This method is called to process any request and dispatches
    * it to on of the do* -methods of the scriptlet. It will also
    * call the <pre>doCreateSession()</pre> method if necessary.
@@ -425,25 +419,5 @@ class HttpScriptlet extends \lang\Object {
         $e
       );
     }
-  }
-
-  /**
-   * This method is called to process any request and dispatches
-   * it to on of the do* -methods of the scriptlet. It will also
-   * call the <pre>doCreateSession()</pre> method if necessary.
-   *
-   * @return  scriptlet.HttpScriptletResponse the response object
-   * @throws  scriptlet.ScriptletException indicating fatal errors
-   */
-  public function process() {
-    $request= $this->_request();
-    $response= $this->_response();
-
-    // Call service()
-    $this->_setupRequest($request);
-    $this->service($request, $response);
-    
-    // Return it
-    return $response;
   }
 }

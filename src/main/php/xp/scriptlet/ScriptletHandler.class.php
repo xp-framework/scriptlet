@@ -8,10 +8,7 @@ use scriptlet\ScriptletException;
  * Scriptlet handler
  */
 class ScriptletHandler extends AbstractUrlHandler {
-  protected $scriptlet;
-  protected $request;
-  protected $response;
-  protected $env;
+  protected $scriptlet, $env;
 
   /**
    * Constructor
@@ -28,8 +25,6 @@ class ScriptletHandler extends AbstractUrlHandler {
       $this->scriptlet= $class->newInstance();
     }
     $this->scriptlet->init();
-    $this->request= $class->getMethod('_request')->setAccessible(true);
-    $this->response= $class->getMethod('_response')->setAccessible(true);
     $this->env= $env;
   }
 
@@ -44,8 +39,8 @@ class ScriptletHandler extends AbstractUrlHandler {
    */
   public function handleRequest($method, $query, array $headers, $data, Socket $socket) {
     $url= new URL('http://localhost'.$query);
-    $request= $this->request->invoke($this->scriptlet, []);
-    $response= $this->response->invoke($this->scriptlet, []);
+    $request= $this->scriptlet->request();
+    $response= $this->scriptlet->response();
 
     // Fill request
     $request->method= $method;

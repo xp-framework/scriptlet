@@ -109,7 +109,7 @@ class WebConfiguration extends \lang\Object implements WebLayout {
    
     return $app;
   }
-  
+
   /**
    * Gets all mapped applications
    *

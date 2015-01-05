@@ -31,21 +31,8 @@ class RunnerTest extends TestCase {
   #[@beforeClass]
   public static function defineScriptlets() {
     self::$errorScriptlet= \lang\ClassLoader::defineClass('ErrorScriptlet', 'scriptlet.HttpScriptlet', array('util.log.Traceable'), '{
-      protected function _request() {
-        $req= parent::_request();
-        $req->method= "GET";
-        $req->env["SERVER_PROTOCOL"]= "HTTP/1.1";
-        $req->env["REQUEST_URI"]= "/error";
-        $req->env["HTTP_HOST"]= "localhost";
-        return $req;
-      }
-      
       public function setTrace($cat) {
         $cat->debug("Injected", $cat->getClassName());
-      }
-      
-      protected function _setupRequest($request) {
-        // Intentionally empty
       }
       
       public function doGet($request, $response) {
@@ -53,33 +40,11 @@ class RunnerTest extends TestCase {
       }
     }');
     self::$welcomeScriptlet= \lang\ClassLoader::defineClass('WelcomeScriptlet', 'scriptlet.HttpScriptlet', array(), '{
-      protected function _request() {
-        $req= parent::_request();
-        $req->method= "GET";
-        $req->env["SERVER_PROTOCOL"]= "HTTP/1.1";
-        $req->env["REQUEST_URI"]= "/welcome";
-        $req->env["HTTP_HOST"]= "localhost";
-        return $req;
-      }
-      
-      protected function _setupRequest($request) {
-        // Intentionally empty
-      }
-      
       public function doGet($request, $response) {
         $response->write("<h1>Welcome, we are open</h1>");
       }
     }');
     self::$xmlScriptlet= \lang\ClassLoader::defineClass('XmlScriptletImpl', 'scriptlet.xml.XMLScriptlet', array(), '{
-      protected function _request() {
-        $req= parent::_request();
-        $req->method= "GET";
-        $req->env["SERVER_PROTOCOL"]= "HTTP/1.1";
-        $req->env["REQUEST_URI"]= "/welcome";
-        $req->env["HTTP_HOST"]= "localhost";
-        return $req;
-      }
-
       protected function _response() {
         $res= parent::_response();
         $stylesheet= create(new \xml\Stylesheet())
@@ -95,10 +60,6 @@ class RunnerTest extends TestCase {
         return $res;
       }
       
-      protected function _setupRequest($request) {
-        // Intentionally empty
-      }
-      
       public function doGet($request, $response) {
         $response->addFormresult(new \xml\Node("result", "Welcome, we are open"));
       }
@@ -109,19 +70,6 @@ class RunnerTest extends TestCase {
       public function __construct($title, $date) {
         $this->title= $title;
         $this->date= $date;
-      }
-      
-      protected function _request() {
-        $req= parent::_request();
-        $req->method= "GET";
-        $req->env["SERVER_PROTOCOL"]= "HTTP/1.1";
-        $req->env["REQUEST_URI"]= "/debug";
-        $req->env["HTTP_HOST"]= "localhost";
-        return $req;
-      }
-      
-      protected function _setupRequest($request) {
-        // Intentionally empty
       }
       
       public function doGet($request, $response) {
@@ -137,20 +85,6 @@ class RunnerTest extends TestCase {
       }
     }');
     self::$exitScriptlet= \lang\ClassLoader::defineClass('ExitScriptlet', 'scriptlet.HttpScriptlet', array(), '{
-      protected function _request() {
-        $req= parent::_request();
-        $req->method= "GET";
-        $req->env["SERVER_PROTOCOL"]= "HTTP/1.1";
-        $req->env["REQUEST_URI"]= "/exit";
-        $req->env["HTTP_HOST"]= "localhost";
-        $req->setParams($_REQUEST);
-        return $req;
-      }
-      
-      protected function _setupRequest($request) {
-        // Intentionally empty
-      }
-      
       public function doGet($request, $response) {
         \lang\Runtime::halt($request->getParam("code"), $request->getParam("message"));
       }
@@ -160,6 +94,7 @@ class RunnerTest extends TestCase {
   /**
    * Sets up property source
    *
+   * @return void
    */
   #[@beforeClass]
   public static function setupPropertySource() {
@@ -172,6 +107,7 @@ class RunnerTest extends TestCase {
   /**
    * Sets up property source
    *
+   * @return void
    */
   #[@afterClass]
   public static function removePropertySource() {
@@ -382,10 +318,17 @@ class RunnerTest extends TestCase {
    * @return  string content
    */
   protected function runWith($profile, $url, $params= array()) {
-    ob_start();
+    $_ENV= [];
+    $_SERVER= [
+      'SERVER_PROTOCOL' => 'HTTP/1.1',
+      'REQUEST_METHOD'  => 'GET',
+      'REQUEST_URI'     => $url,
+      'HTTP_HOST'       => 'localhost',
+    ];
     $_REQUEST= $params;
+
+    ob_start();
     $this->newRunner($profile)->run($url);
-    $_REQUEST= array();
     $content= ob_get_contents();
     ob_end_clean();
     return $content;
