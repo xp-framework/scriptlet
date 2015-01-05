@@ -2,6 +2,7 @@
 
 use util\Properties;
 use util\Hashmap;
+use lang\IllegalStateException;
 
 /**
  * Web application configuration
@@ -84,7 +85,7 @@ class WebConfiguration extends \lang\Object implements WebLayout {
   protected function configuredApp($profile, $application, $url) {
     $section= 'app::'.$application;
     if (!$this->prop->hasSection($section)) {
-      throw new \lang\IllegalStateException('Web misconfigured: Section '.$section.' mapped by '.$url.' missing');
+      throw new IllegalStateException('Web misconfigured: Section '.$section.' mapped by '.$url.' missing');
     }
 
     $app= new WebApplication($application);
@@ -95,13 +96,13 @@ class WebConfiguration extends \lang\Object implements WebLayout {
 
     // Determine debug level
     $flags= WebDebug::NONE;
-    foreach ($this->readArray($profile, $section, 'debug', array()) as $lvl) {
+    foreach ($this->readArray($profile, $section, 'debug', []) as $lvl) {
       $flags |= WebDebug::flagNamed($lvl);
     }
     $app->setDebug($flags);
     
     // Initialization arguments
-    $app->setArguments($this->readArray($profile, $section, 'init-params', array()));
+    $app->setArguments($this->readArray($profile, $section, 'init-params', []));
  
     // Environment
     $app->setEnvironment($this->readHash($profile, $section, 'init-envs', new Hashmap())->toArray());
@@ -118,7 +119,7 @@ class WebConfiguration extends \lang\Object implements WebLayout {
    */
   public function mappedApplications($profile= null) {
     $mappings= $this->prop->readHash('app', 'mappings', null);
-    $apps= array();
+    $apps= [];
 
     // Verify configuration
     if (null === $mappings) {
@@ -133,7 +134,7 @@ class WebConfiguration extends \lang\Object implements WebLayout {
     }
 
     if (0 === sizeof($apps)) {
-      throw new \lang\IllegalStateException('Web misconfigured: "app" section missing or broken');
+      throw new IllegalStateException('Web misconfigured: "app" section missing or broken');
     }
 
     return $apps;
