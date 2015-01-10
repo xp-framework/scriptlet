@@ -8,14 +8,10 @@ php:
   - 5.6
 
 before_script:
-  - wget 'https://github.com/xp-framework/xp-runners/releases/download/v5.1.0/setup' -O - | php
-  - wget 'https://github.com/xp-framework/core/releases/download/v6.0.0beta1/xp-rt-6.0.0beta1.xar'
-  - wget 'https://github.com/xp-framework/http/archive/master.zip' -O depend.zip ; unzip -d depend depend.zip
-  - wget 'https://github.com/xp-framework/xml/archive/master.zip' -O depend.zip ; unzip -d depend depend.zip
-  - wget 'https://github.com/xp-framework/rdbms/archive/master.zip' -O depend.zip ; unzip -d depend depend.zip
-  - wget 'https://github.com/xp-framework/mail/archive/master.zip' -O depend.zip ; unzip -d depend depend.zip
-  - ls -1 *.xar > boot.pth
-  - find depend -type d -name php > depend.pth
+  - wget 'https://github.com/xp-framework/xp-runners/releases/download/v5.2.0/setup' -O - | php
+  - composer install --prefer-dist
+  - echo "vendor/autoload.php" > composer.pth
+  - echo "use=vendor/xp-framework/core" > xp.ini
   - echo "[runtime]" >> xp.ini
   - echo "date.timezone=Europe/Berlin" >> xp.ini
 
