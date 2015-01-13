@@ -42,7 +42,6 @@ class XMLScriptletResponse extends HttpScriptletResponse {
    * @param   xml.IXSLProcessor processor
    */
   public function __construct($processor= null) {
-    parent::__construct();
     $this->processor= $processor;
     $this->document= new OutputDocument();
   }
