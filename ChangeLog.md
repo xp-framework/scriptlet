@@ -3,6 +3,10 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.0.1 / 2015-10-01
+
+* Fix issue #6: Cannot call constructor - (@thekid)
+
 ## 6.0.0 / 2015-10-01
 
 * Merged pull request #1: XPWS and persistent PHP webservers - (@thekid)
