@@ -6,7 +6,7 @@
   "description" : "Scriptlets for the XP Framework",
   "keywords": ["module", "xp"],
   "require" : {
-    "xp-framework/core"  : "dev-master",
+    "xp-framework/core"  : "~6.0",
     "xp-framework/http"  : "~6.0",
     "xp-framework/xml"   : "~6.0",
     "xp-framework/rdbms" : "~6.0",
