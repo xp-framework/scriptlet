@@ -3,6 +3,9 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Added `ToUnixLineBreaks` caster - see PR xp-framework/xp-framework#363
+  (@treuter, @thekid)
+
 ## 6.0.2 / 2015-02-12
 
 * Changed dependency to use XP ~6.0 (instead of dev-master) - @thekid
