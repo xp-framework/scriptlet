@@ -4,9 +4,8 @@ use scriptlet\HttpScriptletResponse;
 use xml\IXSLProcessor;
 use peer\http\HttpConstants;
 
-
 // Deprecated
-  define('XSLT_BUFFER', 0x0000);
+define('XSLT_BUFFER', 0x0000);
 define('XSLT_FILE',   0x0001);
 define('XSLT_TREE',   0x0002);
 
@@ -325,7 +324,6 @@ class XMLScriptletResponse extends HttpScriptletResponse {
    *
    */
   public function __destruct() {
-    delete($this->document);
-    delete($this->processor);
+    unset($this->document, $this->processor);
   }
 }
