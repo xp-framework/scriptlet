@@ -446,4 +446,22 @@ class HttpScriptlet extends \lang\Object {
     // Return it
     return $response;
   }
+
+  /**
+   * At the end of request, perform a *trace* of the processing; this
+   * method will be called for debugging purposes, invoked only on non-
+   * production systems.
+   *
+   * No business logic to be taking place here!
+   *
+   * @param  int flags
+   * @param  scriptlet.HttpScriptletResponse response
+   * @param  var* errors
+   */
+  public function trace($flags, $response, $errors) {
+    if (($flags & \xp\scriptlet\WebDebug::ERRORS) && sizeof(\xp::$errors)) {
+      flush();
+      echo '<xmp>', \xp::stringOf(\xp::$errors), '</xmp>';
+    }
+  }
 }
