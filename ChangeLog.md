@@ -3,6 +3,15 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Merged pull request #4: Implementation of web layouts:
+  . `$ xpws -c de.thekid.dialog.WebLayout`
+    Will start the XP web server reading the web layout from the given layout class
+  . `$ xpws -c de.thekid.dialog.scriptlet.RssScriptlet`
+    Will start the XP web server with a web layout with the given scriptlet at "/"
+  . `$ xpws -c -`
+    Will start the XP web server to serve static files from document root
+  (@thekid)
+
 ## 6.0.3 / 2015-06-01
 
 * Added `ToUnixLineBreaks` caster - see PR xp-framework/xp-framework#363
