@@ -62,7 +62,10 @@ class ScriptletHandler extends AbstractUrlHandler {
     $request->setHeaders($headers);
     $request->setParams($url->getParams());
 
-    // Rewire response
+    // Rewire request and response I/O
+    $request->readData= function() use($data) {
+      return new \io\streams\MemoryInputStream($data);
+    };
     $response->sendHeaders= function($version, $statusCode, $headers) use($socket) {
       $this->sendHeader($socket, $statusCode, '', $headers);
     };

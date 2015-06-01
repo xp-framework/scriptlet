@@ -107,15 +107,16 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
     $offset= strpos($header, "\r\n")+ 2;
     $headers= [];
     if ($t= strtok(substr($header, $offset, $p- $offset), "\r\n")) do {
-      sscanf($t, "%[^:]: %[^\n]", $name, $value);
+      sscanf($t, "%[^:]: %[^\r\n]", $name, $value);
       $headers[$name]= $value;
     } while ($t= strtok("\r\n"));
 
     $body= '';
     try {
-      if (isset($headers['Content-length'])) {
+      if (isset($headers['Content-Length'])) {
         $body= substr($header, $p+ 4);
-        while (strlen($body) < $headers['Content-length']) {
+        $length= (int)$headers['Content-Length'];
+        while (strlen($body) < $length) {
           $body.= $socket->readBinary(1024);
         }
       }
