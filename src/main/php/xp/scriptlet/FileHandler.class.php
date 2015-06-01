@@ -69,7 +69,7 @@ class FileHandler extends AbstractUrlHandler {
     if ($mod= $this->header($headers, 'If-Modified-Since')) {
       $d= strtotime($mod);
       if ($lastModified <= $d) {
-        $this->sendHeader($socket, 304, 'Not modified', array());
+        $this->sendHeader($socket, 304, 'Not modified', []);
         return;
       }
     }
@@ -83,11 +83,11 @@ class FileHandler extends AbstractUrlHandler {
     }
 
     // Send OK header and data in 8192 byte chunks
-    $this->sendHeader($socket, 200, 'OK', array(
+    $this->sendHeader($socket, 200, 'OK', [
       'Last-Modified: '.gmdate('D, d M Y H:i:s T', $lastModified),
       'Content-Type: '.MimeType::getByFileName($f->getFilename()),
       'Content-Length: '.$f->size(),
-    ));
+    ]);
     while (!$f->eof()) {
       $socket->write($f->read(8192));
     }
