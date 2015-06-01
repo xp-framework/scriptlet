@@ -38,7 +38,8 @@ class ScriptletHandler extends AbstractUrlHandler {
    * @param   peer.Socket socket
    */
   public function handleRequest($method, $query, array $headers, $data, Socket $socket) {
-    $url= new URL('http://localhost'.$query);
+    $url= new URL('http://'.(isset($headers['Host']) ? $headers['Host'] : 'localhost').$query);
+    $port= $url->getPort(-1);
     $request= $this->scriptlet->request();
     $response= $this->scriptlet->response();
 
@@ -48,10 +49,7 @@ class ScriptletHandler extends AbstractUrlHandler {
     $request->env['SERVER_PROTOCOL']= 'HTTP/1.1';
     $request->env['REQUEST_URI']= $query;
     $request->env['QUERY_STRING']= substr($query, strpos($query, '?')+ 1);
-    $request->env['HTTP_HOST']= $url->getHost();
-    if ('https' === $url->getScheme()) {
-      $request->env['HTTPS']= 'on';
-    }
+    $request->env['HTTP_HOST']= $url->getHost().(-1 === $port ? '' : ':'.$port);
     if (isset($headers['Authorization'])) {
       if (0 === strncmp('Basic', $headers['Authorization'], 5)) {
         $credentials= explode(':', base64_decode(substr($headers['Authorization'], 6)));
