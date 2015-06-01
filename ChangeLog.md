@@ -3,6 +3,8 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.0.3 / 2015-06-01
+
 * Added `ToUnixLineBreaks` caster - see PR xp-framework/xp-framework#363
   (@treuter, @thekid)
 
