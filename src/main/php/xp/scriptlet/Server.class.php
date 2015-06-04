@@ -46,11 +46,11 @@ class Server extends \lang\Object {
     }
 
     $expand= function($in) use($webroot, $profile) {
-      return strtr($in, [
+      return is_string($in) ? strtr($in, [
         '{WEBROOT}'       => $webroot,
         '{PROFILE}'       => $profile,
         '{DOCUMENT_ROOT}' => getenv('DOCUMENT_ROOT')
-      ]);
+      ]) : $in;
     };
 
     Console::writeLine('---> Startup ', $class, '(', $address, ')');

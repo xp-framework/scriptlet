@@ -132,10 +132,10 @@ class Runner extends \lang\Object {
    * @return  string
    */
   public function expand($value) {
-    return strtr($value, array(
+    return is_string($value) ? strtr($value, array(
       '{WEBROOT}' => $this->webroot,
       '{PROFILE}' => $this->profile
-    ));
+    )) : $value;
   }
   
   /**
