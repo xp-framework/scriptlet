@@ -79,6 +79,9 @@ class ScriptletHandler extends AbstractUrlHandler {
       return;
     }
 
+    if (!$response->isCommitted()) {
+      $response->flush();
+    }
     $response->sendContent();
   }
 
