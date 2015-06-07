@@ -35,7 +35,7 @@ abstract class AbstractUrlHandler extends \lang\Object {
    * @param   string reason the reason
    */
   protected function sendErrorMessage(Socket $socket, $sc, $message, $reason) {
-    $package= (new \lang\XPClass(__CLASS__))->getPackage();
+    $package= $this->getClass()->getPackage();
     $errorPage= ($package->providesResource('error'.$sc.'.html')
       ? $package->getResource('error'.$sc.'.html')
       : $package->getResource('error500.html')
