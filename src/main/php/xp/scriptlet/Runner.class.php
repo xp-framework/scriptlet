@@ -203,6 +203,11 @@ class Runner extends \lang\Object {
       if ($flags & WebDebug::TRACE && $instance instanceof \util\log\Traceable) {
         $instance->setTrace($cat);
       }
+
+      foreach ($application->filters() as $filter) {
+        $instance->filter($filter);
+      }
+
       $instance->init();
 
       // Set up request and response

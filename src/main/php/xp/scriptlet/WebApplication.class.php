@@ -1,5 +1,7 @@
 <?php namespace xp\scriptlet;
 
+use scriptlet\Filter;
+
 /**
  * Represents a web application
  *
@@ -10,8 +12,9 @@ class WebApplication extends \lang\Object {
   protected $name = '';
   protected $config = '';
   protected $scriptlet = '';
-  protected $arguments = array();
-  protected $environment = array();
+  protected $arguments = [];
+  protected $filters = [];
+  protected $environment = [];
   protected $debug = 0;
 
   /**
@@ -166,6 +169,30 @@ class WebApplication extends \lang\Object {
    */
   public function getArguments() {
     return $this->arguments;
+  }
+
+  /**
+   * Sets this application's filter class name
+   *
+   * @param   scriptlet.Filter|string filter Either a filter instance or a filter class name
+   * @return  xp.filter.WebApplication this
+   */
+  public function withFilter($filter) {
+    if ($filter instanceof Filter) {
+      $this->filters[]= $filter;
+    } else {
+      $this->filters[]= XPClass::forName($filter)->newInstance();
+    }
+    return $this;
+  }
+
+  /**
+   * Returns this application's filters
+   *
+   * @return  scriptlet.Filter[]
+   */
+  public function filters() {
+    return $this->filters;
   }
 
   /**

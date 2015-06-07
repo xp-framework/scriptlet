@@ -77,7 +77,8 @@ class Server extends \lang\Object {
           array_map($expand, $application->getArguments()),
           array_map($expand, array_merge($application->getEnvironment(), [
             'DOCUMENT_ROOT' => getenv('DOCUMENT_ROOT')
-          ]))
+          ])),
+          $application->filters()
         ));
         foreach (explode('|', $application->getConfig()) as $element) {
           $expanded= $expand($element);
