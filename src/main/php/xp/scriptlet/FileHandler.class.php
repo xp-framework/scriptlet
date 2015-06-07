@@ -61,7 +61,7 @@ class FileHandler extends AbstractUrlHandler {
       DIRECTORY_SEPARATOR
     ));
     if (!is_file($f->getURI())) {
-      return call_user_func($this->notFound, $socket, $url['path']);
+      return call_user_func($this->notFound, $this, $socket, $url['path']);
     }
 
     // Implement If-Modified-Since/304 Not modified
