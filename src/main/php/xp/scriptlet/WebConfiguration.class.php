@@ -89,23 +89,27 @@ class WebConfiguration extends \lang\Object implements WebLayout {
     }
 
     $app= new WebApplication($application);
-    $app->setScriptlet($this->readString($profile, $section, 'class', ''));
+    $app->withScriptlet($this->readString($profile, $section, 'class', ''));
     
-    // Configuration base
-    $app->setConfig($this->readString($profile, $section, 'prop-base', '{WEBROOT}/etc'));
+    $app->withConfig($this->readArray($profile, $section, 'prop-base', '{WEBROOT}/etc'));
 
     // Determine debug level
     $flags= WebDebug::NONE;
     foreach ($this->readArray($profile, $section, 'debug', []) as $lvl) {
       $flags |= WebDebug::flagNamed($lvl);
     }
-    $app->setDebug($flags);
+    $app->withDebug($flags);
     
     // Initialization arguments
-    $app->setArguments($this->readArray($profile, $section, 'init-params', []));
+    $app->withArguments($this->readArray($profile, $section, 'init-params', []));
  
     // Environment
-    $app->setEnvironment($this->readHash($profile, $section, 'init-envs', new Hashmap())->toArray());
+    $app->withEnvironment($this->readHash($profile, $section, 'init-envs', new Hashmap())->toArray());
+
+    // Filter
+    foreach ($this->readArray($profile, $section, 'filters', []) as $filter) {
+      $app->withFiter($filter);
+    }
    
     return $app;
   }

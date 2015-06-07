@@ -73,13 +73,14 @@ class Server extends \lang\Object {
       }
       foreach ($layout->mappedApplications($args[2]) as $url => $application) {
         $protocol->setUrlHandler('default', '/' == $url ? '##' : '#^('.preg_quote($url, '#').')($|/.+)#', new ScriptletHandler(
-          $application->getScriptlet(),
-          array_map($expand, $application->getArguments()),
-          array_map($expand, array_merge($application->getEnvironment(), [
+          $application->scriptlet(),
+          array_map($expand, $application->arguments()),
+          array_map($expand, array_merge($application->environment(), [
             'DOCUMENT_ROOT' => getenv('DOCUMENT_ROOT')
-          ]))
+          ])),
+          $application->filters()
         ));
-        foreach (explode('|', $application->getConfig()) as $element) {
+        foreach ($application->config() as $element) {
           $expanded= $expand($element);
           if (0 == strncmp('res://', $expanded, 6)) {
             $pm->appendSource(new ResourcePropertySource(substr($expanded, 6)));

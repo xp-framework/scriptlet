@@ -1,5 +1,7 @@
 <?php namespace xp\scriptlet;
 
+use scriptlet\Filter;
+
 /**
  * Represents a web application
  *
@@ -8,10 +10,11 @@
  */
 class WebApplication extends \lang\Object {
   protected $name = '';
-  protected $config = '';
+  protected $config = [];
   protected $scriptlet = '';
-  protected $arguments = array();
-  protected $environment = array();
+  protected $arguments = [];
+  protected $filters = [];
+  protected $environment = [];
   protected $debug = 0;
 
   /**
@@ -27,16 +30,7 @@ class WebApplication extends \lang\Object {
    * Sets this application's name
    *
    * @param   string name
-   */
-  public function setName($name) {
-    $this->name= $name;
-  }
-
-  /**
-   * Sets this application's name
-   *
-   * @param   string name
-   * @return  xp.scriptlet.WebApplication this
+   * @return  self this
    */
   public function withName($name) {
     $this->name= $name;
@@ -48,36 +42,31 @@ class WebApplication extends \lang\Object {
    *
    * @return  string
    */
-  public function getName() {
+  public function name() {
     return $this->name;
   }
 
   /**
    * Sets this application's config
    *
-   * @param   string config
-   */
-  public function setConfig($config) {
-    $this->config= $config;
-  }
-
-  /**
-   * Sets this application's config
-   *
-   * @param   string config
-   * @return  xp.scriptlet.WebApplication this
+   * @param   string[]|string config
+   * @return  self this
    */
   public function withConfig($config) {
-    $this->config= $config;
+    if (is_array($config)) {
+      $this->config= $config;
+    } else {
+      $this->config= [$config];
+    }
     return $this;
   }
   
   /**
    * Returns this application's config
    *
-   * @return  string
+   * @return  string[]
    */
-  public function getConfig() {
+  public function config() {
     return $this->config;
   }
 
@@ -85,16 +74,7 @@ class WebApplication extends \lang\Object {
    * Sets this application's debug flags
    *
    * @param   int debug
-   */
-  public function setDebug($debug) {
-    $this->debug= $debug;
-  }
-
-  /**
-   * Sets this application's debug flags
-   *
-   * @param   int debug
-   * @return  xp.scriptlet.WebApplication this
+   * @return  self this
    */
   public function withDebug($debug) {
     $this->debug= $debug;
@@ -106,7 +86,7 @@ class WebApplication extends \lang\Object {
    *
    * @return  int
    */
-  public function getDebug() {
+  public function debug() {
     return $this->debug;
   }
 
@@ -114,16 +94,7 @@ class WebApplication extends \lang\Object {
    * Sets this application's scriptlet class name
    *
    * @param   string scriptlet
-   */
-  public function setScriptlet($scriptlet) {
-    $this->scriptlet= $scriptlet;
-  }
-
-  /**
-   * Sets this application's scriptlet class name
-   *
-   * @param   string scriptlet
-   * @return  xp.scriptlet.WebApplication this
+   * @return  self this
    */
   public function withScriptlet($scriptlet) {
     $this->scriptlet= $scriptlet;
@@ -135,7 +106,7 @@ class WebApplication extends \lang\Object {
    *
    * @return  string
    */
-  public function getScriptlet() {
+  public function scriptlet() {
     return $this->scriptlet;
   }
 
@@ -143,16 +114,7 @@ class WebApplication extends \lang\Object {
    * Sets this application's arguments
    *
    * @param   string[] arguments
-   */
-  public function setArguments($arguments) {
-    $this->arguments= $arguments;
-  }
-
-  /**
-   * Sets this application's arguments
-   *
-   * @param   string[] arguments
-   * @return  xp.scriptlet.WebApplication this
+   * @return  self this
    */
   public function withArguments($arguments) {
     $this->arguments= $arguments;
@@ -164,24 +126,39 @@ class WebApplication extends \lang\Object {
    *
    * @return  string[]
    */
-  public function getArguments() {
+  public function arguments() {
     return $this->arguments;
   }
 
   /**
-   * Sets this application's environment
+   * Sets this application's filter class name
    *
-   * @param   [:string] environment
+   * @param   scriptlet.Filter|string filter Either a filter instance or a filter class name
+   * @return  xp.filter.WebApplication this
    */
-  public function setEnvironment($environment) {
-    $this->environment= $environment;
+  public function withFilter($filter) {
+    if ($filter instanceof Filter) {
+      $this->filters[]= $filter;
+    } else {
+      $this->filters[]= XPClass::forName($filter)->newInstance();
+    }
+    return $this;
+  }
+
+  /**
+   * Returns this application's filters
+   *
+   * @return  scriptlet.Filter[]
+   */
+  public function filters() {
+    return $this->filters;
   }
 
   /**
    * Sets this application's environment
    *
    * @param   [:string] environment
-   * @return  xp.scriptlet.WebApplication this
+   * @return  self this
    */
   public function withEnvironment($environment) {
     $this->environment= $environment;
@@ -193,7 +170,7 @@ class WebApplication extends \lang\Object {
    *
    * @return  [:string]
    */
-  public function getEnvironment() {
+  public function environment() {
     return $this->environment;
   }
   

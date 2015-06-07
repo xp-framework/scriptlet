@@ -52,7 +52,7 @@ class RequestAuthenticatorTest extends ScriptletTestCase {
         ]);
       },
       'doGet' => function($request, $response) {
-        throw new llegalAccessException('Valid user required');
+        throw new IllegalAccessException('Valid user required');
       }
     ]);
     $s->service($req, $res);

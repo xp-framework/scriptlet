@@ -149,12 +149,12 @@ class Runner extends \lang\Object {
     $application= $this->applicationAt($url);
 
     // Determine debug level
-    $flags= $application->getDebug();
+    $flags= $application->debug();
     
     // Initializer logger, properties and connections to property base, 
     // defaulting to the same directory the web.ini resides in
     $pm= PropertyManager::getInstance();
-    foreach (explode('|', $application->getConfig()) as $element) {
+    foreach ($application->config() as $element) {
       $expanded= $this->expand($element);
       if (0 == strncmp('res://', $expanded, 6)) {
         $pm->appendSource(new ResourcePropertySource(substr($expanded, 6)));
@@ -180,7 +180,7 @@ class Runner extends \lang\Object {
     }
 
     // Set environment variables
-    foreach ($application->getEnvironment() as $key => $value) {
+    foreach ($application->environment() as $key => $value) {
       $_SERVER[$key]= $this->expand($value);
     }
 
@@ -189,12 +189,12 @@ class Runner extends \lang\Object {
     $instance= null;
     $e= null;
     try {
-      $class= \lang\XPClass::forName($application->getScriptlet());
+      $class= \lang\XPClass::forName($application->scriptlet());
       if (!$class->hasConstructor()) {
         $instance= $class->newInstance();
       } else {
         $args= [];
-        foreach ($application->getArguments() as $arg) {
+        foreach ($application->arguments() as $arg) {
           $args[]= $this->expand($arg);
         }
         $instance= $class->getConstructor()->newInstance($args);
@@ -203,6 +203,11 @@ class Runner extends \lang\Object {
       if ($flags & WebDebug::TRACE && $instance instanceof \util\log\Traceable) {
         $instance->setTrace($cat);
       }
+
+      foreach ($application->filters() as $filter) {
+        $instance->filter($filter);
+      }
+
       $instance->init();
 
       // Set up request and response

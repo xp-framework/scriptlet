@@ -16,22 +16,23 @@ use peer\http\HttpConstants;
  * dynamic web pages. 
  *
  * For the beginning, in your class extending this one, simply override
- * the <pre>doGet()</pre> method and put any source there to be executed 
+ * the `doGet()` method and put any source there to be executed 
  * on a HTTP GET request.
  *
  * Example:
- * <code>
- *   class MyScriptlet extends HttpScriptlet {
- *     public function doGet($request, $response) {
- *       $response->write('Hello World');
- *     }
+ * ```php
+ * class MyScriptlet extends HttpScriptlet {
+ *   public function doGet($request, $response) {
+ *     $response->write('Hello World');
  *   }
- * </code>
+ * }
+ * ```
  *
- * @test    xp://scriptlet.unittest.HttpScriptletTest
- * @test    xp://scriptlet.unittest.HttpScriptletProcessTest
+ * @test   xp://scriptlet.unittest.HttpScriptletTest
+ * @test   xp://scriptlet.unittest.HttpScriptletProcessTest
  */
 class HttpScriptlet extends \lang\Object {
+  private $filters= [];
   
   /**
    * Create a request object. Override this method to define
@@ -89,7 +90,18 @@ class HttpScriptlet extends \lang\Object {
   public function getAuthenticator($request) {
     return null;
   }
-  
+
+  /**
+   * Adds a filter
+   *
+   * @param  scriptlet.Filter $filter
+   * @return scriptlet.Filter The added filter
+   */
+  public function filter(Filter $filter) {
+    $this->filters[]= $filter;
+    return $filter;
+  }
+
   /**
    * Initialize session
    *
@@ -149,7 +161,7 @@ class HttpScriptlet extends \lang\Object {
    * implemented as noop in the default implementation.
    *
    * If you want to support these methods, override this method - 
-   * make sure you call <pre>parent::handleMethod($request)</pre>
+   * make sure you call `parent::handleMethod($request)`
    * so that the request object gets set up correctly before any
    * of your source is executed
    *
@@ -194,27 +206,27 @@ class HttpScriptlet extends \lang\Object {
   }
   
   /**
-   * Receives an HTTP GET request from the <pre>process()</pre> method
+   * Receives an HTTP GET request from the `process()` method
    * and handles it.
    *
    * When overriding this method, request parameters are read and acted
    * upon and the response object is used to set headers and add
    * output. The request objects contains a session object if one was
-   * requested via <pre>needsSession()</pre>. Return FALSE to indicate no
+   * requested via `needsSession()`. Return FALSE to indicate no
    * farther processing is needed - the response object's method 
-   * <pre>process</pre> will not be called.
+   * `process` will not be called.
    * 
    * Example:
-   * <code>
-   *   function doGet($request, $response) {
-   *     if (NULL === ($name= $request->getParam('name'))) {
-   *       // Display a form where name is entered
-   *       // ...
-   *       return;
-   *     }
-   *     $response->write('Hello '.$name);
+   * ```php
+   * public function doGet($request, $response) {
+   *   if (null === ($name= $request->getParam('name'))) {
+   *     // Display a form where name is entered
+   *     // ...
+   *     return;
    *   }
-   * </code>
+   *   $response->write('Hello '.$name);
+   * }
+   * ```
    *
    * @return  bool processed
    * @param   scriptlet.HttpScriptletRequest request 
@@ -225,7 +237,7 @@ class HttpScriptlet extends \lang\Object {
   }
   
   /**
-   * Receives an HTTP POST request from the <pre>process()</pre> method
+   * Receives an HTTP POST request from the `process()` method
    * and handles it.
    *
    * @return  bool processed
@@ -237,7 +249,7 @@ class HttpScriptlet extends \lang\Object {
   }
   
   /**
-   * Receives an HTTP HEAD request from the <pre>process()</pre> method
+   * Receives an HTTP HEAD request from the `process()` method
    * and handles it.
    *
    * Remember:
@@ -260,7 +272,7 @@ class HttpScriptlet extends \lang\Object {
   
   /**
    * Creates a session. This method will only be called if 
-   * <pre>needsSession()</pre> return TRUE and no session
+   * `needsSession()` return TRUE and no session
    * is available or the session is unvalid.
    *
    * @return  bool processed
@@ -296,7 +308,7 @@ class HttpScriptlet extends \lang\Object {
   /**
    * This method is called to process any request and dispatches
    * it to on of the do* -methods of the scriptlet. It will also
-   * call the <pre>doCreateSession()</pre> method if necessary.
+   * call the `doCreateSession()` method if necessary.
    *
    * @param   scriptlet.HttpScriptletRequest request 
    * @param   scriptlet.HttpScriptletResponse response 
@@ -387,18 +399,7 @@ class HttpScriptlet extends \lang\Object {
     // site). Exceptions thrown are wrapped in a ScriptletException
     // with status code 403 ("Forbidden").
     if ($auth= $this->getAuthenticator($request)) {
-      try {
-        $r= $auth->authenticate($request, $response, null);
-      } catch (ScriptletException $e) {
-        throw $e;
-      } catch (\lang\XPException $e) {
-        throw new ScriptletException(
-          'Authentication failed: '.$e->getMessage(),
-          HttpConstants::STATUS_FORBIDDEN,
-          $e
-        );
-      }
-      if (false === $r) return;
+      array_unshift($this->filters, new AuthenticationFilter($auth));
     }
 
     // Call method handler and, in case the method handler returns anything
@@ -406,7 +407,7 @@ class HttpScriptlet extends \lang\Object {
     // the two methods will result in a ScriptletException with the HTTP
     // status code 500 ("Internal Server Error") being thrown.
     try {
-      $r= call_user_func(array($this, $method), $request, $response);
+      $r= (new Invocation([$this, $method], $this->filters))->proceed($request, $response);
       if (false !== $r && !is(null, $r)) {
         $response->process();
       }

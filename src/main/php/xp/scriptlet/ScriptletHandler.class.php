@@ -17,13 +17,18 @@ class ScriptletHandler extends AbstractUrlHandler {
    * @param   string[] args
    * @param   [:string] env
    */
-  public function __construct($name, $args, $env= []) {
+  public function __construct($name, $args, $env= [], $filters= []) {
     $class= \lang\XPClass::forName($name);
     if ($class->hasConstructor()) {
       $this->scriptlet= $class->getConstructor()->newInstance((array)$args);
     } else {
       $this->scriptlet= $class->newInstance();
     }
+
+    foreach ($filters as $filter) {
+      $this->scriptlet->filter($filter);
+    }
+
     $this->scriptlet->init();
     $this->env= $env;
   }
