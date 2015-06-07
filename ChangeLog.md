@@ -3,6 +3,8 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.1.0 / 2015-06-08
+
 * Merged pull request #3: Filters. Filters wrap around request/response
   processing and can be used for authentication, compression, caching, etc.
   (@thekid)
