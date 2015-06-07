@@ -19,7 +19,8 @@ class HttpScriptletRequest extends \lang\Object implements Request {
     $params=          [],
     $data=            null,
     $method=          HttpConstants::GET,
-    $session=         null;
+    $session=         null,
+    $readData=        null;
 
   protected
     $cookies=         null;
@@ -427,7 +428,12 @@ class HttpScriptletRequest extends \lang\Object implements Request {
    */
   public function getInputStream() {
     if (null === $this->inputStream) {
-      $this->inputStream= \lang\XPClass::forName('io.streams.ChannelInputStream')->newInstance('input');
+      if (null === $this->readData) {
+        $this->inputStream= \lang\XPClass::forName('io.streams.ChannelInputStream')->newInstance('input');
+      } else {
+        $f= $this->readData;
+        $this->inputStream= $f();
+      }
     }
     return $this->inputStream;
   }

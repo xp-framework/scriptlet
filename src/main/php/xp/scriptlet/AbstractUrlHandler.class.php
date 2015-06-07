@@ -20,8 +20,8 @@ abstract class AbstractUrlHandler extends \lang\Object {
     $socket->write('Date: '.gmdate('D, d M Y H:i:s T')."\r\n");
     $socket->write('Server: XP/PHP '.phpversion()."\r\n");
     $socket->write("Connection: close\r\n");
-    foreach ($headers as $key => $value) {
-      $socket->write($key.': '.$value."\r\n");
+    foreach ($headers as $header) {
+      $socket->write($header."\r\n");
     }
     $socket->write("\r\n");
   }
@@ -35,16 +35,16 @@ abstract class AbstractUrlHandler extends \lang\Object {
    * @param   string reason the reason
    */
   protected function sendErrorMessage(Socket $socket, $sc, $message, $reason) {
-    $package= create(new \lang\XPClass(__CLASS__))->getPackage();
-    $errorPage= ($package->providesResource('error'.$status.'.html')
-      ? $package->getResource('error'.$status.'.html')
+    $package= $this->getClass()->getPackage();
+    $errorPage= ($package->providesResource('error'.$sc.'.html')
+      ? $package->getResource('error'.$sc.'.html')
       : $package->getResource('error500.html')
     );
     $body= str_replace('<xp:value-of select="reason"/>', $reason, $errorPage);
-    $this->sendHeader($socket, $sc, $message, array(
-      'Content-Type'    => 'text/html',
-      'Content-Length'  => strlen($body),
-    ));
+    $this->sendHeader($socket, $sc, $message, [
+      'Content-Type: text/html',
+      'Content-Length: '.strlen($body),
+    ]);
     $socket->write($body);
   }
 

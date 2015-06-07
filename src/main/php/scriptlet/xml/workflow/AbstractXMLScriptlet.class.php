@@ -120,7 +120,7 @@ class AbstractXMLScriptlet extends XMLScriptlet {
         throw new \scriptlet\ScriptletException($e->getMessage(), HttpConstants::STATUS_FORBIDDEN, $e);
       }
 
-      delete($class);
+      unset($class);
     }
     
     // Call state's setup() method

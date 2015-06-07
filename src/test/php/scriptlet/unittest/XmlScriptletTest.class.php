@@ -39,6 +39,10 @@ class XmlScriptletTest extends ScriptletTestCase {
     $q= $url->getQuery('');
     $req= new XMLScriptletRequest();
     $req->method= $method;
+    $req->env['PRODUCT']= $req->env['DEF_PROD']= 'xp';
+    $req->env['STATE']= $req->env['DEF_STATE']= null;
+    $req->env['PAGE']= $req->env['DEF_PAGE']= null;
+    $req->env['LANGUAGE']= $req->env['DEF_LANG']= null;
     $req->env['SERVER_PROTOCOL']= 'HTTP/1.1';
     $req->env['REQUEST_URI']= $url->getPath('/').($q ? '?'.$q : '');
     $req->env['QUERY_STRING']= $q;

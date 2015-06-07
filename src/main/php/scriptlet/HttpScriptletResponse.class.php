@@ -28,24 +28,6 @@ class HttpScriptletResponse extends \lang\Object implements Response {
     $sendContent=     null;
 
   /**
-   * Constructor
-   */
-  public function __construct() {
-    $this->sendHeaders= function($version, $statusCode, $headers) {
-      if ('cgi' === PHP_SAPI) {
-        header('Status: '.$statusCode);
-      } else {
-        header(sprintf('HTTP/%s %d', $version, $statusCode));
-      }
-
-      foreach ($headers as $header) {
-        header(strtr($header, array("\r" => '', "\n" => "\n\t")), false);
-      }
-    };
-    $this->sendContent= null;   // Uses "echo"
-  }
-
-  /**
    * Set URI of request which is currently answered by the response
    *
    * @param scriptlet.HttpScriptletURL uri The requested URL
@@ -214,8 +196,21 @@ class HttpScriptletResponse extends \lang\Object implements Response {
       throw new \lang\IllegalStateException('Headers have already been sent at: '.$file.', line '.$line);
     }
 
-    $f= $this->sendHeaders;
-    $f($this->version, $this->statusCode, $this->headers);
+    // Use sendHeaders closure, default to header()
+    if (null === $this->sendHeaders) {
+      if ('cgi' === PHP_SAPI) {
+        header('Status: '.$this->statusCode);
+      } else {
+        header(sprintf('HTTP/%s %d', $this->version, $this->statusCode));
+      }
+
+      foreach ($this->headers as $header) {
+        header(strtr($header, array("\r" => '', "\n" => "\n\t")), false);
+      }
+    } else {
+      $f= $this->sendHeaders;
+      $f($this->version, $this->statusCode, $this->headers);
+    }
 
     // Flush buffer if not empty
     ob_start($this->sendContent, 8192);

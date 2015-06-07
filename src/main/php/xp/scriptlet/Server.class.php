@@ -26,18 +26,18 @@ class Server extends \lang\Object {
   /**
    * Entry point method. Receives the following arguments from xpws:
    *
-   * - The web root - defaults to $CWD
-   * - The configuration directory - defaults to "etc"
-   * - The server profile - default to "dev"
-   * - The server address - default to "localhost:8080"
-   * - The mode - default to "serve"
+   * 1. The web root - defaults to $CWD
+   * 2. The application source - either a directory or ":" + f.q.c.Name
+   * 3. The server profile - default to "dev"
+   * 4. The server address - default to "localhost:8080"
+   * 5. The mode - default to "serve"
    *
    * @param   string[] args
    * @return  int
    */
   public static function main(array $args) {
     $webroot= isset($args[0]) ? realpath($args[0]) : getcwd();
-    $configd= isset($args[1]) ? $args[1] : 'etc';
+    $source= isset($args[1]) ? $args[1] : 'etc';
     $profile= isset($args[2]) ? $args[2] : 'dev';
     $address= isset($args[3]) ? $args[3] : 'localhost:8080';
     if (!($class= @self::$modes[isset($args[4]) ? $args[4] : 'serve'])) {
@@ -46,11 +46,11 @@ class Server extends \lang\Object {
     }
 
     $expand= function($in) use($webroot, $profile) {
-      return strtr($in, [
+      return is_string($in) ? strtr($in, [
         '{WEBROOT}'       => $webroot,
         '{PROFILE}'       => $profile,
         '{DOCUMENT_ROOT}' => getenv('DOCUMENT_ROOT')
-      ]);
+      ]) : $in;
     };
 
     Console::writeLine('---> Startup ', $class, '(', $address, ')');
@@ -58,20 +58,20 @@ class Server extends \lang\Object {
     $server= XPClass::forName($class)->newInstance($host, $port);
 
     with ($pm= PropertyManager::getInstance(), $protocol= $server->setProtocol(new HttpProtocol())); {
-      $conf= new WebConfiguration(new \util\Properties($configd.DIRECTORY_SEPARATOR.'web.ini'));
+      $layout= (new Source($source))->layout();
 
-      $resources= $conf->staticResources($args[2]);
+      $resources= $layout->staticResources($args[2]);
       if (null === $resources) {
         $protocol->setUrlHandler('default', '#^/#', new FileHandler(
           $expand('{DOCUMENT_ROOT}'),
           $notFound= function() { return false; }
         ));
       } else {
-        foreach ($conf->staticResources($args[2]) as $pattern => $location) {
+        foreach ($resources as $pattern => $location) {
           $protocol->setUrlHandler('default', '#'.strtr($pattern, ['#' => '\\#']).'#', new FileHandler($expand($location)));
         }
       }
-      foreach ($conf->mappedApplications($args[2]) as $url => $application) {
+      foreach ($layout->mappedApplications($args[2]) as $url => $application) {
         $protocol->setUrlHandler('default', '/' == $url ? '##' : '#^('.preg_quote($url, '#').')($|/.+)#', new ScriptletHandler(
           $application->getScriptlet(),
           array_map($expand, $application->getArguments()),

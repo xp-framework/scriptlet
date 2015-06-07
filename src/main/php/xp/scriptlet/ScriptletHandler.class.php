@@ -8,10 +8,7 @@ use scriptlet\ScriptletException;
  * Scriptlet handler
  */
 class ScriptletHandler extends AbstractUrlHandler {
-  protected $scriptlet;
-  protected $request;
-  protected $response;
-  protected $env;
+  protected $scriptlet, $env;
 
   /**
    * Constructor
@@ -28,8 +25,6 @@ class ScriptletHandler extends AbstractUrlHandler {
       $this->scriptlet= $class->newInstance();
     }
     $this->scriptlet->init();
-    $this->request= $class->getMethod('_request')->setAccessible(true);
-    $this->response= $class->getMethod('_response')->setAccessible(true);
     $this->env= $env;
   }
 
@@ -43,9 +38,10 @@ class ScriptletHandler extends AbstractUrlHandler {
    * @param   peer.Socket socket
    */
   public function handleRequest($method, $query, array $headers, $data, Socket $socket) {
-    $url= new URL('http://localhost'.$query);
-    $request= $this->request->invoke($this->scriptlet, []);
-    $response= $this->response->invoke($this->scriptlet, []);
+    $url= new URL('http://'.(isset($headers['Host']) ? $headers['Host'] : 'localhost').$query);
+    $port= $url->getPort(-1);
+    $request= $this->scriptlet->request();
+    $response= $this->scriptlet->response();
 
     // Fill request
     $request->method= $method;
@@ -53,10 +49,7 @@ class ScriptletHandler extends AbstractUrlHandler {
     $request->env['SERVER_PROTOCOL']= 'HTTP/1.1';
     $request->env['REQUEST_URI']= $query;
     $request->env['QUERY_STRING']= substr($query, strpos($query, '?')+ 1);
-    $request->env['HTTP_HOST']= $url->getHost();
-    if ('https' === $url->getScheme()) {
-      $request->env['HTTPS']= 'on';
-    }
+    $request->env['HTTP_HOST']= $url->getHost().(-1 === $port ? '' : ':'.$port);
     if (isset($headers['Authorization'])) {
       if (0 === strncmp('Basic', $headers['Authorization'], 5)) {
         $credentials= explode(':', base64_decode(substr($headers['Authorization'], 6)));
@@ -67,7 +60,10 @@ class ScriptletHandler extends AbstractUrlHandler {
     $request->setHeaders($headers);
     $request->setParams($url->getParams());
 
-    // Rewire response
+    // Rewire request and response I/O
+    $request->readData= function() use($data) {
+      return new \io\streams\MemoryInputStream($data);
+    };
     $response->sendHeaders= function($version, $statusCode, $headers) use($socket) {
       $this->sendHeader($socket, $statusCode, '', $headers);
     };
@@ -83,6 +79,9 @@ class ScriptletHandler extends AbstractUrlHandler {
       return;
     }
 
+    if (!$response->isCommitted()) {
+      $response->flush();
+    }
     $response->sendContent();
   }
 

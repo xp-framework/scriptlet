@@ -7,7 +7,10 @@ use util\log\Logger;
 use util\log\context\EnvironmentAware;
 use rdbms\ConnectionManager;
 use scriptlet\HttpScriptlet;
+use scriptlet\HttpScriptletRequest;
+use scriptlet\HttpScriptletResponse;
 use peer\http\HttpConstants;
+use lang\XPClass;
 
 /**
  * Scriptlet runner
@@ -21,10 +24,10 @@ class Runner extends \lang\Object {
     $mappings   = null;
 
   static function __static() {
-    \lang\XPClass::forName('lang.ResourceProvider');
+    XPClass::forName('lang.ResourceProvider');
     if (!function_exists('getallheaders')) {
       eval('function getallheaders() {
-        $headers= array();
+        $headers= [];
         foreach ($_SERVER as $name => $value) {
           if (0 !== strncmp("HTTP_", $name, 5)) continue;
           $headers[strtr(ucwords(strtolower(strtr(substr($name, 5), "_", " "))), " ", "-")]= $value;
@@ -48,31 +51,36 @@ class Runner extends \lang\Object {
   /**
    * Configure this runner with a web.ini
    *
-   * @param   util.Properties conf
+   * @param   util.Properties $conf
    * @throws  lang.IllegalStateException if the web is misconfigured
    */
   public function configure(\util\Properties $conf) {
-    $conf= new WebConfiguration($conf);
-    foreach ($conf->mappedApplications($this->profile) as $url => $application) {
-      $this->mapApplication($url, $application);
-    }
+    $this->layout(new WebConfiguration($conf));
   }
-  
+
+  /**
+   * Sets layout to use
+   *
+   * @param   xp.scriptlet.WebLayout $layout
+   * @return  self This
+   */
+  public function layout(WebLayout $layout) {
+    $this->mappings= $layout->mappedApplications($this->profile);
+    return $this;
+  }
+
   /**
    * Entry point method. Receives the following arguments from web.php:
-   * <ol>
-   *   <li>The web root</li>
-   *   <li>The configuration directory</li>
-   *   <li>The server profile</li>
-   *   <li>The script URL</li>
-   * </ol>
+   * 
+   * 1. The web root - a directory
+   * 2. The application source - either a directory or ":" + f.q.c.Name
+   * 3. The server profile - any name, really, defaulting to "dev"
+   * 4. The script URL - the resolved path, including leading "/"
    *
    * @param   string[] args
    */
   public static function main(array $args) {
-    $r= new self($args[0], $args[2]);
-    $r->configure(new \util\Properties($args[1].DIRECTORY_SEPARATOR.'web.ini'));
-    $r->run($args[3]);
+    (new self($args[0], $args[2]))->layout((new Source($args[1]))->layout())->run($args[3]);
   }
   
   /**
@@ -124,10 +132,10 @@ class Runner extends \lang\Object {
    * @return  string
    */
   public function expand($value) {
-    return strtr($value, array(
+    return is_string($value) ? strtr($value, array(
       '{WEBROOT}' => $this->webroot,
       '{PROFILE}' => $this->profile
-    ));
+    )) : $value;
   }
   
   /**
@@ -185,7 +193,7 @@ class Runner extends \lang\Object {
       if (!$class->hasConstructor()) {
         $instance= $class->newInstance();
       } else {
-        $args= array();
+        $args= [];
         foreach ($application->getArguments() as $arg) {
           $args[]= $this->expand($arg);
         }
@@ -196,9 +204,17 @@ class Runner extends \lang\Object {
         $instance->setTrace($cat);
       }
       $instance->init();
-    
+
+      // Set up request and response
+      $request= $instance->request();
+      $request->method= $_SERVER['REQUEST_METHOD'];
+      $request->env= $_ENV;
+      $request->setHeaders(getallheaders());
+      $request->setParams($_REQUEST);
+      $response= $instance->response();
+
       // Service
-      $response= $instance->process();
+      $instance->service($request, $response);
     } catch (\scriptlet\ScriptletException $e) {
       $cat->error($e);
 
@@ -207,22 +223,25 @@ class Runner extends \lang\Object {
       if (method_exists($instance, 'fail')) {
         $response= $instance->fail($e);
       } else {
-        $response= $this->fail($e, $e->getStatus(), $flags & WebDebug::STACKTRACE);
+        $this->error($response, $e, $e->getStatus(), $flags & WebDebug::STACKTRACE);
       }
     } catch (\lang\SystemExit $e) {
       if (0 === $e->getCode()) {
-        $response= new \scriptlet\HttpScriptletResponse();
         $response->setStatus(HttpConstants::STATUS_OK);
         if ($message= $e->getMessage()) $response->setContent($message);
       } else {
         $cat->error($e);
-        $response= $this->fail($e, HttpConstants::STATUS_INTERNAL_SERVER_ERROR, false);
+        $this->error($response, $e, HttpConstants::STATUS_INTERNAL_SERVER_ERROR, false);
       }
     } catch (\lang\Throwable $e) {
       $cat->error($e);
 
-      // Here, we might not have a scriptlet
-      $response= $this->fail($e, HttpConstants::STATUS_PRECONDITION_FAILED, $flags & WebDebug::STACKTRACE);
+      // Here, we might not have a scriptlet instance; and thus not a response
+      if (!isset($response)) {
+        $response= isset($instance) ? $instance->response() : new HttpScriptletResponse();
+      }
+
+      $this->error($response, $e, HttpConstants::STATUS_PRECONDITION_FAILED, $flags & WebDebug::STACKTRACE);
     }
 
     // Send output
@@ -247,25 +266,24 @@ class Runner extends \lang\Object {
   /**
    * Handle exception from scriptlet
    *
-   * @param   lang.Throwable t
-   * @param   int status
-   * @param   bool trace whether to show stacktrace
+   * @param   scriptlet.Response $response
+   * @param   lang.Throwable $t
+   * @param   int $status
+   * @param   bool $trace whether to show stacktrace
    * @return  scriptlet.HttpScriptletResponse
    */
-  protected function fail(\lang\Throwable $t, $status, $trace) {
-    $package= create(new \lang\XPClass(__CLASS__))->getPackage();
-    $errorPage= ($package->providesResource('error'.$status.'.html')
-      ? $package->getResource('error'.$status.'.html')
-      : $package->getResource('error500.html')
+  protected function error($response, \lang\Throwable $t, $status, $trace) {
+    $package= $this->getClass()->getPackage();
+    $errorPage= $package->getResource($package->providesResource('error'.$status.'.html')
+      ? 'error'.$status.'.html'
+      : 'error500.html'
     );
 
-    $response= new \scriptlet\HttpScriptletResponse();
     $response->setStatus($status);
     $response->setContent(str_replace(
       '<xp:value-of select="reason"/>',
       $trace ? $t->toString() : $t->getMessage(),
       $errorPage
     ));
-    return $response;
   }
 }
