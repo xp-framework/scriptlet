@@ -30,7 +30,7 @@ class WebApplication extends \lang\Object {
    * Sets this application's name
    *
    * @param   string name
-   * @return  xp.scriptlet.WebApplication this
+   * @return  self this
    */
   public function withName($name) {
     $this->name= $name;
@@ -50,7 +50,7 @@ class WebApplication extends \lang\Object {
    * Sets this application's config
    *
    * @param   string config
-   * @return  xp.scriptlet.WebApplication this
+   * @return  self this
    */
   public function withConfig($config) {
     $this->config= $config;
@@ -70,7 +70,7 @@ class WebApplication extends \lang\Object {
    * Sets this application's debug flags
    *
    * @param   int debug
-   * @return  xp.scriptlet.WebApplication this
+   * @return  self this
    */
   public function withDebug($debug) {
     $this->debug= $debug;
@@ -90,7 +90,7 @@ class WebApplication extends \lang\Object {
    * Sets this application's scriptlet class name
    *
    * @param   string scriptlet
-   * @return  xp.scriptlet.WebApplication this
+   * @return  self this
    */
   public function withScriptlet($scriptlet) {
     $this->scriptlet= $scriptlet;
@@ -110,7 +110,7 @@ class WebApplication extends \lang\Object {
    * Sets this application's arguments
    *
    * @param   string[] arguments
-   * @return  xp.scriptlet.WebApplication this
+   * @return  self this
    */
   public function withArguments($arguments) {
     $this->arguments= $arguments;
@@ -154,7 +154,7 @@ class WebApplication extends \lang\Object {
    * Sets this application's environment
    *
    * @param   [:string] environment
-   * @return  xp.scriptlet.WebApplication this
+   * @return  self this
    */
   public function withEnvironment($environment) {
     $this->environment= $environment;
