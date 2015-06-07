@@ -3,13 +3,18 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Merged pull request #3: Filters. Filters wrap around request/response
+  processing and can be used for authentication, compression, caching, etc.
+  (@thekid)
 * Merged pull request #4: Implementation of web layouts:
   . `$ xpws -c de.thekid.dialog.WebLayout`
-    Will start the XP web server reading the web layout from the given layout class
+    Will start reading the web layout from the given layout class
   . `$ xpws -c de.thekid.dialog.scriptlet.RssScriptlet`
-    Will start the XP web server with a web layout with the given scriptlet at "/"
+    Will start with a web layout with the given scriptlet at "/"
   . `$ xpws -c -`
-    Will start the XP web server to serve static files from document root
+    Will start to serve static files from document root
+  . `$ xpws -c etc` (*existing behaviour*)
+    Will start with a web layout read from etc/web.ini
   (@thekid)
 
 ## 6.0.3 / 2015-06-01
