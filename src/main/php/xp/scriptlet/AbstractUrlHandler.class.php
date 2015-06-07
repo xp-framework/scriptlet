@@ -18,7 +18,7 @@ abstract class AbstractUrlHandler extends \lang\Object {
   protected function sendHeader(Socket $socket, $sc, $message, array $headers) {
     $socket->write('HTTP/1.1 '.$sc.' '.$message."\r\n");
     $socket->write('Date: '.gmdate('D, d M Y H:i:s T')."\r\n");
-    $socket->write('Server: XP/PHP '.phpversion()."\r\n");
+    $socket->write("Server: XP/PHP\r\n");
     $socket->write("Connection: close\r\n");
     foreach ($headers as $header) {
       $socket->write($header."\r\n");
