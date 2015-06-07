@@ -10,7 +10,7 @@ use scriptlet\Filter;
  */
 class WebApplication extends \lang\Object {
   protected $name = '';
-  protected $config = '';
+  protected $config = [];
   protected $scriptlet = '';
   protected $arguments = [];
   protected $filters = [];
@@ -49,18 +49,22 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's config
    *
-   * @param   string config
+   * @param   string[]|string config
    * @return  self this
    */
   public function withConfig($config) {
-    $this->config= $config;
+    if (is_array($config)) {
+      $this->config= $config;
+    } else {
+      $this->config= [$config];
+    }
     return $this;
   }
   
   /**
    * Returns this application's config
    *
-   * @return  string
+   * @return  string[]
    */
   public function config() {
     return $this->config;

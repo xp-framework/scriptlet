@@ -91,7 +91,7 @@ class WebConfiguration extends \lang\Object implements WebLayout {
     $app= new WebApplication($application);
     $app->withScriptlet($this->readString($profile, $section, 'class', ''));
     
-    $app->withConfig($this->readString($profile, $section, 'prop-base', '{WEBROOT}/etc'));
+    $app->withConfig($this->readArray($profile, $section, 'prop-base', '{WEBROOT}/etc'));
 
     // Determine debug level
     $flags= WebDebug::NONE;

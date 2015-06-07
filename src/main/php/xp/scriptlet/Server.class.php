@@ -80,7 +80,7 @@ class Server extends \lang\Object {
           ])),
           $application->filters()
         ));
-        foreach (explode('|', $application->config()) as $element) {
+        foreach ($application->config() as $element) {
           $expanded= $expand($element);
           if (0 == strncmp('res://', $expanded, 6)) {
             $pm->appendSource(new ResourcePropertySource(substr($expanded, 6)));
