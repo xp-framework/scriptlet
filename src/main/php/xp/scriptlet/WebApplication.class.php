@@ -30,15 +30,6 @@ class WebApplication extends \lang\Object {
    * Sets this application's name
    *
    * @param   string name
-   */
-  public function setName($name) {
-    $this->name= $name;
-  }
-
-  /**
-   * Sets this application's name
-   *
-   * @param   string name
    * @return  xp.scriptlet.WebApplication this
    */
   public function withName($name) {
@@ -51,17 +42,8 @@ class WebApplication extends \lang\Object {
    *
    * @return  string
    */
-  public function getName() {
+  public function name() {
     return $this->name;
-  }
-
-  /**
-   * Sets this application's config
-   *
-   * @param   string config
-   */
-  public function setConfig($config) {
-    $this->config= $config;
   }
 
   /**
@@ -80,17 +62,8 @@ class WebApplication extends \lang\Object {
    *
    * @return  string
    */
-  public function getConfig() {
+  public function config() {
     return $this->config;
-  }
-
-  /**
-   * Sets this application's debug flags
-   *
-   * @param   int debug
-   */
-  public function setDebug($debug) {
-    $this->debug= $debug;
   }
 
   /**
@@ -109,17 +82,8 @@ class WebApplication extends \lang\Object {
    *
    * @return  int
    */
-  public function getDebug() {
+  public function debug() {
     return $this->debug;
-  }
-
-  /**
-   * Sets this application's scriptlet class name
-   *
-   * @param   string scriptlet
-   */
-  public function setScriptlet($scriptlet) {
-    $this->scriptlet= $scriptlet;
   }
 
   /**
@@ -138,17 +102,8 @@ class WebApplication extends \lang\Object {
    *
    * @return  string
    */
-  public function getScriptlet() {
+  public function scriptlet() {
     return $this->scriptlet;
-  }
-
-  /**
-   * Sets this application's arguments
-   *
-   * @param   string[] arguments
-   */
-  public function setArguments($arguments) {
-    $this->arguments= $arguments;
   }
 
   /**
@@ -167,7 +122,7 @@ class WebApplication extends \lang\Object {
    *
    * @return  string[]
    */
-  public function getArguments() {
+  public function arguments() {
     return $this->arguments;
   }
 
@@ -199,15 +154,6 @@ class WebApplication extends \lang\Object {
    * Sets this application's environment
    *
    * @param   [:string] environment
-   */
-  public function setEnvironment($environment) {
-    $this->environment= $environment;
-  }
-
-  /**
-   * Sets this application's environment
-   *
-   * @param   [:string] environment
    * @return  xp.scriptlet.WebApplication this
    */
   public function withEnvironment($environment) {
@@ -220,7 +166,7 @@ class WebApplication extends \lang\Object {
    *
    * @return  [:string]
    */
-  public function getEnvironment() {
+  public function environment() {
     return $this->environment;
   }
   
