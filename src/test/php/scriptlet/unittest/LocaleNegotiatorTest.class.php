@@ -24,33 +24,20 @@ class LocaleNegotiatorTest extends TestCase {
     );
   }
 
-  /**
-   * Test getLocale()
-   *
-   */
-  #[@test]
-  public function languageNegotiation() {
-    $supported= array('de_DE', 'en_UK', 'en_US', 'es_ES');
-    $default= 'en_US';
-    foreach (array(
-      'de_DE, en_UK'    => 'de_DE',
-      'es_ES, de_DE'    => 'es_ES',
-      'en_US'           => 'en_US',
-      'fr_FR'           => 'en_US',
-      'fr_FR, en_UK'    => 'en_UK',
-    ) as $usersetting => $result) {
-      $this->assertEquals(
-        new Locale($result),
-        create(new LocaleNegotiator($usersetting))->getLocale($supported, $default),
-        'Setting <'.$usersetting.'> should yield '.$result.' (supported: '.implode(', ', $supported).', default: '.$default.')'
-      );
-    }
+  #[@test, @values([
+  #  ['de_DE, en_UK', 'de_DE'],
+  #  ['es_ES, de_DE', 'es_ES'],
+  #  ['en_US'       , 'en_US'],
+  #  ['fr_FR'       , 'en_US'],
+  #  ['fr_FR, en_UK', 'en_UK'],
+  #])]
+  public function languageNegotiation($usersetting, $expected) {
+    $this->assertEquals(
+      new Locale($expected),
+      (new LocaleNegotiator($usersetting))->getLocale(['de_DE', 'en_UK', 'en_US', 'es_ES'], 'en_US')
+    );
   }
 
-  /**
-   * Test getLocale()
-   *
-   */
   #[@test]
   public function languagePreference() {
     $this->assertEquals(
@@ -63,10 +50,6 @@ class LocaleNegotiatorTest extends TestCase {
     );
   }
 
-  /**
-   * Test getLocale()
-   *
-   */
   #[@test]
   public function secondLanguagePreference() {
     $this->assertEquals(
@@ -75,10 +58,6 @@ class LocaleNegotiatorTest extends TestCase {
     );
   }
 
-  /**
-   * Test getLocale()
-   *
-   */
   #[@test]
   public function thirdLanguagePreference() {
     $this->assertEquals(
@@ -87,10 +66,6 @@ class LocaleNegotiatorTest extends TestCase {
     );
   }
 
-  /**
-   * Test getLocale()
-   *
-   */
   #[@test]
   public function fourthLanguagePreference() {
     $this->assertEquals(
@@ -99,10 +74,6 @@ class LocaleNegotiatorTest extends TestCase {
     );
   }
 
-  /**
-   * Test getLocale()
-   *
-   */
   #[@test]
   public function defaultLanguage() {
     $this->assertEquals(
@@ -111,10 +82,6 @@ class LocaleNegotiatorTest extends TestCase {
     );
   }
 
-  /**
-   * Test getCharset()
-   *
-   */
   #[@test]
   public function charsetPreference() {
     $this->assertEquals(
@@ -123,10 +90,6 @@ class LocaleNegotiatorTest extends TestCase {
     );
   }
 
-  /**
-   * Test getCharset()
-   *
-   */
   #[@test]
   public function secondCharsetPreference() {
     $this->assertEquals(
@@ -135,10 +98,6 @@ class LocaleNegotiatorTest extends TestCase {
     );
   }
 
-  /**
-   * Test getCharset()
-   *
-   */
   #[@test]
   public function anyCharsetPreference() {
     $this->assertEquals(

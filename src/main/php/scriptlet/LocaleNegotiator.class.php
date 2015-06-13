@@ -2,31 +2,28 @@
 
 use util\Locale;
 
-
 /**
  * Class to aid website internationalization based on the
  * Accept-Language and Accept-Charset headers.
  *
  * Basic usage example:
- * <code>
- *   uses('scriptlet.LocaleNegotiator');
- *
- *   $negotiator= new LocaleNegotiator(
- *     'de-at, de;q=0.75, en-us;q=0.50, en;q=0.25',
- *     'ISO-8859-1,utf-8;q=0.7,*;q=0.7'
- *   );
- *   var_dump(
- *     $negotiator, 
- *     $negotiator->getLocale(
- *       $supported= array('de_DE', 'en_US'), 
- *       $default= 'de_DE'
- *     ),
- *     $negotiator->getCharset(
- *       $supported= array('iso-8859-1', 'utf-8'),
- *       $default= 'iso-8859-1'
- *     )
- *   );
- * </code>
+ * ```php
+ * $negotiator= new LocaleNegotiator(
+ *   'de-at, de;q=0.75, en-us;q=0.50, en;q=0.25',
+ *   'utf-8,ISO-8859-1;q=0.7,*;q=0.7'
+ * );
+ * var_dump(
+ *   $negotiator, 
+ *   $negotiator->getLocale(
+ *     $supported= ['de_DE', 'en_US'],
+ *     $default= 'de_DE'
+ *   ),
+ *   $negotiator->getCharset(
+ *     $supported= ['iso-8859-1', 'utf-8'],
+ *     $default= 'utf-8'
+ *   )
+ * );
+ * ```
  * 
  * Within a scriptlet, use the getHeader() method of the request
  * object to retrieve the values of the Accept-Language / Accept-Charset
@@ -34,29 +31,27 @@ use util\Locale;
  * indicate language negotation has took place.
  *
  * Abbreviated example:
- * <code>
- *   function doGet($req, $res) {
- *     $negotiator= new LocaleNegotiator(
- *       $req->getHeader('Accept-Language'), 
- *       $req->getHeader('Accept-Charset')
- *     );
- *     $locale= $negotiator->getLocale(array('de_DE', 'en_US'), 'de_DE');
+ * ```php
+ * public function doGet($req, $res) {
+ *   $negotiator= new LocaleNegotiator(
+ *     $req->getHeader('Accept-Language'), 
+ *     $req->getHeader('Accept-Charset')
+ *   );
+ *   $locale= $negotiator->getLocale(['de_DE', 'en_US'), 'de_DE');
  *
- *     // [... Do whatever needs to be done for this language ...]
+ *   // [... Do whatever needs to be done for this language ...]
  *
- *     $res->setHeader('Content-Language', $locale->getLanguage());
- *     $res->setHeader('Vary', 'Accept-Language');
- *   }
- * </code>
+ *   $res->setHeader('Content-Language', $locale->getLanguage());
+ *   $res->setHeader('Vary', 'Accept-Language');
+ * }
+ * ```
  *
- * @test     xp://scriptlet.unittest.LocaleNegotiatorTest
- * @see      http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
- * @purpose  Negotiate locales
+ * @test   xp://scriptlet.unittest.LocaleNegotiatorTest
+ * @see    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
  */
 class LocaleNegotiator extends \lang\Object {
-  public
-    $languages    = array(),
-    $charsets     = array();
+  public $languages;
+  public $charsets;
 
   /**
    * Constructor
@@ -84,7 +79,7 @@ class LocaleNegotiator extends \lang\Object {
         ($chosen= $this->_find($lang, $supported, 2))
       ) break;
     }
-    return new Locale($chosen ? $chosen : $default);
+    return new Locale($chosen ?: $default);
   }
   
   /**
@@ -110,17 +105,17 @@ class LocaleNegotiator extends \lang\Object {
   /**
    * Private helper that parses a string of the following format:
    *
-   * <pre> 
+   * ```
    * Accept-Language: en,de;q=0.5
    * Accept-Language: en-UK;q=0.7, en-US;q=0.6, no;q=1.0, dk;q=0.8
    * Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
-   * </pre>
+   * ```
    *
    * @param   string str
    * @return  array values
    */
   protected function _parse($str) {
-    $values= array();
+    $values= [];
     if ($t= strtok($str, ', ')) do {
       if (false === ($p= strpos($t, ';'))) {
         $value= strtr($t, '-', '_');
