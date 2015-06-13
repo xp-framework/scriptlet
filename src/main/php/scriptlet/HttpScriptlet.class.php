@@ -342,7 +342,7 @@ class HttpScriptlet extends \lang\Object {
     // Answer with a "HTTP Version Not Supported" statuscode (#505) for any 
     // other protocol version.
     $response->setURI($request->getURL());
-    if (2 != sscanf($proto= $request->getEnvValue('SERVER_PROTOCOL'), 'HTTP/%*[1].%[01]', $minor)) {
+    if (2 != sscanf($proto= $request->getEnvValue('SERVER_PROTOCOL'), 'HTTP/%[1].%[01]', $major, $minor)) {
       throw new ScriptletException(
         'Unsupported HTTP protocol version "'.$proto.'" - expected HTTP/1.0 or HTTP/1.1', 
         HttpConstants::STATUS_HTTP_VERSION_NOT_SUPPORTED
