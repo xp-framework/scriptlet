@@ -3,6 +3,8 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.2.0 / 2015-06-13
+
 * Added forward compatibility with PHP7 - @thekid
 * Fixed `scriptlet.LocaleNegotiator` in PHP7 - @thekid
 * Fixed HHVM compatibility issue with HTTP protocol version verification,
