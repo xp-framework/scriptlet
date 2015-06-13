@@ -116,10 +116,11 @@ class LocaleNegotiator extends \lang\Object {
    */
   protected function _parse($str) {
     $values= [];
+    $i= 0;
     if ($t= strtok($str, ', ')) do {
       if (false === ($p= strpos($t, ';'))) {
         $value= strtr($t, '-', '_');
-        $q= 1.0;
+        $q= 1.0 - $i++ * 0.0001;
       } else {
         $value= strtr(substr($t, 0, $p), '-', '_');
         $q= (float)substr($t, $p + 3);    // skip ";q="
@@ -127,8 +128,8 @@ class LocaleNegotiator extends \lang\Object {
       $values[strtolower($value)]= $q;
     } while ($t= strtok(', '));
     
-    asort($values, SORT_NUMERIC);
-    return array_reverse($values);
+    arsort($values, SORT_NUMERIC);
+    return $values;
   }
   
   /**
