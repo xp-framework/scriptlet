@@ -3,6 +3,12 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Added forward compatibility with PHP7 - @thekid
+* Fixed `scriptlet.LocaleNegotiator` in PHP7 - @thekid
+* Fixed HHVM compatibility issue with HTTP protocol version verification,
+  broken because HHVM handles sscanf() differently regarding to `%*...`.
+  (@thekid)
+
 ## 6.1.0 / 2015-06-08
 
 * Merged pull request #3: Filters. Filters wrap around request/response
