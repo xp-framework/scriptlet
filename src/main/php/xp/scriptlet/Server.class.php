@@ -30,7 +30,7 @@ class Server extends \lang\Object {
    * 2. The application source - either a directory or ":" + f.q.c.Name
    * 3. The server profile - default to "dev"
    * 4. The server address - default to "localhost:8080"
-   * 5. The mode - default to "serve"
+   * 5. The mode - default to "serve" (can include further arguments to the server constructor separated by commas)
    *
    * @param   string[] args
    * @return  int
@@ -40,8 +40,17 @@ class Server extends \lang\Object {
     $source= isset($args[1]) ? $args[1] : 'etc';
     $profile= isset($args[2]) ? $args[2] : 'dev';
     $address= isset($args[3]) ? $args[3] : 'localhost:8080';
-    if (!($class= @self::$modes[isset($args[4]) ? $args[4] : 'serve'])) {
-      Console::writeLine('*** Unkown server mode "', $args[4], '", supported: ', self::$modes);
+
+    if (isset($args[4])) {
+      $arguments= explode(',', $args[4]);
+      $mode= array_shift($arguments);
+    } else {
+      $arguments= [];
+      $mode= 'serve';
+    }
+
+    if (!($class= @self::$modes[$mode])) {
+      Console::writeLine('*** Unkown server mode "', $mode, '", supported: ', self::$modes);
       return 2;
     }
 
@@ -55,7 +64,9 @@ class Server extends \lang\Object {
 
     Console::writeLine('---> Startup ', $class, '(', $address, ')');
     sscanf($address, '%[^:]:%d', $host, $port);
-    $server= XPClass::forName($class)->newInstance($host, $port);
+    $server= XPClass::forName($class)->getConstructor()->newInstance(array_merge([$host, $port], $arguments));
+    Console::writeLine('---> ', $server);
+    // $server->setTrace((new \util\log\LogCategory())->withAppender(new \util\log\ConsoleAppender()));
 
     with ($pm= PropertyManager::getInstance(), $protocol= $server->setProtocol(new HttpProtocol())); {
       $layout= (new Source($source))->layout();

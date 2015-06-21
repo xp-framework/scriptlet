@@ -3,6 +3,12 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Added possibility to pass arguments to the server implementation in the
+  "-m" command line switch: `xpws -c com.example.shorturl.Api -m prefork,5`
+  for example will make the PreforkingServer implementation use 5 children
+  instead of the default 10.
+  (@thekid)
+
 ## 6.2.0 / 2015-06-13
 
 * Added forward compatibility with PHP7 - @thekid
