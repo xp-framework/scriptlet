@@ -3,6 +3,9 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Added support for event-based server via `-m event`. The event based
+  server is based on [PECL/event](http://pecl.php.net/package/event).
+  (@thekid)
 * Added possibility to pass arguments to the server implementation in the
   "-m" command line switch: `xpws -c com.example.shorturl.Api -m prefork,5`
   for example will make the PreforkingServer implementation use 5 children

@@ -16,7 +16,8 @@ class Server extends \lang\Object {
   protected static $modes= [
     'serve'   => 'peer.server.Server',
     'prefork' => 'peer.server.PreforkingServer',
-    'fork'    => 'peer.server.ForkingServer'
+    'fork'    => 'peer.server.ForkingServer',
+    'event'   => 'peer.server.EventServer'
   ];
 
   static function __static() {
