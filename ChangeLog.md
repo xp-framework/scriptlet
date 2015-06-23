@@ -3,6 +3,8 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.2.1 / 2015-06-23
+
 * Added support for event-based server via `-m event`. The event based
   server is based on [PECL/event](http://pecl.php.net/package/event).
   (@thekid)
