@@ -81,12 +81,12 @@ class XmlScriptletTest extends ScriptletTestCase {
   #[@test]
   public function doGet() {
     $req= $this->newRequest('GET', new URL('http://localhost/'));
-    $res= $this->newResponse(create(new Stylesheet())
+    $res= $this->newResponse((new Stylesheet())
       ->withEncoding('iso-8859-1')
       ->withOutputMethod('xml')
-      ->withTemplate(create(new \xml\XslTemplate())->matching('/')
-        ->withChild(create(new \xml\Node('html'))
-          ->withChild(create(new \xml\Node('body'))
+      ->withTemplate((new \xml\XslTemplate())->matching('/')
+        ->withChild((new \xml\Node('html'))
+          ->withChild((new \xml\Node('body'))
             ->withChild(new \xml\Node('xsl:value-of', null, array('select' => '/formresult/result')))
           )
         )
@@ -139,7 +139,7 @@ class XmlScriptletTest extends ScriptletTestCase {
   #[@test, @expect('scriptlet.ScriptletException')]
   public function writeToResponseNotPermitted () {
     $req= $this->newRequest('GET', new URL('http://localhost/'));
-    $res= $this->newResponse(create(new Stylesheet())->withOutputMethod('xml'));
+    $res= $this->newResponse((new Stylesheet())->withOutputMethod('xml'));
     
     $s= newinstance('scriptlet.xml.XMLScriptlet', array(), '{
       public function doGet($request, $response) {
@@ -157,7 +157,7 @@ class XmlScriptletTest extends ScriptletTestCase {
   #[@test]
   public function writeToResponsePermittedIfNotProcessed () {
     $req= $this->newRequest('GET', new URL('http://localhost/'));
-    $res= $this->newResponse(create(new Stylesheet())->withOutputMethod('xml'));
+    $res= $this->newResponse((new Stylesheet())->withOutputMethod('xml'));
     
     $s= newinstance('scriptlet.xml.XMLScriptlet', array(), '{
       public function doGet($request, $response) {
@@ -177,12 +177,12 @@ class XmlScriptletTest extends ScriptletTestCase {
   #[@test]
   public function doPost() {
     $req= $this->newRequest('POST', new URL('http://localhost/'));
-    $res= $this->newResponse(create(new Stylesheet())
+    $res= $this->newResponse((new Stylesheet())
       ->withEncoding('iso-8859-1')
       ->withOutputMethod('xml')
-      ->withTemplate(create(new \xml\XslTemplate())->matching('/')
-        ->withChild(create(new \xml\Node('html'))
-          ->withChild(create(new \xml\Node('body'))
+      ->withTemplate((new \xml\XslTemplate())->matching('/')
+        ->withChild((new \xml\Node('html'))
+          ->withChild((new \xml\Node('body'))
             ->withChild(new \xml\Node('xsl:value-of', null, array('select' => '/formresult/result')))
           )
         )
@@ -209,9 +209,9 @@ class XmlScriptletTest extends ScriptletTestCase {
    * @return  xml.XslTemplate
    */
   protected function dumpParamsTemplate() {
-    return create(new \xml\XslTemplate())->matching('/')
-      ->withChild(create(new \xml\Node('html'))
-        ->withChild(create(new \xml\Node('body'))
+    return (new \xml\XslTemplate())->matching('/')
+      ->withChild((new \xml\Node('html'))
+        ->withChild((new \xml\Node('body'))
           ->withChild(new \xml\Node('xsl:value-of', null, array('select' => 'concat(
             "state=",   $__state, ", ",
             "page=",    $__page, ", ",
@@ -232,12 +232,12 @@ class XmlScriptletTest extends ScriptletTestCase {
   #[@test]
   public function requestParametersAppearInFormresult() {
     $req= $this->newRequest('GET', new URL('http://localhost/?a=b&b=c'));
-    $res= $this->newResponse(create(new Stylesheet())
+    $res= $this->newResponse((new Stylesheet())
       ->withEncoding('iso-8859-1')
       ->withOutputMethod('xml')
-      ->withTemplate(create(new \xml\XslTemplate())->matching('/')
-        ->withChild(create(new \xml\Node('html'))
-          ->withChild(create(new \xml\Node('body'))
+      ->withTemplate((new \xml\XslTemplate())->matching('/')
+        ->withChild((new \xml\Node('html'))
+          ->withChild((new \xml\Node('body'))
             ->withChild(new \xml\Node('xsl:copy-of', null, array('select' => '/formresult/formvalues')))
           )
         )
@@ -268,12 +268,12 @@ class XmlScriptletTest extends ScriptletTestCase {
   #[@test]
   public function requestArrayParametersAppearInFormresult() {
     $req= $this->newRequest('GET', new URL('http://localhost/?a[]=b&a[]=c'));
-    $res= $this->newResponse(create(new Stylesheet())
+    $res= $this->newResponse((new Stylesheet())
       ->withEncoding('iso-8859-1')
       ->withOutputMethod('xml')
-      ->withTemplate(create(new \xml\XslTemplate())->matching('/')
-        ->withChild(create(new \xml\Node('html'))
-          ->withChild(create(new \xml\Node('body'))
+      ->withTemplate((new \xml\XslTemplate())->matching('/')
+        ->withChild((new \xml\Node('html'))
+          ->withChild((new \xml\Node('body'))
             ->withChild(new \xml\Node('xsl:copy-of', null, array('select' => '/formresult/formvalues')))
           )
         )
@@ -304,7 +304,7 @@ class XmlScriptletTest extends ScriptletTestCase {
   #[@test]
   public function defaultParameters() {
     $req= $this->newRequest('GET', new URL('http://localhost/'));
-    $res= $this->newResponse(create(new Stylesheet())
+    $res= $this->newResponse((new Stylesheet())
       ->withEncoding('iso-8859-1')
       ->withOutputMethod('xml')
       ->withTemplate($this->dumpParamsTemplate())
@@ -327,7 +327,7 @@ class XmlScriptletTest extends ScriptletTestCase {
   #[@test]
   public function homeState() {
     $req= $this->newRequest('GET', new URL('http://localhost/xml/home'));
-    $res= $this->newResponse(create(new Stylesheet())
+    $res= $this->newResponse((new Stylesheet())
       ->withEncoding('iso-8859-1')
       ->withOutputMethod('xml')
       ->withTemplate($this->dumpParamsTemplate())
@@ -350,7 +350,7 @@ class XmlScriptletTest extends ScriptletTestCase {
   #[@test]
   public function productAndLanguage() {
     $req= $this->newRequest('GET', new URL('http://localhost/xml/public.de_DE/home'));
-    $res= $this->newResponse(create(new Stylesheet())
+    $res= $this->newResponse((new Stylesheet())
       ->withEncoding('iso-8859-1')
       ->withOutputMethod('xml')
       ->withTemplate($this->dumpParamsTemplate())
@@ -373,7 +373,7 @@ class XmlScriptletTest extends ScriptletTestCase {
   #[@test]
   public function query() {
     $req= $this->newRequest('GET', new URL('http://localhost/?a=b'));
-    $res= $this->newResponse(create(new Stylesheet())
+    $res= $this->newResponse((new Stylesheet())
       ->withEncoding('iso-8859-1')
       ->withOutputMethod('xml')
       ->withTemplate($this->dumpParamsTemplate())

@@ -47,11 +47,11 @@ class RunnerTest extends TestCase {
     self::$xmlScriptlet= \lang\ClassLoader::defineClass('XmlScriptletImpl', 'scriptlet.xml.XMLScriptlet', array(), '{
       protected function _response() {
         $res= parent::_response();
-        $stylesheet= create(new \xml\Stylesheet())
+        $stylesheet= (new \xml\Stylesheet())
           ->withEncoding("iso-8859-1")
           ->withOutputMethod("xml")
-          ->withTemplate(create(new \xml\XslTemplate())->matching("/")
-            ->withChild(create(new \xml\Node("h1"))
+          ->withTemplate((new \xml\XslTemplate())->matching("/")
+            ->withChild((new \xml\Node("h1"))
               ->withChild(new \xml\Node("xsl:value-of", NULL, array("select" => "/formresult/result")))
             )
           )
@@ -122,7 +122,7 @@ class RunnerTest extends TestCase {
     $r= new Runner('/var/www', $profile);
     
     // The debug application
-    $r->mapApplication('/debug', create(new \xp\scriptlet\WebApplication('debug'))
+    $r->mapApplication('/debug', (new \xp\scriptlet\WebApplication('debug'))
       ->withScriptlet(self::$debugScriptlet->getName())
       ->withConfig($r->expand('{WEBROOT}/etc/{PROFILE}'))
       ->withEnvironment(array('DOMAIN' => 'example.com', 'ADMINS' => 'admin@example.com,root@localhost'))
@@ -130,7 +130,7 @@ class RunnerTest extends TestCase {
     );
 
     // The error application
-    $r->mapApplication('/error', create(new \xp\scriptlet\WebApplication('error'))
+    $r->mapApplication('/error', (new \xp\scriptlet\WebApplication('error'))
       ->withScriptlet(self::$errorScriptlet->getName())
       ->withConfig($r->expand('{WEBROOT}/etc'))
       ->withDebug('dev' === $profile 
@@ -140,13 +140,13 @@ class RunnerTest extends TestCase {
     );
 
     // The incomplete app (missing a scriptlet)
-    $r->mapApplication('/incomplete', create(new \xp\scriptlet\WebApplication('incomplete'))
+    $r->mapApplication('/incomplete', (new \xp\scriptlet\WebApplication('incomplete'))
       ->withScriptlet(null)
       ->withDebug(\xp\scriptlet\WebDebug::STACKTRACE)
     );
 
     // The XML application
-    $r->mapApplication('/xml', create(new \xp\scriptlet\WebApplication('xml'))
+    $r->mapApplication('/xml', (new \xp\scriptlet\WebApplication('xml'))
       ->withScriptlet(self::$xmlScriptlet->getName())
       ->withDebug('dev' === $profile 
         ? \xp\scriptlet\WebDebug::XML 
@@ -155,12 +155,12 @@ class RunnerTest extends TestCase {
     );
     
     // The exit scriptlet
-    $r->mapApplication('/exit', create(new \xp\scriptlet\WebApplication('exit'))
+    $r->mapApplication('/exit', (new \xp\scriptlet\WebApplication('exit'))
       ->withScriptlet(self::$exitScriptlet->getName())
     );
 
     // The welcome application
-    $r->mapApplication('/', create(new \xp\scriptlet\WebApplication('welcome'))
+    $r->mapApplication('/', (new \xp\scriptlet\WebApplication('welcome'))
       ->withScriptlet(self::$welcomeScriptlet->getName())
       ->withConfig($r->expand('{WEBROOT}/etc'))
       ->withDebug('dev' === $profile 
@@ -232,7 +232,7 @@ class RunnerTest extends TestCase {
   #[@test]
   public function welcomeApplication() {
     $this->assertEquals(
-      create(new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
+      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
       $this->newRunner()->applicationAt('/')
     );
   }
@@ -244,7 +244,7 @@ class RunnerTest extends TestCase {
   #[@test]
   public function welcomeApplicationAtEmptyUrl() {
     $this->assertEquals(
-      create(new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
+      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
       $this->newRunner()->applicationAt('')
     );
   }
@@ -256,7 +256,7 @@ class RunnerTest extends TestCase {
   #[@test]
   public function welcomeApplicationAtDoubleSlash() {
     $this->assertEquals(
-      create(new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
+      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
       $this->newRunner()->applicationAt('//')
     );
   }
@@ -268,7 +268,7 @@ class RunnerTest extends TestCase {
   #[@test]
   public function errorApplication() {
     $this->assertEquals(
-      create(new \xp\scriptlet\WebApplication('error'))->withConfig('/var/www/etc')->withScriptlet('ErrorScriptlet'),
+      (new \xp\scriptlet\WebApplication('error'))->withConfig('/var/www/etc')->withScriptlet('ErrorScriptlet'),
       $this->newRunner()->applicationAt('/error')
     );
   }
@@ -280,7 +280,7 @@ class RunnerTest extends TestCase {
   #[@test]
   public function welcomeApplicationAtUrlEvenWithErrorInside() {
     $this->assertEquals(
-      create(new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
+      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
       $this->newRunner()->applicationAt('/url/with/error/inside')
     );
   }
@@ -292,7 +292,7 @@ class RunnerTest extends TestCase {
   #[@test]
   public function welcomeApplicationAtUrlBeginningWithErrors() {
     $this->assertEquals(
-      create(new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
+      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
       $this->newRunner()->applicationAt('/errors')
     );
   }
@@ -304,7 +304,7 @@ class RunnerTest extends TestCase {
   #[@test]
   public function errorApplicationAtErrorPath() {
     $this->assertEquals(
-      create(new \xp\scriptlet\WebApplication('error'))->withConfig('/var/www/etc')->withScriptlet('ErrorScriptlet'),
+      (new \xp\scriptlet\WebApplication('error'))->withConfig('/var/www/etc')->withScriptlet('ErrorScriptlet'),
       $this->newRunner()->applicationAt('/error/happened')
     );
   }
@@ -648,7 +648,7 @@ class RunnerTest extends TestCase {
   #[@test]
   public function properties() {
     $r= new Runner('/var/www', 'dev');
-    $r->mapApplication('/debug', create(new \xp\scriptlet\WebApplication('debug'))
+    $r->mapApplication('/debug', (new \xp\scriptlet\WebApplication('debug'))
       ->withScriptlet(self::$debugScriptlet->getName())
       ->withConfig('res://user')
       ->withArguments(array('Debugging', 'today'))
