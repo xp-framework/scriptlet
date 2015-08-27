@@ -106,6 +106,15 @@ class HttpScriptletResponse extends \lang\Object implements Response {
   }
 
   /**
+   * Set whether this document needs to be processed
+   *
+   * @param   bool processed
+   */
+  public function setProcessed($processed) {
+    // Template method
+  }
+
+  /**
    * Returns whether the response has been comitted yet.
    *
    * @return  bool

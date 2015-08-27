@@ -233,7 +233,10 @@ class Runner extends \lang\Object {
     } catch (\lang\SystemExit $e) {
       if (0 === $e->getCode()) {
         $response->setStatus(HttpConstants::STATUS_OK);
-        if ($message= $e->getMessage()) $response->setContent($message);
+        if ($message= $e->getMessage()) {
+          $response->setProcessed(false);
+          $response->setContent($message);
+        }
       } else {
         $cat->error($e);
         $this->error($response, $e, HttpConstants::STATUS_INTERNAL_SERVER_ERROR, false);
@@ -284,6 +287,7 @@ class Runner extends \lang\Object {
       : 'error500.html'
     );
 
+    $response->setProcessed(false);
     $response->setStatus($status);
     $response->setContent(str_replace(
       '<xp:value-of select="reason"/>',
