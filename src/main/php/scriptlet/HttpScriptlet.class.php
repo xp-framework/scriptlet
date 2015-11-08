@@ -408,7 +408,7 @@ class HttpScriptlet extends \lang\Object {
     // status code 500 ("Internal Server Error") being thrown.
     try {
       $r= (new Invocation([$this, $method], $this->filters))->proceed($request, $response);
-      if (false !== $r && !is(null, $r)) {
+      if (false !== $r) {
         $response->process();
       }
     } catch (ScriptletException $e) {

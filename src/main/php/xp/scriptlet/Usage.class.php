@@ -11,7 +11,7 @@ class Usage extends \lang\Object {
    * @param   string[] args
    */
   public static function main(array $args) {
-    \util\cmd\Console::$err->writeLine(\lang\XPClass::forName(\xp::nameOf(__CLASS__))->getPackage()->getResource($args[0]));
+    \util\cmd\Console::$err->writeLine((new \lang\XPClass(__CLASS__))->getPackage()->getResource($args[0]));
     return 0xFF;
   }
 }

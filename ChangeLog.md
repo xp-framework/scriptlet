@@ -3,6 +3,10 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.2.3 / 2015-11-08
+
+* Added forward compatibility with XP 6.6.0 - @thekid
+
 ## 6.2.2 / 2015-07-12
 
 * Added forward compatibility with XP 6.4.0 - @thekid
