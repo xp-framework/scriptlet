@@ -1,6 +1,7 @@
 <?php namespace scriptlet;
 
 use peer\http\HttpConstants;
+use io\streams\ChannelInputStream;
 
 /**
  * Defines the request sent by the client to the server
@@ -429,7 +430,7 @@ class HttpScriptletRequest extends \lang\Object implements Request {
   public function getInputStream() {
     if (null === $this->inputStream) {
       if (null === $this->readData) {
-        $this->inputStream= \lang\XPClass::forName('io.streams.ChannelInputStream')->newInstance('input');
+        $this->inputStream= new ChannelInputStream('input');
       } else {
         $f= $this->readData;
         $this->inputStream= $f();
