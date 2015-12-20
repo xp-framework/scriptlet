@@ -120,7 +120,7 @@ class HttpSession extends \lang\Object implements Session {
   public function reset() {
     if (!$this->isValid()) throw new \lang\IllegalStateException('Session is invalid');
     $size= sizeof($_SESSION) - 1;
-    $_SESSION= array(SESS_CREATE => $_SESSION[SESS_CREATE]);
+    $_SESSION= [SESS_CREATE => $_SESSION[SESS_CREATE]];
     return $size;
   }
   
@@ -196,7 +196,7 @@ class HttpSession extends \lang\Object implements Session {
   public function invalidate() {
     if (!$this->isValid()) throw new \lang\IllegalStateException('Session is invalid');
     @session_destroy();
-    $_SESSION= array();
+    $_SESSION= [];
   }
 
   /**

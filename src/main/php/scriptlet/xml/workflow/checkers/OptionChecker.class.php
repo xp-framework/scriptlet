@@ -14,7 +14,7 @@
  */
 class OptionChecker extends ParamChecker {
   public
-    $validOptions = array();
+    $validOptions = [];
   
   /**
    * Construct

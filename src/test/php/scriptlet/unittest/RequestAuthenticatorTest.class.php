@@ -16,7 +16,7 @@ use lang\IllegalAccessException;
  */
 class RequestAuthenticatorTest extends ScriptletTestCase {
 
-  #[@test, @expect('scriptlet.ScriptletException')]
+  #[@test, @expect(ScriptletException::class)]
   public function unconditionalDenyAuthenticator() {
     $req= $this->newRequest('GET', new URL('http://localhost/members/profile'));
     $res= new HttpScriptletResponse();

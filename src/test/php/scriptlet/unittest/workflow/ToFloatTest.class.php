@@ -24,7 +24,7 @@ class ToFloatTest extends AbstractCasterTest {
   /**
    * Test whole numbers
    */
-  #[@test, @values(array(array('1', 1.0), array('-1', -1.0), array('0', 0.0)))]
+  #[@test, @values([['1', 1.0], ['-1', -1.0], ['0', 0.0]])]
   public function wholeNumbers($input, $expect) {
     $this->assertEquals($expect, $this->castValue($input), $input);
   }
@@ -32,7 +32,7 @@ class ToFloatTest extends AbstractCasterTest {
   /**
    * Test fractional numbers
    */
-  #[@test, @values(array(array('0.5', 0.5), array('-0.5', -0.5), array('.5', 0.5)))]
+  #[@test, @values([['0.5', 0.5], ['-0.5', -0.5], ['.5', 0.5]])]
   public function fractionalNumbers($input, $expect) {
     $this->assertEquals($expect, $this->castValue($input), $input);
   }

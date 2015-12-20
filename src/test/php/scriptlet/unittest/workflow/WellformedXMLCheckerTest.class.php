@@ -17,24 +17,24 @@ class WellformedXMLCheckerTest extends \unittest\TestCase {
   
   #[@test]
   public function emptyInput() {
-    $this->assertNull($this->fixture->check(array('')));
+    $this->assertNull($this->fixture->check(['']));
   }
   
   #[@test]
   public function validXml() {
-    $this->assertNull($this->fixture->check(array('<document/>')));
+    $this->assertNull($this->fixture->check(['<document/>']));
   }
   
   #[@test]
   public function noRootNode() {
-    $this->assertNull($this->fixture->check(array('<node1/><node2/>')));
+    $this->assertNull($this->fixture->check(['<node1/><node2/>']));
   }
   
   #[@test]
   public function notWellFormedXml() {
     $this->assertEquals(
       'not_well_formed',
-      $this->fixture->check(array('<outer><inner></outer>'))
+      $this->fixture->check(['<outer><inner></outer>'])
     );
   }
   
@@ -42,7 +42,7 @@ class WellformedXMLCheckerTest extends \unittest\TestCase {
   public function invalidCharacters() {
     $this->assertEquals(
       'invalid_chars',
-      $this->fixture->check(array("\0"))
+      $this->fixture->check(["\0"])
     );
   }
 }

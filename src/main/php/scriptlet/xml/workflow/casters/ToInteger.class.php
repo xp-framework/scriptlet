@@ -18,7 +18,7 @@ class ToInteger extends ParamCaster {
    * @return  int[] value
    */
   public function castValue($value) {
-    $return= array();
+    $return= [];
     foreach ($value as $k => $v) {
       if ('' == ltrim($v, ' +-0')) {
         $return[$k]= 0;

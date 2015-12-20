@@ -78,13 +78,13 @@ class Cookie extends \lang\Object {
     
     $name= $matches[1][0];
     $value= $matches[2][0];
-    $params= array(
+    $params= [
       'path'      => '',
       'domain'    => '',
       'secure'    => false,
       'httponly'  => false,
       'expires'   => 0
-    );
+    ];
     
     for ($i= 1; $i < count($matches[0]); $i++) {
       $val= trim($matches[2][$i]);

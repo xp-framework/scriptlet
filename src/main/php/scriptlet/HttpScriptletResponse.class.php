@@ -23,7 +23,7 @@ class HttpScriptletResponse extends \lang\Object implements Response {
     $version=         '1.1',
     $content=         null,
     $statusCode=      HttpConstants::STATUS_OK,
-    $headers=         array(),
+    $headers=         [],
     $sendHeaders=     null,
     $sendContent=     null;
 
@@ -214,7 +214,7 @@ class HttpScriptletResponse extends \lang\Object implements Response {
       }
 
       foreach ($this->headers as $header) {
-        header(strtr($header, array("\r" => '', "\n" => "\n\t")), false);
+        header(strtr($header, ["\r" => '', "\n" => "\n\t"]), false);
       }
     } else {
       $f= $this->sendHeaders;

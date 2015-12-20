@@ -26,8 +26,8 @@ class AbstractHandler extends \lang\Object implements Traceable {
   public
     $cat              = null,
     $wrapper          = null,
-    $values           = array(HVAL_PERSISTENT => array(), HVAL_FORMPARAM => array()),
-    $errors           = array(),
+    $values           = [HVAL_PERSISTENT => [], HVAL_FORMPARAM => []],
+    $errors           = [],
     $identifier       = '',
     $name             = '',
     $requestOverride  = false;
@@ -194,7 +194,7 @@ class AbstractHandler extends \lang\Object implements Traceable {
    * @param   var info default NULL
    */
   public function addError($code, $field= '*', $info= null) {
-    $this->errors[]= array($code, $field, $info);
+    $this->errors[]= [$code, $field, $info];
     return false;
   }
   

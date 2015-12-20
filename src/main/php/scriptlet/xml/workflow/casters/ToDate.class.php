@@ -15,7 +15,7 @@ class ToDate extends ParamCaster {
   static function __static() {
     $p= date_parse('Feb 31');
     if (0 === $p['warning_count']) {
-      self::$parse= array(__CLASS__, 'parse');
+      self::$parse= [__CLASS__, 'parse'];
     }
   }
   
@@ -32,10 +32,10 @@ class ToDate extends ParamCaster {
    * @return  var
    */
   protected static function parse($v) {
-    static $dim= array(
-      false => array(-1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31), 
-      true  => array(-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31),
-    );
+    static $dim= [
+      false => [-1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31], 
+      true  => [-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+    ];
 
     $p= date_parse($v);
     if ($p['warning_count'] > 0 || $p['error_count']) return $v;
@@ -55,7 +55,7 @@ class ToDate extends ParamCaster {
    * @return  array value
    */
   public function castValue($value) {
-    $return= array();
+    $return= [];
     foreach ($value as $k => $v) {
       if ('' === $v) return 'empty';
       

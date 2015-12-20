@@ -51,12 +51,12 @@ class OutputDocument extends Tree {
    */
   public function __construct() {
     parent::__construct();
-    $this->formresult= new Node('formresult', null, array(
+    $this->formresult= new Node('formresult', null, [
       'serial'    => time(),
       'tz'        => date('Z'),
       'xmlns:xsd' => 'http://www.w3.org/2001/XMLSchema', 
       'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance'
-    ));
+    ]);
     $this->withRoot($this->formresult);
     $this->formvalues= $this->formresult->addChild(new Node('formvalues'));
     $this->formerrors= $this->formresult->addChild(new Node('formerrors'));

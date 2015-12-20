@@ -29,11 +29,11 @@ class XMLScriptletResponse extends HttpScriptletResponse {
   public
     $document     = null,
     $processor    = null,
-    $params       = array();
+    $params       = [];
   
   public
     $_processed   = true,
-    $_stylesheet  = array();
+    $_stylesheet  = [];
   
   /**
    * Constructor
@@ -126,7 +126,7 @@ class XMLScriptletResponse extends HttpScriptletResponse {
    * @param   var val
    */
   public function addFormValue($name, $values) {
-    if (!is_array($values)) $values= array($values);
+    if (!is_array($values)) $values= [$values];
 
     foreach ($values as $k => $val) {
       try {
@@ -148,11 +148,11 @@ class XMLScriptletResponse extends HttpScriptletResponse {
         // breakage.
         // Passing special XML characters such as < or & will not fall into this
         // block - they'll just be converted to their counterpart XML entities.
-        $c= new \xml\Node('param', null, array(
+        $c= new \xml\Node('param', null, [
           'name'      => $name,
           'xsi:type'  => 'xsd:null',
           'error'     => 'formaterror'
-        ));
+        ]);
       }
       $this->document->formvalues->addChild($c);
     }
@@ -182,11 +182,11 @@ class XMLScriptletResponse extends HttpScriptletResponse {
     } else {
       $c= new \xml\Node('error', $info);
     }
-    $c->setAttributes(array(
+    $c->setAttributes([
       'type'        => $type,
       'field'       => $field,
       'checker'     => $checker
-    ));
+    ]);
     $this->document->formerrors->addChild($c);
     
     return false;
@@ -218,7 +218,7 @@ class XMLScriptletResponse extends HttpScriptletResponse {
    * @param   int type default XSLT_FILE
    */
   public function setStylesheet($stylesheet, $type= XSLT_FILE) {
-    $this->_stylesheet= array($type, $stylesheet);
+    $this->_stylesheet= [$type, $stylesheet];
   }
 
   /**

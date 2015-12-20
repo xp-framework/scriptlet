@@ -1,5 +1,6 @@
 <?php namespace scriptlet\unittest;
 
+use scriptlet\HttpSessionInvalidException;
 use scriptlet\HttpScriptlet;
 use scriptlet\HttpScriptletRequest;
 use scriptlet\HttpScriptletResponse;
@@ -55,7 +56,7 @@ class HttpSessionIntegrationTest extends ScriptletTestCase {
     }
   }
 
-  #[@test, @expect('scriptlet.HttpSessionInvalidException')]
+  #[@test, @expect(HttpSessionInvalidException::class)]
   public function invalidSession() {
     $req= $this->newRequest('GET', new URL('http://localhost/?psessionid=INVALID'));
     $res= new HttpScriptletResponse();
@@ -67,7 +68,7 @@ class HttpSessionIntegrationTest extends ScriptletTestCase {
     $s->service($req, $res);
   }
 
-  #[@test, @expect('scriptlet.HttpSessionInvalidException')]
+  #[@test, @expect(HttpSessionInvalidException::class)]
   public function sessionInitializationError() {
     $req= $this->newRequest('GET', new URL('http://localhost/?psessionid=MALFORMED'));
     $res= new HttpScriptletResponse();

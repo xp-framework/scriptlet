@@ -37,7 +37,7 @@ abstract class AbstractCasterTest extends TestCase {
    * @throws  lang.IllegalArgumentException in case the caster fails
    */
   protected function castValue($value) {
-    if (!is_array($casted= call_user_func(array($this->caster, 'castValue'), array((string)$value)))) {
+    if (!is_array($casted= call_user_func([$this->caster, 'castValue'], [(string)$value]))) {
       throw new \lang\IllegalArgumentException('Cannot cast '.$value);
     }
     return array_pop($casted);

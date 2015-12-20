@@ -22,7 +22,7 @@ class WrapperTest extends \unittest\TestCase {
    */
   public function setUp() {
     $this->wrapper= new Wrapper();
-    $this->handler= newinstance('scriptlet.xml.workflow.Handler', array(), '{}');
+    $this->handler= newinstance('scriptlet.xml.workflow.Handler', [], '{}');
     $this->handler->setWrapper($this->wrapper);
     
     // Register parameters
@@ -30,7 +30,7 @@ class WrapperTest extends \unittest\TestCase {
       'orderdate',
       OCCURRENCE_OPTIONAL,
       new Date('1977-12-14'),
-      array('scriptlet.xml.workflow.casters.ToDate')
+      ['scriptlet.xml.workflow.casters.ToDate']
     );
     $this->wrapper->registerParamInfo(
       'shirt_size',
@@ -38,37 +38,37 @@ class WrapperTest extends \unittest\TestCase {
       null,                // No default, required attribute
       null,                // No cast necessary
       null,                // No precheck necessary, non-empty suffices
-      array('scriptlet.xml.workflow.checkers.OptionChecker', array('S', 'M', 'L', 'XL'))
+      ['scriptlet.xml.workflow.checkers.OptionChecker', ['S', 'M', 'L', 'XL']]
     );
     $this->wrapper->registerParamInfo(
       'shirt_qty',
       OCCURRENCE_UNDEFINED,
       null,                // No default, required attribute
-      array('scriptlet.xml.workflow.casters.ToInteger'),
-      array('scriptlet.xml.workflow.checkers.NumericChecker'),
-      array('scriptlet.xml.workflow.checkers.IntegerRangeChecker', 1, 10)
+      ['scriptlet.xml.workflow.casters.ToInteger'],
+      ['scriptlet.xml.workflow.checkers.NumericChecker'],
+      ['scriptlet.xml.workflow.checkers.IntegerRangeChecker', 1, 10]
     );
     $this->wrapper->registerParamInfo(
       'notify_me',
       OCCURRENCE_OPTIONAL | OCCURRENCE_MULTIPLE,
-      array(),
+      [],
       null,
       null,
       null,
       'core:string',
-      array('process', 'send')
+      ['process', 'send']
     );
     $this->wrapper->registerParamInfo(
       'options',
       OCCURRENCE_OPTIONAL | OCCURRENCE_MULTIPLE,
-      array(0, 0),
-      array('scriptlet.xml.workflow.casters.ToInteger')
+      [0, 0],
+      ['scriptlet.xml.workflow.casters.ToInteger']
     );
     $this->wrapper->registerParamInfo(
       'person_ids',
       OCCURRENCE_MULTIPLE,
       null,
-      array('scriptlet.xml.workflow.casters.ToInteger')
+      ['scriptlet.xml.workflow.casters.ToInteger']
     );
   }
   
@@ -79,7 +79,7 @@ class WrapperTest extends \unittest\TestCase {
   #[@test]
   public function getParamNames() {
     $this->assertEquals(
-      array('orderdate', 'shirt_size', 'shirt_qty', 'notify_me', 'options', 'person_ids'), 
+      ['orderdate', 'shirt_size', 'shirt_qty', 'notify_me', 'options', 'person_ids'], 
       $this->wrapper->getParamNames()
     );
   }
@@ -95,7 +95,7 @@ class WrapperTest extends \unittest\TestCase {
     $this->assertEquals(null, $this->wrapper->getParamInfo('orderdate', PARAM_PRECHECK));
     $this->assertEquals(null, $this->wrapper->getParamInfo('orderdate', PARAM_POSTCHECK));
     $this->assertEquals('core:string', $this->wrapper->getParamInfo('orderdate', PARAM_TYPE));
-    $this->assertEquals(array(), $this->wrapper->getParamInfo('orderdate', PARAM_VALUES));
+    $this->assertEquals([], $this->wrapper->getParamInfo('orderdate', PARAM_VALUES));
     $this->assertInstanceOf('scriptlet.xml.workflow.casters.ToDate', $this->wrapper->getParamInfo('orderdate', PARAM_CASTER));
   }
 
@@ -110,7 +110,7 @@ class WrapperTest extends \unittest\TestCase {
     $this->assertEquals(null, $this->wrapper->getParamInfo('shirt_size', PARAM_PRECHECK));
     $this->assertEquals(null, $this->wrapper->getParamInfo('shirt_size', PARAM_CASTER));
     $this->assertEquals('core:string', $this->wrapper->getParamInfo('shirt_size', PARAM_TYPE));
-    $this->assertEquals(array(), $this->wrapper->getParamInfo('shirt_size', PARAM_VALUES));
+    $this->assertEquals([], $this->wrapper->getParamInfo('shirt_size', PARAM_VALUES));
     $this->assertInstanceOf('scriptlet.xml.workflow.checkers.OptionChecker',$this->wrapper->getParamInfo('shirt_size', PARAM_POSTCHECK));
   }
 
@@ -139,7 +139,7 @@ class WrapperTest extends \unittest\TestCase {
    * Helper method to simulate form submission
    *
    */
-  protected function loadFromRequest($params= array()) {
+  protected function loadFromRequest($params= []) {
     $r= new XMLScriptletRequest();
     
     foreach ($params as $key => $value) {
@@ -179,11 +179,11 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function defaultValueUsedForMissingValue() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'person_ids' => array('1549', '1552')
-    ));
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
     $this->assertEquals(
       $this->wrapper->getParamInfo('orderdate', PARAM_DEFAULT), 
@@ -197,12 +197,12 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function defaultValueUsedForEmptyValue() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'person_ids' => array('1549', '1552')
-    ));
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
     $this->assertEquals(
       $this->wrapper->getParamInfo('orderdate', PARAM_DEFAULT), 
@@ -216,12 +216,12 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function valueUsed() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '1977-12-14',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'person_ids' => array('1549', '1552')
-    ));
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
     $this->assertEquals(
       new Date('1977-12-14'),
@@ -235,11 +235,11 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function missingSizeValue() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_qty'  => 1,
-      'person_ids' => array('1549', '1552')
-    ));
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFormError('shirt_size', 'missing');
   }
 
@@ -249,11 +249,11 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function missingQtyValue() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
-      'person_ids' => array('1549', '1552')
-    ));
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFormError('shirt_qty', 'missing');
   }
   
@@ -263,12 +263,12 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function malformedSizeValue() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => '@',
       'shirt_qty'  => 1,
-      'person_ids' => array('1549', '1552')
-    ));
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFormError('shirt_size', 'scriptlet.xml.workflow.checkers.OptionChecker.invalidoption');
   }
 
@@ -278,12 +278,12 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function malformedQtyValue() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => -1,
-      'person_ids' => array('1549', '1552')
-    ));
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFormError('shirt_qty', 'scriptlet.xml.workflow.checkers.IntegerRangeChecker.toosmall');
   }
 
@@ -293,12 +293,12 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function multipleMalformedValues() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => '@',
       'shirt_qty'  => -1,
-      'person_ids' => array('1549', '1552')
-    ));
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFormError('shirt_size', 'scriptlet.xml.workflow.checkers.OptionChecker.invalidoption');
     $this->assertFormError('shirt_qty', 'scriptlet.xml.workflow.checkers.IntegerRangeChecker.toosmall');
   }
@@ -309,14 +309,14 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function missingValueForMultipleSelection() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'person_ids' => array('1549', '1552')
-    ));
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
-    $this->assertEquals(array(), $this->wrapper->getValue('notify_me'));
+    $this->assertEquals([], $this->wrapper->getValue('notify_me'));
   }
 
   /**
@@ -325,15 +325,15 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function emptyValueForMultipleSelection() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'notify_me'  => array(),
-      'person_ids' => array('1549', '1552')
-    ));
+      'notify_me'  => [],
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
-    $this->assertEquals(array(), $this->wrapper->getValue('notify_me'));
+    $this->assertEquals([], $this->wrapper->getValue('notify_me'));
   }
 
   /**
@@ -342,15 +342,15 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function valueForMultipleSelection() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'notify_me'  => array('send'),
-      'person_ids' => array('1549', '1552')
-    ));
+      'notify_me'  => ['send'],
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
-    $this->assertEquals(array('send'), $this->wrapper->getValue('notify_me'));
+    $this->assertEquals(['send'], $this->wrapper->getValue('notify_me'));
   }
 
   /**
@@ -359,15 +359,15 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function valuesForMultipleSelection() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'notify_me'  => array('send', 'process'),
-      'person_ids' => array('1549', '1552')
-    ));
+      'notify_me'  => ['send', 'process'],
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
-    $this->assertEquals(array('send', 'process'), $this->wrapper->getValue('notify_me'));
+    $this->assertEquals(['send', 'process'], $this->wrapper->getValue('notify_me'));
   }
 
   /**
@@ -376,16 +376,16 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function castMultipleOptionalField() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'notify_me'  => array('send'),
-      'options'    => array('0010', '0020'),
-      'person_ids' => array('1549', '1552')
-    ));
+      'notify_me'  => ['send'],
+      'options'    => ['0010', '0020'],
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
-    $this->assertEquals(array(10, 20), $this->wrapper->getValue('options'));
+    $this->assertEquals([10, 20], $this->wrapper->getValue('options'));
   }
 
   /**
@@ -394,16 +394,16 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function castMultipleOptionalFieldFirstEmpty() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'notify_me'  => array('send'),
-      'options'    => array(null, '0020'),
-      'person_ids' => array('1549', '1552')
-    ));
+      'notify_me'  => ['send'],
+      'options'    => [null, '0020'],
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
-    $this->assertEquals(array(0, 20), $this->wrapper->getValue('options'));
+    $this->assertEquals([0, 20], $this->wrapper->getValue('options'));
   }
 
   /**
@@ -412,16 +412,16 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function castMultipleOptionalAllEmpty() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'notify_me'  => array('send'),
-      'options'    => array('', ''),
-      'person_ids' => array('1549', '1552')
-    ));
+      'notify_me'  => ['send'],
+      'options'    => ['', ''],
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
-    $this->assertEquals(array(0, 0), $this->wrapper->getValue('options'));
+    $this->assertEquals([0, 0], $this->wrapper->getValue('options'));
   }
 
   /**
@@ -430,15 +430,15 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function castMultipleOptionalParameterMissing() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'notify_me'  => array('send'),
-      'person_ids' => array('1549', '1552')
-    ));
+      'notify_me'  => ['send'],
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
-    $this->assertEquals(array(0, 0), $this->wrapper->getValue('options'));
+    $this->assertEquals([0, 0], $this->wrapper->getValue('options'));
   }
 
   /**
@@ -447,16 +447,16 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function castMultipleField() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'notify_me'  => array('send'),
-      'options'    => array('0010', '0020'),
-      'person_ids' => array('1549', '1552')
-    ));
+      'notify_me'  => ['send'],
+      'options'    => ['0010', '0020'],
+      'person_ids' => ['1549', '1552']
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
-    $this->assertEquals(array(1549, 1552), $this->wrapper->getValue('person_ids'));
+    $this->assertEquals([1549, 1552], $this->wrapper->getValue('person_ids'));
   }
 
   /**
@@ -465,16 +465,16 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function castMultipleFieldFirstEmpty() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'notify_me'  => array('send'),
-      'options'    => array(null, '0020'),
-      'person_ids' => array('', '1552')
-    ));
+      'notify_me'  => ['send'],
+      'options'    => [null, '0020'],
+      'person_ids' => ['', '1552']
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
-    $this->assertEquals(array(0, 1552), $this->wrapper->getValue('person_ids'));
+    $this->assertEquals([0, 1552], $this->wrapper->getValue('person_ids'));
   }
 
   /**
@@ -483,14 +483,14 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function castMultipleFieldAllEmpty() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'notify_me'  => array('send'),
-      'options'    => array(null, '0020'),
-      'person_ids' => array()
-    ));
+      'notify_me'  => ['send'],
+      'options'    => [null, '0020'],
+      'person_ids' => []
+    ]);
     $this->assertTrue($this->handler->errorsOccured());
   }
 
@@ -500,13 +500,13 @@ class WrapperTest extends \unittest\TestCase {
    */
   #[@test]
   public function castMultipleFieldParameterMissing() {
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'  => '',
       'shirt_size' => 'S',
       'shirt_qty'  => 1,
-      'notify_me'  => array('send'),
-      'options'    => array(null, '0020')
-    ));
+      'notify_me'  => ['send'],
+      'options'    => [null, '0020']
+    ]);
     $this->assertTrue($this->handler->errorsOccured());
   }
 
@@ -522,26 +522,26 @@ class WrapperTest extends \unittest\TestCase {
       'file_upload',
       OCCURRENCE_UNDEFINED,
       null,
-      array('scriptlet.xml.workflow.casters.ToFileData'),
-      array('scriptlet.xml.workflow.checkers.FileUploadPrechecker'),
+      ['scriptlet.xml.workflow.casters.ToFileData'],
+      ['scriptlet.xml.workflow.checkers.FileUploadPrechecker'],
       null
     );
 
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'   => '',
       'shirt_size'  => 'S',
       'shirt_qty'   => 1,
-      'notify_me'   => array('send'),
-      'options'     => array(null, '0020'),
-      'person_ids'  => array('', '1552'),
-      'file_upload' => array(
+      'notify_me'   => ['send'],
+      'options'     => [null, '0020'],
+      'person_ids'  => ['', '1552'],
+      'file_upload' => [
         'name'     => '',
         'type'     => '',
         'tmp_name' => '',
         'error'    => UPLOAD_ERR_NO_FILE,
         'size'     => 0
-      )
-    ));
+      ]
+    ]);
     $this->assertFormError('file_upload', 'missing');
   }
 
@@ -557,26 +557,26 @@ class WrapperTest extends \unittest\TestCase {
       'file_upload',
       OCCURRENCE_OPTIONAL,
       null,
-      array('scriptlet.xml.workflow.casters.ToFileData'),
-      array('scriptlet.xml.workflow.checkers.FileUploadPrechecker'),
+      ['scriptlet.xml.workflow.casters.ToFileData'],
+      ['scriptlet.xml.workflow.checkers.FileUploadPrechecker'],
       null
     );
 
-    $this->loadFromRequest(array(
+    $this->loadFromRequest([
       'orderdate'   => '',
       'shirt_size'  => 'S',
       'shirt_qty'   => 1,
-      'notify_me'   => array('send'),
-      'options'     => array(null, '0020'),
-      'person_ids'  => array('', '1552'),
-      'file_upload' => array(
+      'notify_me'   => ['send'],
+      'options'     => [null, '0020'],
+      'person_ids'  => ['', '1552'],
+      'file_upload' => [
         'name'     => '',
         'type'     => '',
         'tmp_name' => '',
         'error'    => UPLOAD_ERR_NO_FILE,
         'size'     => 0
-      )
-    ));
+      ]
+    ]);
     $this->assertFalse($this->handler->errorsOccured());
   }
 }

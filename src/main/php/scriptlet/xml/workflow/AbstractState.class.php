@@ -13,7 +13,7 @@ use util\log\Traceable;
 class AbstractState extends \lang\Object implements Traceable {
   public
     $cat      = null,
-    $handlers = array();
+    $handlers = [];
   
   /**
    * Add a handler
@@ -62,14 +62,14 @@ class AbstractState extends \lang\Object implements Traceable {
     if ($handler->hasWrapper() && $handler->wrapper instanceof IFormresultAggregate) {
       $wrapper= $node->addChild(new Node('wrapper'));
       foreach (array_keys($handler->wrapper->paraminfo) as $name) {
-        $param= $wrapper->addChild(new Node('param', null, array(
+        $param= $wrapper->addChild(new Node('param', null, [
           'name'       => $name,
           'type'       => $handler->wrapper->paraminfo[$name]['type'],
           'occurrence' => $handler->wrapper->paraminfo[$name]['occurrence'],
-        )));
+        ]));
         if ($handler->wrapper->paraminfo[$name]['values']) {
           foreach ($handler->wrapper->paraminfo[$name]['values'] as $key => $value) {
-            $param->addChild(new Node('value', $value, array('name' => $key)));
+            $param->addChild(new Node('value', $value, ['name' => $key]));
           }
         }
         if ($handler->wrapper->paraminfo[$name]['default']) {
@@ -97,10 +97,10 @@ class AbstractState extends \lang\Object implements Traceable {
             $request->getStateName(),
             $this->handlers[$i]->identifierFor($request, $context)
           );
-          $node= $h->addChild(new Node('handler', null, array(
+          $node= $h->addChild(new Node('handler', null, [
             'id'   => $this->handlers[$i]->identifier,
             'name' => $name
-          )));
+          ]));
           $this->cat && $this->cat->debug('Processing handler #', $i, $this->handlers[$i]);
           
           $setup= false;

@@ -30,7 +30,7 @@ class RunnerTest extends TestCase {
    */
   #[@beforeClass]
   public static function defineScriptlets() {
-    self::$errorScriptlet= \lang\ClassLoader::defineClass('ErrorScriptlet', 'scriptlet.HttpScriptlet', array('util.log.Traceable'), '{
+    self::$errorScriptlet= \lang\ClassLoader::defineClass('ErrorScriptlet', 'scriptlet.HttpScriptlet', ['util.log.Traceable'], '{
       public function setTrace($cat) {
         $cat->debug("Injected", $cat->getClassName());
       }
@@ -39,12 +39,12 @@ class RunnerTest extends TestCase {
         throw new \lang\IllegalAccessException("No shoes, no shorts, no service");
       }
     }');
-    self::$welcomeScriptlet= \lang\ClassLoader::defineClass('WelcomeScriptlet', 'scriptlet.HttpScriptlet', array(), '{
+    self::$welcomeScriptlet= \lang\ClassLoader::defineClass('WelcomeScriptlet', 'scriptlet.HttpScriptlet', [], '{
       public function doGet($request, $response) {
         $response->write("<h1>Welcome, we are open</h1>");
       }
     }');
-    self::$xmlScriptlet= \lang\ClassLoader::defineClass('XmlScriptletImpl', 'scriptlet.xml.XMLScriptlet', array(), '{
+    self::$xmlScriptlet= \lang\ClassLoader::defineClass('XmlScriptletImpl', 'scriptlet.xml.XMLScriptlet', [], '{
       protected function _response() {
         $res= parent::_response();
         $stylesheet= (new \xml\Stylesheet())
@@ -64,7 +64,7 @@ class RunnerTest extends TestCase {
         $response->addFormresult(new \xml\Node("result", "Welcome, we are open"));
       }
     }');
-    self::$debugScriptlet= \lang\ClassLoader::defineClass('DebugScriptlet', 'scriptlet.HttpScriptlet', array(), '{
+    self::$debugScriptlet= \lang\ClassLoader::defineClass('DebugScriptlet', 'scriptlet.HttpScriptlet', [], '{
       protected $title, $date;
 
       public function __construct($title, $date) {
@@ -84,7 +84,7 @@ class RunnerTest extends TestCase {
         $response->write("<h2>".$config->getClassName()."</h2>");
       }
     }');
-    self::$exitScriptlet= \lang\ClassLoader::defineClass('ExitScriptlet', 'scriptlet.HttpScriptlet', array(), '{
+    self::$exitScriptlet= \lang\ClassLoader::defineClass('ExitScriptlet', 'scriptlet.HttpScriptlet', [], '{
       public function doGet($request, $response) {
         \lang\Runtime::halt($request->getParam("code"), $request->getParam("message"));
       }
@@ -98,7 +98,7 @@ class RunnerTest extends TestCase {
    */
   #[@beforeClass]
   public static function setupPropertySource() {
-    self::$propertySource= \util\PropertyManager::getInstance()->appendSource(newinstance('util.PropertySource', array(), '{
+    self::$propertySource= \util\PropertyManager::getInstance()->appendSource(newinstance('util.PropertySource', [], '{
       public function provides($name) { return "debug" === $name; }
       public function fetch($name) { return new Properties("/var/www/etc/dev/debug.ini"); }
     }'));
@@ -125,8 +125,8 @@ class RunnerTest extends TestCase {
     $r->mapApplication('/debug', (new \xp\scriptlet\WebApplication('debug'))
       ->withScriptlet(self::$debugScriptlet->getName())
       ->withConfig($r->expand('{WEBROOT}/etc/{PROFILE}'))
-      ->withEnvironment(array('DOMAIN' => 'example.com', 'ADMINS' => 'admin@example.com,root@localhost'))
-      ->withArguments(array('Debugging', 'today'))
+      ->withEnvironment(['DOMAIN' => 'example.com', 'ADMINS' => 'admin@example.com,root@localhost'])
+      ->withArguments(['Debugging', 'today'])
     );
 
     // The error application
@@ -317,7 +317,7 @@ class RunnerTest extends TestCase {
    * @param   [:string] params
    * @return  string content
    */
-  protected function runWith($profile, $url, $params= array()) {
+  protected function runWith($profile, $url, $params= []) {
     $_ENV= [];
     $_SERVER= [
       'SERVER_PROTOCOL' => 'HTTP/1.1',
@@ -361,7 +361,7 @@ class RunnerTest extends TestCase {
       );
       \xp::gc(__FILE__);
     }
-    $this->assertEquals(array(), $matches);
+    $this->assertEquals([], $matches);
   }
 
   /**
@@ -505,7 +505,7 @@ class RunnerTest extends TestCase {
     $this->assertEquals('Debugging @ today', $params[1], 'params');
     $this->assertEquals('util.Properties', $config[1], 'config');
     $this->assertEquals(
-      array('ENV.DOMAIN = example.com', 'ENV.ADMINS = admin@example.com,root@localhost'),
+      ['ENV.DOMAIN = example.com', 'ENV.ADMINS = admin@example.com,root@localhost'],
       $env[1],
       'environment'
     );
@@ -565,7 +565,7 @@ class RunnerTest extends TestCase {
    */
   #[@test]
   public function exitScriptletWithZeroExitCode() {
-    $content= $this->runWith('dev', '/exit', array('code' => '0'));
+    $content= $this->runWith('dev', '/exit', ['code' => '0']);
     $this->assertEquals('', $content);
   }
 
@@ -575,7 +575,7 @@ class RunnerTest extends TestCase {
    */
   #[@test]
   public function exitScriptletWithZeroExitCodeAndMessage() {
-    $content= $this->runWith('dev', '/exit', array('code' => '0', 'message' => 'Sorry'));
+    $content= $this->runWith('dev', '/exit', ['code' => '0', 'message' => 'Sorry']);
     $this->assertEquals('Sorry', $content);
   }
 
@@ -585,12 +585,12 @@ class RunnerTest extends TestCase {
    */
   #[@test]
   public function exitScriptletWithNonZeroExitCode() {
-    $content= $this->runWith('dev', '/exit', array('code' => '1'));
+    $content= $this->runWith('dev', '/exit', ['code' => '1']);
     preg_match('#ERROR ([0-9]+)#', $content, $error);
     preg_match('#<xmp>(.+)</xmp>#', $content, $compound);
 
     $this->assertEquals('500', $error[1], 'error message');
-    $this->assertEquals(array(), $compound, 'exception compound message');
+    $this->assertEquals([], $compound, 'exception compound message');
   }
 
   /**
@@ -599,7 +599,7 @@ class RunnerTest extends TestCase {
    */
   #[@test]
   public function exitScriptletWithNonZeroExitCodeAndMessage() {
-    $content= $this->runWith('dev', '/exit', array('code' => '1', 'message' => 'Sorry'));
+    $content= $this->runWith('dev', '/exit', ['code' => '1', 'message' => 'Sorry']);
     preg_match('#ERROR ([0-9]+)#', $content, $error);
     preg_match('#<xmp>(.+)</xmp>#', $content, $compound);
 
@@ -636,7 +636,7 @@ class RunnerTest extends TestCase {
 
     // Run
     ob_start();
-    Runner::main(array($temp, $temp, 'dev', '/'));
+    Runner::main([$temp, $temp, 'dev', '/']);
     $content= ob_get_contents();
     ob_end_clean();
     $ini->unlink();
@@ -651,13 +651,13 @@ class RunnerTest extends TestCase {
     $r->mapApplication('/debug', (new \xp\scriptlet\WebApplication('debug'))
       ->withScriptlet(self::$debugScriptlet->getName())
       ->withConfig('res://user')
-      ->withArguments(array('Debugging', 'today'))
+      ->withArguments(['Debugging', 'today'])
     );
 
     ob_start();
     $_REQUEST= [];
     $content= $r->run('/debug');
-    $_REQUEST= array();
+    $_REQUEST= [];
     $content= ob_get_contents();
     ob_end_clean();
 

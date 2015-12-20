@@ -1,5 +1,6 @@
 <?php namespace scriptlet\unittest;
 
+use lang\IllegalStateException;
 use unittest\TestCase;
 use scriptlet\HttpScriptletResponse;
 
@@ -79,7 +80,7 @@ class HttpScriptletResponseTest extends TestCase {
     $this->r->flush();
   }
 
-  #[@test, @expect('lang.IllegalStateException')]
+  #[@test, @expect(IllegalStateException::class)]
   public function flushCalledTwice() {
     $this->r->flush();
     $this->r->flush();

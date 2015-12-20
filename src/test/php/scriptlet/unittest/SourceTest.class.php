@@ -1,5 +1,6 @@
 <?php namespace scriptlet\unittest;
 
+use lang\IllegalArgumentException;
 use xp\scriptlet\Source;
 use lang\ClassLoader;
 
@@ -39,17 +40,17 @@ class SourceTest extends \unittest\TestCase {
     $this->assertInstanceOf(self::$layout, (new Source(':'.self::$layout->getName()))->layout());
   }
 
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function cannot_create_when_passed_class_which_is_neither_scriptlet_nor_layout() {
     (new Source(':lang.Object'))->layout();
   }
 
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function cannot_create_when_passed_class_does_not_exist() {
     (new Source(':does.not.exist'))->layout();
   }
 
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function cannot_create_when_passed_class_is_empty() {
     (new Source(':'))->layout();
   }

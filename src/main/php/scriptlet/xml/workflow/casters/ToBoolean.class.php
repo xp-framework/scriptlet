@@ -17,7 +17,7 @@ class ToBoolean extends ParamCaster {
    * @return  array value
    */
   public function castValue($value) {
-    static $map= array(
+    static $map= [
       'true'  => true,
       'yes'   => true,
       'on'    => true,
@@ -26,9 +26,9 @@ class ToBoolean extends ParamCaster {
       'no'    => false,
       'off'   => false,
       '0'     => false
-    );
+    ];
     
-    $return= array();
+    $return= [];
     foreach ($value as $k => $v) {
       $lookup= trim(strtolower($v));
       if (!isset($map[$lookup])) return null; // An error occured

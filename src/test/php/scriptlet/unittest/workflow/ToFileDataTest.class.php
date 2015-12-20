@@ -26,13 +26,13 @@ class ToFileDataTest extends TestCase {
    */
   #[@test]
   public function singleFileUpload() {
-    $data= array(
+    $data= [
       'name' => 'test.jpg',
       'type' => 'image/jpeg',
       'tmp_name' => '/tmp/php1234',
       'error' => UPLOAD_ERR_OK,
       'size' => 12345
-    );
+    ];
 
     $casted= $this->caster()->castValue($data);
     $this->assertInstanceOf('var[]', $casted);
@@ -40,7 +40,7 @@ class ToFileDataTest extends TestCase {
     $this->assertInstanceOf('scriptlet.xml.workflow.FileData', $casted[0]);
     $this->assertInstanceOf('io.File', $casted[0]->getFile());
     $this->assertEquals(
-      array(new \scriptlet\xml\workflow\FileData('test.jpg', 'image/jpeg', 12345, '/tmp/php1234')),
+      [new \scriptlet\xml\workflow\FileData('test.jpg', 'image/jpeg', 12345, '/tmp/php1234')],
       $casted
     );
   }
@@ -51,13 +51,13 @@ class ToFileDataTest extends TestCase {
    */
   #[@test]
   public function multipleFilesUpload() {
-    $data= array(
-      'name' => array('test.jpg', 'test2.jpg'),
-      'type' => array('image/jpeg', 'image/jpeg'),
-      'tmp_name' => array('/tmp/php1234', '/tmp/php5678'),
-      'error' => array(UPLOAD_ERR_OK, UPLOAD_ERR_OK),
-      'size' => array(12345, 67890)
-    );
+    $data= [
+      'name' => ['test.jpg', 'test2.jpg'],
+      'type' => ['image/jpeg', 'image/jpeg'],
+      'tmp_name' => ['/tmp/php1234', '/tmp/php5678'],
+      'error' => [UPLOAD_ERR_OK, UPLOAD_ERR_OK],
+      'size' => [12345, 67890]
+    ];
 
     $casted= $this->caster()->castValue($data);
     $this->assertInstanceOf('var[]', $casted);
@@ -69,10 +69,10 @@ class ToFileDataTest extends TestCase {
     $this->assertInstanceOf('io.File', $casted[1]->getFile());
     
     $this->assertEquals(
-      array(
+      [
         new \scriptlet\xml\workflow\FileData('test.jpg', 'image/jpeg', 12345, '/tmp/php1234'), 
         new \scriptlet\xml\workflow\FileData('test2.jpg', 'image/jpeg', 67890, '/tmp/php5678')
-      ),
+      ],
       $casted
     );
   }

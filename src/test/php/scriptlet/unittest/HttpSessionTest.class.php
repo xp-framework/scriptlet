@@ -1,5 +1,6 @@
 <?php namespace scriptlet\unittest;
 
+use lang\IllegalStateException;
 use scriptlet\HttpSession;
 use unittest\TestCase;
 use util\Date;
@@ -139,7 +140,7 @@ class HttpSessionTest extends TestCase {
     $this->assertFalse($this->session->initialize('ILLEGALSESSIONID'));
   }
   
-  #[@test, @ignore('Creates an unremovable file sess_ILLEGALSESSIONID'), @expect('lang.IllegalStateException')]
+  #[@test, @ignore('Creates an unremovable file sess_ILLEGALSESSIONID'), @expect(IllegalStateException::class)]
   public function testIllegalSessionAccess() {
     $this->session->initialize('ILLEGALSESSIONID');
     $this->session->putValue('foo', $f= 3);

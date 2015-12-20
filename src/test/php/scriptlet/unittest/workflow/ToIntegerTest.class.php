@@ -23,7 +23,7 @@ class ToIntegerTest extends AbstractCasterTest {
   /**
    * Test positive and negative numbers
    */
-  #[@test, @values(array(array('1', 1), array('-1', -1), array('0', 0)))]
+  #[@test, @values([['1', 1], ['-1', -1], ['0', 0]])]
   public function wholeNumbers($input, $expect) {
     $this->assertEquals($expect, $this->castValue($input), $input);
   }

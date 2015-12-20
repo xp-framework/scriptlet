@@ -19,7 +19,7 @@ class MockRequest extends WorkflowScriptletRequest {
    * @param   string functionality
    * @param   [:var] params default array()
    */
-  public function __construct($package, $stateName, $functionality, $params= array()) {
+  public function __construct($package, $stateName, $functionality, $params= []) {
     static $i= 0;
 
     parent::__construct($package);
@@ -32,7 +32,7 @@ class MockRequest extends WorkflowScriptletRequest {
     $this->state= \lang\ClassLoader::getDefault()->defineClass(
       $package.'.mock.state.'.$stateName.'State', 
       'scriptlet.xml.workflow.AbstractState',
-      array(),
+      [],
       $functionality
     )->newInstance();
     $_SERVER['STATE']= $stateName;

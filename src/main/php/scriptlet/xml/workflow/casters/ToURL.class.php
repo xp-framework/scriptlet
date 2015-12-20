@@ -19,7 +19,7 @@ class ToURL extends ParamCaster {
    * @return  array value
    */
   public function castValue($value) {
-    $return= array();
+    $return= [];
     foreach ($value as $k => $v) {
       $return[$k]= new URL($v);
     }

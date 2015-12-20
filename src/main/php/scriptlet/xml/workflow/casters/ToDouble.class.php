@@ -18,7 +18,7 @@ class ToDouble extends ParamCaster {
    * @return  double[] value
    */
   public function castValue($value) {
-    $return= array();
+    $return= [];
     foreach ($value as $k => $v) {
       if ('' == ltrim($v, ' +-0')) {
         $return[$k]= 0.0;

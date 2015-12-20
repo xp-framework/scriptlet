@@ -18,7 +18,7 @@ class ToEmailAddress extends ParamCaster {
    * @return  array value
    */
   public function castValue($value) {
-    $return= array();
+    $return= [];
     foreach ($value as $k => $v) {
       try {
         $addr= InternetAddress::fromString($v);

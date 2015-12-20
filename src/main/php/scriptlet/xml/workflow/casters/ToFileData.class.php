@@ -18,7 +18,7 @@ class ToFileData extends ParamCaster {
    * @return  array value
    */
   public function castValue($value) {
-    $files= array();
+    $files= [];
     if (is_array($value['name'])) {
       // multiple files
       foreach ($value['name'] as $i => $name) {

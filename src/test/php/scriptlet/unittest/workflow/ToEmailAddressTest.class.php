@@ -1,5 +1,6 @@
 <?php namespace scriptlet\unittest\workflow;
 
+use lang\IllegalArgumentException;
 use scriptlet\xml\workflow\casters\ToEmailAddress;
 
 
@@ -24,7 +25,7 @@ class ToEmailAddressTest extends AbstractCasterTest {
   /**
    * Test numerous valid email addresses
    */
-  #[@test, @values(array('xp@example.com', 'xp-cvs@example.com'))]
+  #[@test, @values(['xp@example.com', 'xp-cvs@example.com'])]
   public function validEmailAdresses($email) {
     $this->assertEquals(new \peer\mail\InternetAddress($email), $this->castValue($email));
   }
@@ -32,7 +33,7 @@ class ToEmailAddressTest extends AbstractCasterTest {
   /**
    * Test input without an @ sign
    */
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function stringWithoutAt() {
     $this->castValue('FOO');
   }
@@ -40,7 +41,7 @@ class ToEmailAddressTest extends AbstractCasterTest {
   /**
    * Test empty input
    */
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function emptyInput() {
     $this->castValue('');
   }
@@ -48,7 +49,7 @@ class ToEmailAddressTest extends AbstractCasterTest {
   /**
    * Test "@" by itself
    */
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function onlyAtSign() {
     $this->castValue('@');
   }

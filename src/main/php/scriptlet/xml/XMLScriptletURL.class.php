@@ -195,13 +195,13 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @return string
    */
   public function getURL() {
-    $defaultPorts= array(
+    $defaultPorts= [
       'http'  => 80,
       'https' => 443
-    );
+    ];
   
     // Determine which settings we need to pass
-    $xsr= array();
+    $xsr= [];
     if (
       ($this->getProduct()  != $this->getDefaultProduct()) ||
       ($this->getLanguage() != $this->getDefaultLanguage())

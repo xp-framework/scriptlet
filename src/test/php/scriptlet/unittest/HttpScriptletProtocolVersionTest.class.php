@@ -1,5 +1,6 @@
 <?php namespace scriptlet\unittest;
 
+use scriptlet\ScriptletException;
 use unittest\TestCase;
 use scriptlet\HttpScriptlet;
 use peer\URL;
@@ -32,7 +33,7 @@ class HttpScriptletProtocolVersionTest extends TestCase {
     if ('https' === $url->getScheme()) { 
       $req->env['HTTPS']= 'on';
     }
-    $req->setHeaders(array());
+    $req->setHeaders([]);
     $req->setParams($url->getParams());
     return $req;
   }
@@ -73,7 +74,7 @@ class HttpScriptletProtocolVersionTest extends TestCase {
    * Test HTTP/0.9 Requests are unsupported
    *
    */
-  #[@test, @expect('scriptlet.ScriptletException')]
+  #[@test, @expect(ScriptletException::class)]
   public function http09RequestsUnsupported() {
     $req= $this->newRequest('GET', new URL('http://localhost/'));
     $req->env['SERVER_PROTOCOL']= 'HTTP/0.9';
@@ -87,7 +88,7 @@ class HttpScriptletProtocolVersionTest extends TestCase {
    * Test HTTP/1.2 Requests are unsupported
    *
    */
-  #[@test, @expect('scriptlet.ScriptletException')]
+  #[@test, @expect(ScriptletException::class)]
   public function http12RequestsUnsupported() {
     $req= $this->newRequest('GET', new URL('http://localhost/'));
     $req->env['SERVER_PROTOCOL']= 'HTTP/1.2';
@@ -101,7 +102,7 @@ class HttpScriptletProtocolVersionTest extends TestCase {
    * Test requests without a a valid protocol version are unsupported
    *
    */
-  #[@test, @expect('scriptlet.ScriptletException')]
+  #[@test, @expect(ScriptletException::class)]
   public function emptyProtocolRequestsUnsupported() {
     $req= $this->newRequest('GET', new URL('http://localhost/'));
     $req->env['SERVER_PROTOCOL']= '';
@@ -115,7 +116,7 @@ class HttpScriptletProtocolVersionTest extends TestCase {
    * Test requests without a a valid protocol version are unsupported
    *
    */
-  #[@test, @expect('scriptlet.ScriptletException')]
+  #[@test, @expect(ScriptletException::class)]
   public function invalidProtocolRequestsUnsupported() {
     $req= $this->newRequest('GET', new URL('http://localhost/'));
     $req->env['SERVER_PROTOCOL']= 'INVALID/1.0';

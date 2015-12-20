@@ -13,7 +13,7 @@ class AbstractPortlet extends \lang\Object implements Portlet {
     $name       = '',
     $properties = null,
     $layout     = null,
-    $attributes = array();
+    $attributes = [];
 
   /**
    * Constructor

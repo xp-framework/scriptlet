@@ -9,7 +9,7 @@
  */
 class PortletContainer extends \lang\Object {
   public
-    $portlets= array();
+    $portlets= [];
 
   /**
    * Add Portlets
@@ -41,10 +41,10 @@ class PortletContainer extends \lang\Object {
     $node= $response->addFormResult(new \xml\Node('portlets'));
 
     for ($i= 0, $s= sizeof($this->portlets); $i < $s; $i++) {
-      $portlet= $node->addChild(new \xml\Node('portlet', null, array(
+      $portlet= $node->addChild(new \xml\Node('portlet', null, [
         'class'   => $this->portlets[$i]->getClassName(),
         'layout' =>  $this->portlets[$i]->getLayout()
-      )));
+      ]));
       
       try {
         $content= $this->portlets[$i]->getContent($rundata);

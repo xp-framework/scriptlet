@@ -23,7 +23,7 @@
  * @test     xp://scriptlet.unittest.PreferenceTest
  */
 class Preference extends \lang\Object {
-  protected $list= array();
+  protected $list= [];
 
   /**
    * Parses the "Accept" header
@@ -32,7 +32,7 @@ class Preference extends \lang\Object {
    * @param  [:float] list
    */
   protected function preferenceOf($accept) {
-    $values= array();
+    $values= [];
     $prec= 1.0;
     foreach ($accept as $t) {
       preg_match('# ?(.+); ?q=([0-9\.]+)#', $t, $matches);
@@ -89,7 +89,7 @@ class Preference extends \lang\Object {
   public function match($supported) {
     $str= implode(' ', $supported);
     foreach ($this->list as $preference => $q) {
-      if (preg_match('#('.strtr(preg_quote($preference, '#'), array('\*' => '[^ ]+')).')#', $str, $matches)) return $matches[1];
+      if (preg_match('#('.strtr(preg_quote($preference, '#'), ['\*' => '[^ ]+']).')#', $str, $matches)) return $matches[1];
     }
     return null;
   }
@@ -107,7 +107,7 @@ class Preference extends \lang\Object {
     } else {
       $q= 0.0;
       foreach ($this->list as $preference => $q) {
-        if (preg_match('#('.strtr(preg_quote($preference, '#'), array('\*' => '[^ ]+')).')#', $type, $matches)) break;
+        if (preg_match('#('.strtr(preg_quote($preference, '#'), ['\*' => '[^ ]+']).')#', $type, $matches)) break;
       }
     }
     return round($q, $precision);

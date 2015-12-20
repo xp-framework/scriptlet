@@ -39,8 +39,8 @@ class Wrapper extends \lang\Object {
     PARAM_VALUES          = 'values';
 
   public
-    $paraminfo    = array(),
-    $values       = array();
+    $paraminfo    = [],
+    $values       = [];
 
   /**
    * Set up this handler. Called when the handler has not yet been
@@ -78,7 +78,7 @@ class Wrapper extends \lang\Object {
    * @return  lang.Object
    */
   public function checkerInstanceFor($defines) {
-    static $class= array();
+    static $class= [];
 
     if (!$defines) return null;
 
@@ -90,7 +90,7 @@ class Wrapper extends \lang\Object {
       return null;
     }
 
-    return call_user_func_array(array($class[$name], 'newInstance'), $defines);
+    return call_user_func_array([$class[$name], 'newInstance'], $defines);
   }
   
   /**
@@ -144,9 +144,9 @@ class Wrapper extends \lang\Object {
     $precheck= null, 
     $postcheck= null,
     $type= 'core:string',
-    $values= array()
+    $values= []
   ) {
-    $this->paraminfo[$name]= array(
+    $this->paraminfo[$name]= [
       self::PARAM_OCCURRENCE => $occurrence,
       self::PARAM_DEFAULT    => $default,
       self::PARAM_PRECHECK   => $this->checkerInstanceFor($precheck),
@@ -154,7 +154,7 @@ class Wrapper extends \lang\Object {
       self::PARAM_POSTCHECK  => $this->checkerInstanceFor($postcheck),
       self::PARAM_TYPE       => $type,
       self::PARAM_VALUES     => $values
-    );
+    ];
   }
 
   /**
@@ -212,7 +212,7 @@ class Wrapper extends \lang\Object {
       if ($definitions[self::PARAM_OCCURRENCE] & self::OCCURRENCE_PASSBEHIND) {
         $value= (array)$handler->getValue($name, '');
       } else if ($definitions[self::PARAM_OCCURRENCE] & self::OCCURRENCE_MULTIPLE) {
-        $value= (array)$request->getParam($name, array());
+        $value= (array)$request->getParam($name, []);
       } else {
         $value= (array)$request->getParam($name, '');
       }
@@ -254,7 +254,7 @@ class Wrapper extends \lang\Object {
         //
         // Pre- and postchecks return an error code or NULL if they are content
         if ($definitions[self::PARAM_PRECHECK]) {
-          if (null !== ($code= call_user_func(array($definitions[self::PARAM_PRECHECK], 'check'), $value))) {
+          if (null !== ($code= call_user_func([$definitions[self::PARAM_PRECHECK], 'check'], $value))) {
             $handler->addError($definitions[self::PARAM_PRECHECK]->getClassName().'.'.$code, $name);
             continue;
           }
@@ -265,7 +265,7 @@ class Wrapper extends \lang\Object {
         // type indicates an error and will be used as informational data
         // for the form error (an exception message, for instance).
         if ($definitions[self::PARAM_CASTER]) {
-          if (!is_array($value= call_user_func(array($definitions[self::PARAM_CASTER], 'castValue'), $value))) {
+          if (!is_array($value= call_user_func([$definitions[self::PARAM_CASTER], 'castValue'], $value))) {
             $handler->addError($definitions[self::PARAM_CASTER]->getClassName().'.invalidcast', $name, $value);
             continue;
           }
@@ -274,7 +274,7 @@ class Wrapper extends \lang\Object {
         // Now, run the postcheck. The postcheck receives the already casted
         // values.
         if ($definitions[self::PARAM_POSTCHECK]) {
-          if (null !== ($code= call_user_func(array($definitions[self::PARAM_POSTCHECK], 'check'), $value))) {
+          if (null !== ($code= call_user_func([$definitions[self::PARAM_POSTCHECK], 'check'], $value))) {
             $handler->addError($definitions[self::PARAM_POSTCHECK]->getClassName().'.'.$code, $name);
             continue;
           }

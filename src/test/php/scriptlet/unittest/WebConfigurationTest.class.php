@@ -29,9 +29,9 @@ class WebConfigurationTest extends TestCase {
         ['/service' => (new \xp\scriptlet\WebApplication('service'))
           ->withConfig('{WEBROOT}/etc/{PROFILE}')
           ->withScriptlet('ServiceScriptlet')
-          ->withEnvironment(array('ROLE' => 'admin', 'CLUSTER' => 'a'))
+          ->withEnvironment(['ROLE' => 'admin', 'CLUSTER' => 'a'])
           ->withDebug(\xp\scriptlet\WebDebug::STACKTRACE | \xp\scriptlet\WebDebug::ERRORS)
-          ->withArguments(array('a', 'b'))
+          ->withArguments(['a', 'b'])
         ],
         (new WebConfiguration($p))->mappedApplications('dev')
       );
@@ -79,10 +79,10 @@ class WebConfigurationTest extends TestCase {
       $p->writeSection('app::global');
 
       $this->assertEquals(
-        array(
+        [
           '/service' => (new \xp\scriptlet\WebApplication('service'))->withConfig('{WEBROOT}/etc'), 
           '/'        => (new \xp\scriptlet\WebApplication('global'))->withConfig('{WEBROOT}/etc')
-        ),
+        ],
         (new WebConfiguration($p))->mappedApplications()
       );
     }

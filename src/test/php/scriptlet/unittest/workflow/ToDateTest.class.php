@@ -1,5 +1,6 @@
 <?php namespace scriptlet\unittest\workflow;
 
+use lang\IllegalArgumentException;
 use scriptlet\xml\workflow\casters\ToDate;
 
 
@@ -34,7 +35,7 @@ class ToDateTest extends AbstractCasterTest {
    * Test european date format with short year
    *
    */
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function europeanDateFormatShortYear() {
     $this->assertEquals(new \util\Date('2008-04-10'), $this->castValue('10.04.08'));
   }
@@ -63,7 +64,7 @@ class ToDateTest extends AbstractCasterTest {
    * Test empty input
    *
    */
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function emptyInput() {
     $this->castValue('');
   }
@@ -72,7 +73,7 @@ class ToDateTest extends AbstractCasterTest {
    * Test
    *
    */
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function daysNotInMonth() {
     $this->castValue('31.11.2009');
   }
@@ -81,7 +82,7 @@ class ToDateTest extends AbstractCasterTest {
    * Test 31.02.2009 is invalid
    *
    */
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function februaryDoesNotHave31st() {
     $this->castValue('31.02.2009');
   }
@@ -90,7 +91,7 @@ class ToDateTest extends AbstractCasterTest {
    * Test 30.02.2009 is invalid
    *
    */
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function februaryDoesNotHave30th() {
     $this->castValue('30.02.2009');
   }
@@ -99,7 +100,7 @@ class ToDateTest extends AbstractCasterTest {
    * Test 29.02.2009 is invalid
    *
    */
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function februaryDoesNotHave29th() {
     $this->castValue('29.02.2009');
   }
@@ -117,7 +118,7 @@ class ToDateTest extends AbstractCasterTest {
    * Test with a day > 31
    *
    */
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function dayLargerThan31() {
     $this->castValue('32.11.2009');
   }
@@ -126,7 +127,7 @@ class ToDateTest extends AbstractCasterTest {
    * Test with a month > 12
    *
    */
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function monthLargerThan12() {
     $this->castValue('01.13.2009');
   }
@@ -135,7 +136,7 @@ class ToDateTest extends AbstractCasterTest {
    * Test
    *
    */
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function brokenAmericanDateFormat() {
     $this->castValue('30/11/2009'); // Should be 11/30
   }

@@ -1,5 +1,6 @@
 <?php namespace scriptlet\unittest;
 
+use scriptlet\ScriptletException;
 use scriptlet\xml\XMLScriptlet;
 use scriptlet\xml\XMLScriptletRequest;
 use scriptlet\xml\XMLScriptletResponse;
@@ -21,7 +22,7 @@ class XmlScriptletTest extends ScriptletTestCase {
    */
   public function setUp() {
     unset($_SERVER['STATE']);
-    foreach (array('dom', 'xsl') as $ext) {
+    foreach (['dom', 'xsl'] as $ext) {
       if (!extension_loaded($ext)) {
         throw new \unittest\PrerequisitesNotMetError($ext.' extension not loaded');
       }
@@ -51,7 +52,7 @@ class XmlScriptletTest extends ScriptletTestCase {
     if ('https' === $url->getScheme()) { 
       $req->env['HTTPS']= 'on';
     }
-    $req->setHeaders(array());
+    $req->setHeaders([]);
     $req->setParams($url->getParams());
     return $req;
   }
@@ -87,13 +88,13 @@ class XmlScriptletTest extends ScriptletTestCase {
       ->withTemplate((new \xml\XslTemplate())->matching('/')
         ->withChild((new \xml\Node('html'))
           ->withChild((new \xml\Node('body'))
-            ->withChild(new \xml\Node('xsl:value-of', null, array('select' => '/formresult/result')))
+            ->withChild(new \xml\Node('xsl:value-of', null, ['select' => '/formresult/result']))
           )
         )
       )
     );
     
-    $s= newinstance('scriptlet.xml.XMLScriptlet', array(), '{
+    $s= newinstance('scriptlet.xml.XMLScriptlet', [], '{
       public function doGet($request, $response) {
         $response->addFormResult(new \xml\Node("result", "GET"));
       }
@@ -117,7 +118,7 @@ class XmlScriptletTest extends ScriptletTestCase {
     $req= $this->newRequest('GET', new URL('http://localhost/'));
     $res= new \scriptlet\HttpScriptletResponse();
     
-    $s= newinstance('scriptlet.xml.XMLScriptlet', array(), '{
+    $s= newinstance('scriptlet.xml.XMLScriptlet', [], '{
       public function needsSession($request) { return true; }
     }');
     $s->service($req, $res);
@@ -128,7 +129,7 @@ class XmlScriptletTest extends ScriptletTestCase {
       $this->assertEquals('http', $redirect->getScheme());
       $this->assertEquals('localhost', $redirect->getHost());
       $this->assertEquals(sprintf('/xml/psessionid=%s/static', session_id()), $redirect->getPath());
-      $this->assertEquals(array(), $redirect->getParams(), $redirect->getURL());
+      $this->assertEquals([], $redirect->getParams(), $redirect->getURL());
     }
   }
 
@@ -136,12 +137,12 @@ class XmlScriptletTest extends ScriptletTestCase {
    * Test writing to response with write() throws an exception
    *
    */
-  #[@test, @expect('scriptlet.ScriptletException')]
+  #[@test, @expect(ScriptletException::class)]
   public function writeToResponseNotPermitted () {
     $req= $this->newRequest('GET', new URL('http://localhost/'));
     $res= $this->newResponse((new Stylesheet())->withOutputMethod('xml'));
     
-    $s= newinstance('scriptlet.xml.XMLScriptlet', array(), '{
+    $s= newinstance('scriptlet.xml.XMLScriptlet', [], '{
       public function doGet($request, $response) {
         $response->write("Hello");
       }
@@ -159,7 +160,7 @@ class XmlScriptletTest extends ScriptletTestCase {
     $req= $this->newRequest('GET', new URL('http://localhost/'));
     $res= $this->newResponse((new Stylesheet())->withOutputMethod('xml'));
     
-    $s= newinstance('scriptlet.xml.XMLScriptlet', array(), '{
+    $s= newinstance('scriptlet.xml.XMLScriptlet', [], '{
       public function doGet($request, $response) {
         $response->setProcessed(false);
         $response->write("Hello");
@@ -183,13 +184,13 @@ class XmlScriptletTest extends ScriptletTestCase {
       ->withTemplate((new \xml\XslTemplate())->matching('/')
         ->withChild((new \xml\Node('html'))
           ->withChild((new \xml\Node('body'))
-            ->withChild(new \xml\Node('xsl:value-of', null, array('select' => '/formresult/result')))
+            ->withChild(new \xml\Node('xsl:value-of', null, ['select' => '/formresult/result']))
           )
         )
       )
     );
     
-    $s= newinstance('scriptlet.xml.XMLScriptlet', array(), '{
+    $s= newinstance('scriptlet.xml.XMLScriptlet', [], '{
       public function doPost($request, $response) {
         $response->addFormResult(new \xml\Node("result", "POST"));
       }
@@ -212,14 +213,14 @@ class XmlScriptletTest extends ScriptletTestCase {
     return (new \xml\XslTemplate())->matching('/')
       ->withChild((new \xml\Node('html'))
         ->withChild((new \xml\Node('body'))
-          ->withChild(new \xml\Node('xsl:value-of', null, array('select' => 'concat(
+          ->withChild(new \xml\Node('xsl:value-of', null, ['select' => 'concat(
             "state=",   $__state, ", ",
             "page=",    $__page, ", ",
             "lang=",    $__lang, ", ",
             "product=", $__product, ", ",
             "sess=",    $__sess, ", ",
             "query=",   $__query
-          )')))
+          )']))
         )
       )
     ;
@@ -238,7 +239,7 @@ class XmlScriptletTest extends ScriptletTestCase {
       ->withTemplate((new \xml\XslTemplate())->matching('/')
         ->withChild((new \xml\Node('html'))
           ->withChild((new \xml\Node('body'))
-            ->withChild(new \xml\Node('xsl:copy-of', null, array('select' => '/formresult/formvalues')))
+            ->withChild(new \xml\Node('xsl:copy-of', null, ['select' => '/formresult/formvalues']))
           )
         )
       )
@@ -274,7 +275,7 @@ class XmlScriptletTest extends ScriptletTestCase {
       ->withTemplate((new \xml\XslTemplate())->matching('/')
         ->withChild((new \xml\Node('html'))
           ->withChild((new \xml\Node('body'))
-            ->withChild(new \xml\Node('xsl:copy-of', null, array('select' => '/formresult/formvalues')))
+            ->withChild(new \xml\Node('xsl:copy-of', null, ['select' => '/formresult/formvalues']))
           )
         )
       )

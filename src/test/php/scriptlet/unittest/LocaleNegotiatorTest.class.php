@@ -42,11 +42,11 @@ class LocaleNegotiatorTest extends TestCase {
   public function languagePreference() {
     $this->assertEquals(
       new Locale('de_AT'), 
-      $this->fixture->getLocale(array('de_AT', 'de_DE', 'en_US'), 'C')
+      $this->fixture->getLocale(['de_AT', 'de_DE', 'en_US'], 'C')
     );
     $this->assertEquals(
       new Locale('de_AT'), 
-      $this->fixture->getLocale(array('de_DE', 'de_AT', 'en_US'), 'C')
+      $this->fixture->getLocale(['de_DE', 'de_AT', 'en_US'], 'C')
     );
   }
 
@@ -54,7 +54,7 @@ class LocaleNegotiatorTest extends TestCase {
   public function secondLanguagePreference() {
     $this->assertEquals(
       new Locale('de_DE'), 
-      $this->fixture->getLocale(array('de_DE', 'en_US'), 'C')
+      $this->fixture->getLocale(['de_DE', 'en_US'], 'C')
     );
   }
 
@@ -62,7 +62,7 @@ class LocaleNegotiatorTest extends TestCase {
   public function thirdLanguagePreference() {
     $this->assertEquals(
       new Locale('en_US'), 
-      $this->fixture->getLocale(array('en_US'), 'C')
+      $this->fixture->getLocale(['en_US'], 'C')
     );
   }
 
@@ -70,7 +70,7 @@ class LocaleNegotiatorTest extends TestCase {
   public function fourthLanguagePreference() {
     $this->assertEquals(
       new Locale('en_UK'), 
-      $this->fixture->getLocale(array('en_UK'), 'C')
+      $this->fixture->getLocale(['en_UK'], 'C')
     );
   }
 
@@ -78,7 +78,7 @@ class LocaleNegotiatorTest extends TestCase {
   public function defaultLanguage() {
     $this->assertEquals(
       new Locale('C'), 
-      $this->fixture->getLocale(array('es_ES'), 'C')
+      $this->fixture->getLocale(['es_ES'], 'C')
     );
   }
 
@@ -86,7 +86,7 @@ class LocaleNegotiatorTest extends TestCase {
   public function charsetPreference() {
     $this->assertEquals(
       'iso-8859-1',
-      $this->fixture->getCharset(array('iso-8859-1', 'utf-8', 'iso-8859-15'), 'ASCII')
+      $this->fixture->getCharset(['iso-8859-1', 'utf-8', 'iso-8859-15'], 'ASCII')
     );
   }
 
@@ -94,7 +94,7 @@ class LocaleNegotiatorTest extends TestCase {
   public function secondCharsetPreference() {
     $this->assertEquals(
       'utf-8',
-      $this->fixture->getCharset(array('utf-8', 'iso-8859-15'), 'ASCII')
+      $this->fixture->getCharset(['utf-8', 'iso-8859-15'], 'ASCII')
     );
   }
 
@@ -102,7 +102,7 @@ class LocaleNegotiatorTest extends TestCase {
   public function anyCharsetPreference() {
     $this->assertEquals(
       'iso-8859-15',
-      $this->fixture->getCharset(array('iso-8859-15'), 'ASCII')
+      $this->fixture->getCharset(['iso-8859-15'], 'ASCII')
     );
   }
 }

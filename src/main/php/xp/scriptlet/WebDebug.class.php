@@ -21,13 +21,13 @@ abstract class WebDebug extends \lang\Object {
    * @throws  lang.IllegalArgumentException
    */
   public static function flagNamed($name) {
-    static $lookup= array(
+    static $lookup= [
       'NONE'        => self::NONE,
       'XML'         => self::XML,
       'ERRORS'      => self::ERRORS,
       'STACKTRACE'  => self::STACKTRACE,
       'TRACE'       => self::TRACE,
-    );
+    ];
 
     if (!isset($lookup[$name])) {
       throw new \lang\IllegalArgumentException('No flag named WebDebug::'.$name);
@@ -42,15 +42,15 @@ abstract class WebDebug extends \lang\Object {
    * @return  string[] names
    */
   public static function namesOf($flags) {
-    static $lookup= array(
+    static $lookup= [
       self::XML         => 'XML',
       self::ERRORS      => 'ERRORS',
       self::STACKTRACE  => 'STACKTRACE',
       self::TRACE       => 'TRACE',
-    );
+    ];
   
-    if (0 === $flags) return array('NONE');
-    $names= array();
+    if (0 === $flags) return ['NONE'];
+    $names= [];
     foreach ($lookup as $flag => $name) {
       $flags & $flag && $names[]= $name;
     }
