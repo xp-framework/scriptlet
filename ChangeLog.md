@@ -3,6 +3,13 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.3.0 / 2015-12-20
+
+* **Heads up: Dropped PHP 5.4 support**. *Note: As the main source is not
+  touched, unofficial PHP 5.4 support is still available though not tested
+  with Travis-CI*.
+  (@thekid)
+
 ## 6.2.3 / 2015-11-08
 
 * Added forward compatibility with XP 6.6.0 - @thekid
