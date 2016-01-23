@@ -1,13 +1,13 @@
 <?php namespace scriptlet\xml\workflow;
 
 // Obsolete
-  define('OCCURRENCE_UNDEFINED',    0x0000);
+define('OCCURRENCE_UNDEFINED',    0x0000);
 define('OCCURRENCE_OPTIONAL',     0x0001);
 define('OCCURRENCE_MULTIPLE',     0x0002);
 define('OCCURRENCE_PASSBEHIND',   0x0004);
 
 // Obsolete
-  define('PARAM_OCCURRENCE', 'occurrence');
+define('PARAM_OCCURRENCE', 'occurrence');
 define('PARAM_DEFAULT',    'default');   
 define('PARAM_PRECHECK',   'precheck');  
 define('PARAM_CASTER',     'caster');    
@@ -255,7 +255,7 @@ class Wrapper extends \lang\Object {
         // Pre- and postchecks return an error code or NULL if they are content
         if ($definitions[self::PARAM_PRECHECK]) {
           if (null !== ($code= call_user_func([$definitions[self::PARAM_PRECHECK], 'check'], $value))) {
-            $handler->addError($definitions[self::PARAM_PRECHECK]->getClassName().'.'.$code, $name);
+            $handler->addError(nameof($definitions[self::PARAM_PRECHECK]).'.'.$code, $name);
             continue;
           }
         }
@@ -266,7 +266,7 @@ class Wrapper extends \lang\Object {
         // for the form error (an exception message, for instance).
         if ($definitions[self::PARAM_CASTER]) {
           if (!is_array($value= call_user_func([$definitions[self::PARAM_CASTER], 'castValue'], $value))) {
-            $handler->addError($definitions[self::PARAM_CASTER]->getClassName().'.invalidcast', $name, $value);
+            $handler->addError(nameof($definitions[self::PARAM_CASTER]).'.invalidcast', $name, $value);
             continue;
           }
         }
@@ -275,7 +275,7 @@ class Wrapper extends \lang\Object {
         // values.
         if ($definitions[self::PARAM_POSTCHECK]) {
           if (null !== ($code= call_user_func([$definitions[self::PARAM_POSTCHECK], 'check'], $value))) {
-            $handler->addError($definitions[self::PARAM_POSTCHECK]->getClassName().'.'.$code, $name);
+            $handler->addError(nameof($definitions[self::PARAM_POSTCHECK]).'.'.$code, $name);
             continue;
           }
         }

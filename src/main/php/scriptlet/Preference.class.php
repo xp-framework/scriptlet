@@ -132,6 +132,6 @@ class Preference extends \lang\Object {
     foreach ($this->list as $preference => $q) {
       $list.= (1.0 - $q < 0.001) ? ', '.$preference : sprintf(', %s;q=%.1f', $preference, $q);
     }
-    return $this->getClassName().'<'.substr($list, 2).'>';
+    return nameof($this).'<'.substr($list, 2).'>';
   }
 }

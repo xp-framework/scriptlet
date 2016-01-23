@@ -48,7 +48,7 @@ class ScriptletException extends \lang\XPException {
   public function compoundMessage() {
     return sprintf(
       "Exception %s (%d:%s)",
-      $this->getClassName(),
+      nameof($this),
       $this->statusCode,
       $this->message
     );

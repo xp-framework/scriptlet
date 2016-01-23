@@ -80,7 +80,7 @@ class ScriptletHandler extends AbstractUrlHandler {
       $this->scriptlet->service($request, $response);
     } catch (ScriptletException $e) {
       $e->printStackTrace();
-      $this->sendErrorMessage($socket, $e->getStatus(), $e->getClassName(), $e->getMessage());
+      $this->sendErrorMessage($socket, $e->getStatus(), nameof($e), $e->getMessage());
       return;
     }
 
@@ -96,6 +96,6 @@ class ScriptletHandler extends AbstractUrlHandler {
    * @return  string
    */
   public function toString() {
-    return $this->getClassName().'<'.$this->scriptlet->getClassName().'>';
+    return nameof($this).'<'.nameof($this->scriptlet).'>';
   }
 }

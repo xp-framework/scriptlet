@@ -61,10 +61,10 @@ class AbstractHandler extends \lang\Object implements Traceable {
       "  [name               ] %s\n".
       "  [identifier         ] %s\n".
       "  [wrapper            ] %s\n",
-      $this->getClassName(),
+      nameof($this),
       $this->name,
       $this->identifier,
-      $this->wrapper ? $this->wrapper->getClassName() : '(null)'
+      $this->wrapper ? nameof($this->wrapper) : '(null)'
     );
     foreach (array_keys($this->values[HVAL_PERSISTENT]) as $key) {
       $s.= sprintf("  [%-20s] %s\n", $key, \xp::typeOf($this->values[$key]));

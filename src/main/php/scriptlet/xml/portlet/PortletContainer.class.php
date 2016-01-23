@@ -42,14 +42,14 @@ class PortletContainer extends \lang\Object {
 
     for ($i= 0, $s= sizeof($this->portlets); $i < $s; $i++) {
       $portlet= $node->addChild(new \xml\Node('portlet', null, [
-        'class'   => $this->portlets[$i]->getClassName(),
+        'class'   => nameof($this->portlets[$i]),
         'layout' =>  $this->portlets[$i]->getLayout()
       ]));
       
       try {
         $content= $this->portlets[$i]->getContent($rundata);
       } catch (\lang\Throwable $e) {
-        $response->addFormError($e->getClassName(), '*', $e->getMessage());
+        $response->addFormError(nameof($e), '*', $e->getMessage());
         return;
       }
       $content && $portlet->addChild($content);

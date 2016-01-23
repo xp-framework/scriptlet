@@ -188,7 +188,7 @@ class WebApplication extends \lang\Object {
       "  [arguments    ] [%s]\n".
       "  [environment  ] %s\n".
       "}",
-      $this->getClassName(),
+      nameof($this),
       $this->name,
       $this->config,
       $this->scriptlet,

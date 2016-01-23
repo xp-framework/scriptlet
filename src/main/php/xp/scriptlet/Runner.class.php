@@ -173,7 +173,7 @@ class Runner extends \lang\Object {
     foreach (Logger::getInstance()->getCategories() as $category) {
       if (null === ($context= $category->getContext()) || !($context instanceof EnvironmentAware)) continue;
       $context->setHostname($_SERVER['SERVER_NAME']);
-      $context->setRunner($this->getClassName());
+      $context->setRunner(nameof($this));
       $context->setInstance($application->getScriptlet());
       $context->setResource($url);
       $context->setParams($_SERVER['QUERY_STRING']);

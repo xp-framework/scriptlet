@@ -68,6 +68,6 @@ class OutputDocument extends Tree {
    * @return  string
    */
   public function toString() {
-    return $this->getClassName().'@('.$this->root()->getSource(INDENT_DEFAULT).')';
+    return nameof($this).'@('.$this->root()->getSource(INDENT_DEFAULT).')';
   }
 }

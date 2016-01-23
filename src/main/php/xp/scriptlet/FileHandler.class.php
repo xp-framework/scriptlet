@@ -100,6 +100,6 @@ class FileHandler extends AbstractUrlHandler {
    * @return  string
    */
   public function toString() {
-    return $this->getClassName().'<'.$this->docroot->toString().', '.\xp::stringOf($this->notFound).'>';
+    return nameof($this).'<'.$this->docroot->toString().', '.\xp::stringOf($this->notFound).'>';
   }
 }

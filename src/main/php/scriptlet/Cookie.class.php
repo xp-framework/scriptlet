@@ -370,7 +370,7 @@ class Cookie extends \lang\Object {
       "  [secure  ] %s\n".
       "  [HTTPOnly] %s\n".
       "}",
-      $this->getClassName(),
+      nameof($this),
       $this->name,
       $this->value,
       $this->domain,

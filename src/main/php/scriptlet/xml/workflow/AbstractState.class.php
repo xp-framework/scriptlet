@@ -3,7 +3,6 @@
 use xml\Node;
 use util\log\Traceable;
 
-
 /**
  * Represents a single state
  *
@@ -87,7 +86,7 @@ class AbstractState extends \lang\Object implements Traceable {
    * @param   scriptlet.xml.workflow.Context context
    */
   public function setup($request, $response, $context) {
-    $this->cat && $this->cat->debug($this->getClassName().'::setup');
+    $this->cat && $this->cat->debug(nameof($this).'::setup');
     
     with ($h= $response->addFormResult(new Node('handlers'))); {
       for ($i= 0, $s= sizeof($this->handlers); $i < $s; $i++) {
@@ -181,7 +180,6 @@ class AbstractState extends \lang\Object implements Traceable {
           // If the handler has a wrapper, tell it to load its values from the
           // request.
           if ($this->handlers[$i]->hasWrapper()) {
-            $this->cat && $this->cat->debug($this->handlers[$i]->wrapper->getClassName().'::load');
             $this->handlers[$i]->wrapper->load($request, $this->handlers[$i]);
           }
 

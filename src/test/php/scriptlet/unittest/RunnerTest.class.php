@@ -32,7 +32,7 @@ class RunnerTest extends TestCase {
   public static function defineScriptlets() {
     self::$errorScriptlet= \lang\ClassLoader::defineClass('ErrorScriptlet', 'scriptlet.HttpScriptlet', ['util.log.Traceable'], '{
       public function setTrace($cat) {
-        $cat->debug("Injected", $cat->getClassName());
+        $cat->debug("Injected", nameof($cat));
       }
       
       public function doGet($request, $response) {
@@ -81,7 +81,7 @@ class RunnerTest extends TestCase {
         $response->write("</ul>");
 
         $config= \util\PropertyManager::getInstance()->getProperties("debug");
-        $response->write("<h2>".$config->getClassName()."</h2>");
+        $response->write("<h2>".nameof($config)."</h2>");
       }
     }');
     self::$exitScriptlet= \lang\ClassLoader::defineClass('ExitScriptlet', 'scriptlet.HttpScriptlet', [], '{
