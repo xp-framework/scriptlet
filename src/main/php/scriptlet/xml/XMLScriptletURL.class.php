@@ -38,9 +38,10 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @return string
    */
   public function getValueOrDefault($key) {
-    return $this->values->get($key) !== null
-      ? $this->values->get($key)
-      : $this->values->get('Default'.$key);
+    return isset($this->values[$key])
+      ? $this->values[$key]
+      : (isset($this->values[$default= 'Default'.$key]) ? $this->values[$default] : null)
+    ;
   }
   
   /**
@@ -49,7 +50,7 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @param string product The product name
    */
   public function setProduct($product) {
-    $this->values->put('Product', $product);
+    $this->values['Product']= $product;
   }
   
   /**
@@ -59,7 +60,7 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @param string product
    */
   public function setDefaultProduct($product) {
-    $this->values->put('DefaultProduct', $product);
+    $this->values['DefaultProduct']= $product;
   }
   
   /**
@@ -77,7 +78,7 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @return string
    */
   public function getDefaultProduct() {
-    return $this->values->get('DefaultProduct');
+    return isset($this->values['DefaultProduct']) ? $this->values['DefaultProduct'] : null;
   }
   
   /**
@@ -86,7 +87,7 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @param string language The language
    */
   public function setLanguage($language) {
-    $this->values->put('Language', $language);
+    $this->values['Language']= $language;
   }
   
   /**
@@ -96,7 +97,7 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @param string language The language
    */
   public function setDefaultLanguage($language) {
-    $this->values->put('DefaultLanguage', $language);
+    $this->values['DefaultLanguage']= $language;
   }
   
   /**
@@ -114,7 +115,7 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @return string
    */
   public function getDefaultLanguage() {
-    return $this->values->get('DefaultLanguage');
+    return isset($this->values['DefaultLanguage']) ? $this->values['DefaultLanguage'] : null;
   }
 
   /**
@@ -123,7 +124,7 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @param string stateName The state name
    */
   public function setStateName($stateName) {
-    $this->values->put('StateName', $stateName);
+    $this->values['StateName']= $stateName;
   }
   
   /**
@@ -132,7 +133,7 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @param string stateName The state name
    */
   public function setDefaultStateName($stateName) {
-    $this->values->put('DefaultStateName', $stateName);
+    $this->values['DefaultStateName']= $stateName;
   }
   
   /**
@@ -150,7 +151,7 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @return string
    */
   public function getDefaultStateName() {
-    return $this->values->get('DefaultStateName');
+    return isset($this->values['DefaultStateName']) ? $this->values['DefaultStateName'] : null;
   }
   
   /**
@@ -159,7 +160,7 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @param string stateName The state name
    */
   public function setPage($page) {
-    $this->values->put('Page', $page);
+    $this->values['Page']= $page;
   }
   
   /**
@@ -168,7 +169,7 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @param string stateName The state name
    */
   public function setDefaultPage($page) {
-    $this->values->put('DefaultPage', $page);
+    $this->values['DefaultPage']= $page;
   }
   
   /**
@@ -186,7 +187,7 @@ class XMLScriptletURL extends HttpScriptletURL {
    * @return string
    */
   public function getDefaultPage() {
-    return $this->values->get('DefaultPage');
+    return isset($this->values['DefaultPage']) ? $this->values['DefaultPage'] : null;
   }
   
   /**

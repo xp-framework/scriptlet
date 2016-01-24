@@ -1,6 +1,5 @@
 <?php namespace scriptlet;
  
-use util\Hashmap;
 use peer\URL;
 
 
@@ -11,9 +10,7 @@ use peer\URL;
  * @purpose  URL representation class
  */
 class HttpScriptletURL extends URL {
-    
-  protected
-    $values= null;
+  protected $values= [];
 
   /**
    * Constructor
@@ -22,11 +19,6 @@ class HttpScriptletURL extends URL {
    */
   public function __construct($url) {
     parent::__construct($url);
-    
-    // Setup hashmap
-    $this->values= new Hashmap();
-    
-    // Extract information
     $this->extract();
   }
   
@@ -51,7 +43,7 @@ class HttpScriptletURL extends URL {
    * @param string language The session
    */
   public function setSessionId($session) {
-    $this->values->put('SessionId', $session);
+    $this->values['SessionId']= $session;
   }
 
   /**
@@ -60,7 +52,7 @@ class HttpScriptletURL extends URL {
    * @return string
    */
   public function getSessionId() {
-    return $this->values->get('SessionId');
+    return isset($this->values['SessionId']) ? $this->values['SessionId'] : null;
   }
 
   /**
