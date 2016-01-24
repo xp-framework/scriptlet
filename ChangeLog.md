@@ -3,6 +3,13 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.0.0 / 2016-01-25
+
+* Adopted semantic versioning according to xp-framework/rfc#300 - @thekid
+* **Heads up: Changed HttpScriptletURL's values** from util.Hashmap to
+  a map. This can affect subclasses, which will need to be refactored! 
+  (@thekid)
+
 ## 6.3.2 / 2016-01-24
 
 * Replaced calls to deprecated Properties::readHash() with readMap()
