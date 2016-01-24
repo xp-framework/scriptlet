@@ -3,6 +3,8 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.3.2 / 2016-01-24
+
 * Replaced calls to deprecated Properties::readHash() with readMap()
   (@thekid)
 
