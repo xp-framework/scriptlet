@@ -66,9 +66,9 @@ class WebConfiguration extends \lang\Object implements WebLayout {
    * @param   var default default NULL
    * @return  util.Hashmap
    */
-  protected function readHash($profile, $section, $key, $default= null) {
-    if (null === ($h= $this->prop->readHash($section.'@'.$profile, $key, null))) {
-      return $this->prop->readHash($section, $key, $default);
+  protected function readMap($profile, $section, $key, $default= null) {
+    if (null === ($h= $this->prop->readMap($section.'@'.$profile, $key, null))) {
+      return $this->prop->readMap($section, $key, $default);
     }
     return $h;
   }
@@ -104,7 +104,7 @@ class WebConfiguration extends \lang\Object implements WebLayout {
     $app->withArguments($this->readArray($profile, $section, 'init-params', []));
  
     // Environment
-    $app->withEnvironment($this->readHash($profile, $section, 'init-envs', new Hashmap())->toArray());
+    $app->withEnvironment($this->readMap($profile, $section, 'init-envs', []));
 
     // Filter
     foreach ($this->readArray($profile, $section, 'filters', []) as $filter) {
@@ -122,7 +122,7 @@ class WebConfiguration extends \lang\Object implements WebLayout {
    * @throws  lang.IllegalStateException if the web is misconfigured
    */
   public function mappedApplications($profile= null) {
-    $mappings= $this->prop->readHash('app', 'mappings', null);
+    $mappings= $this->prop->readMap('app', 'mappings', null);
     $apps= [];
 
     // Verify configuration
@@ -132,8 +132,8 @@ class WebConfiguration extends \lang\Object implements WebLayout {
         $apps[$url]= $this->configuredApp($profile, substr($key, 4), $url);
       }
     } else {
-      foreach ($mappings->keys() as $url) {
-        $apps[$url]= $this->configuredApp($profile, $mappings->get($url), $url);
+      foreach ($mappings as $url => $mapping) {
+        $apps[$url]= $this->configuredApp($profile, $mapping, $url);
       }
     }
 
@@ -151,7 +151,7 @@ class WebConfiguration extends \lang\Object implements WebLayout {
    * @return  [:string]
    */
   public function staticResources($profile= null) {
-    $hash= $this->prop->readHash('static', 'resources', null);
+    $hash= $this->prop->readMap('static', 'resources', null);
     return null === $hash ? null : $hash->toArray();
   }
 }

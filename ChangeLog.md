@@ -3,6 +3,9 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Replaced calls to deprecated Properties::readHash() with readMap()
+  (@thekid)
+
 ## 6.3.1 / 2016-01-24
 
 * Fix code to use `nameof()` instead of the deprecated `getClassName()`

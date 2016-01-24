@@ -623,7 +623,7 @@ class RunnerTest extends TestCase {
 
     // Create web.ini in system's temp dir
     $ini= new \io\File($temp, 'web.ini');
-    $ini->open(FILE_MODE_WRITE);
+    $ini->open(\io\File::WRITE);
     $ini->write(
       "[app]\n".
       "mappings=\"/:welcome\"\n".
