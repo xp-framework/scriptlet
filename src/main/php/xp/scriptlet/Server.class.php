@@ -72,7 +72,7 @@ class Server extends \lang\Object {
     with ($pm= PropertyManager::getInstance(), $protocol= $server->setProtocol(new HttpProtocol())); {
       $layout= (new Source($source))->layout();
 
-      $resources= $layout->staticResources($args[2]);
+      $resources= $layout->staticResources($profile);
       if (null === $resources) {
         $protocol->setUrlHandler('default', '#^/#', new FileHandler(
           $expand('{DOCUMENT_ROOT}'),
@@ -83,7 +83,7 @@ class Server extends \lang\Object {
           $protocol->setUrlHandler('default', '#'.strtr($pattern, ['#' => '\\#']).'#', new FileHandler($expand($location)));
         }
       }
-      foreach ($layout->mappedApplications($args[2]) as $url => $application) {
+      foreach ($layout->mappedApplications($profile) as $url => $application) {
         $protocol->setUrlHandler('default', '/' == $url ? '##' : '#^('.preg_quote($url, '#').')($|/.+)#', new ScriptletHandler(
           $application->scriptlet(),
           array_map($expand, $application->arguments()),

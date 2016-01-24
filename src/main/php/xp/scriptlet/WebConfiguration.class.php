@@ -151,7 +151,6 @@ class WebConfiguration extends \lang\Object implements WebLayout {
    * @return  [:string]
    */
   public function staticResources($profile= null) {
-    $hash= $this->prop->readMap('static', 'resources', null);
-    return null === $hash ? null : $hash->toArray();
+    return $this->prop->readMap('static', 'resources', null);
   }
 }
