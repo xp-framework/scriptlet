@@ -1,7 +1,6 @@
 <?php namespace xp\scriptlet;
 
 use util\Properties;
-use util\Hashmap;
 use lang\IllegalStateException;
 
 /**
@@ -57,14 +56,14 @@ class WebConfiguration extends \lang\Object implements WebLayout {
   }
   
   /**
-   * Read hashmap. First tries special section "section"@"profile", then defaults 
+   * Read map. First tries special section "section"@"profile", then defaults 
    * to "section"
    *
    * @param   string profile
    * @param   string section
    * @param   string key
    * @param   var default default NULL
-   * @return  util.Hashmap
+   * @return  [:var]
    */
   protected function readMap($profile, $section, $key, $default= null) {
     if (null === ($h= $this->prop->readMap($section.'@'.$profile, $key, null))) {
