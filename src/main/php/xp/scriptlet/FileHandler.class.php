@@ -75,7 +75,7 @@ class FileHandler extends AbstractUrlHandler {
     }
 
     try {
-      $f->open(FILE_MODE_READ);
+      $f->open(File::READ);
     } catch (IOException $e) {
       $this->sendErrorMessage($socket, 500, 'Internal server error', $e->getMessage());
       $f->close();
