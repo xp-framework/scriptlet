@@ -134,10 +134,10 @@ class WebRunner {
       }
     }
 
-    Console::writeLine('---> Startup ', $mode, '(', $address, ' & ', $arguments ?: '[]', ')');
-    Console::writeLine('---> Layout ', $layout);
+    Console::writeLine('--> Startup ', $mode, '(', $address, ' & ', $arguments ?: '[]', ')');
+    Console::writeLine('--> Layout ', $layout);
     $server= self::server($mode, $address, $arguments);
-    Console::writeLine('---> ', $server);
+    Console::writeLine('--> ', $server);
 
     $docroot= $webroot->resolve($docroot);
     with ($protocol= $server->setProtocol(new HttpProtocol())); {
@@ -183,11 +183,11 @@ class WebRunner {
       $pm->hasProperties('log') && $l->configure($pm->getProperties('log'));
       $cm= ConnectionManager::getInstance();
       $pm->hasProperties('database') && $cm->configure($pm->getProperties('database'));
-      Console::writeLine($protocol);
+      Console::writeLine('--> ', $protocol);
     }
     $server->init();
 
-    Console::writeLine('===> Server started');
+    Console::writeLine('==> Server started');
     $server->service();
     $server->shutdown();
     return 0;
