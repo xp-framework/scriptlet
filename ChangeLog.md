@@ -5,6 +5,7 @@ Scriptlets for the XP Framework ChangeLog
 
 ## 7.0.0 / 2016-01-25
 
+* Added "xp web" command in alignment with xp-framework/rfc#303 - @thekid
 * Adopted semantic versioning according to xp-framework/rfc#300 - @thekid
 * **Heads up: Changed HttpScriptletURL's values** from util.Hashmap to
   a map. This can affect subclasses, which will need to be refactored! 

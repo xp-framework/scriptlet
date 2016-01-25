@@ -18,6 +18,7 @@
   "require-dev" : {
     "xp-framework/unittest": "^6.5"
   },
+  "bin": ["bin/xp.xp-framework.scriptlet.web"],
   "autoload" : {
     "files" : ["src/main/php/autoload.php"]
   }
