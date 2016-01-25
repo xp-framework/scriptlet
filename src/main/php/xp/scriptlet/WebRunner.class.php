@@ -45,11 +45,14 @@ new import('lang.ResourceProvider');
  *   ```sh
  *   $ xp web etc/web.ini
  *   ```
- * - On Un*x systems, start multiprocess server with 50 childs:
+ * - On Un*x systems, start multiprocess server with 50 children:
  *   ```sh
  *   $ xp web -m prefork,50
  *   ```
- *
+ * - Use [event-based I/O](http://pecl.php.net/package/event):
+ *   ```sh
+ *   $ xp web -m event
+ *   ```
  * The address the server listens to can be supplied via *-a {host}:{port}*.
  * The profile can be changed via *-p {profile}* (and can be anything!).
  */
