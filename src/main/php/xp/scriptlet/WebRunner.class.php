@@ -41,16 +41,17 @@ new import('lang.ResourceProvider');
  *   ```sh
  *   $ xp web com.example.scriptlet.Layout
  *   ```
- * - Run a configured web layout
+ * - Run a [configured web layout](xp help web/config)
  *   ```sh
  *   $ xp web etc/web.ini
+ *   ```
+ * - On Un*x systems, start multiprocess server with 50 childs:
+ *   ```sh
+ *   $ xp web -m prefork,50
  *   ```
  *
  * The address the server listens to can be supplied via *-a {host}:{port}*.
  * The profile can be changed via *-p {profile}* (and can be anything!).
- * 
- * The placeholders `{PROFILE}` and `{WEBROOT}` are expanded in configuraton
- * file values.
  */
 class WebRunner {
   private static $modes= [

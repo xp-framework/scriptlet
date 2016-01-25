@@ -20,6 +20,6 @@
   },
   "bin": ["bin/xp.xp-framework.scriptlet.web"],
   "autoload" : {
-    "files" : ["src/main/php/autoload.php"]
+    "files" : ["src/main/php/autoload.php", "src/main/resources/autoload.php"]
   }
 }
