@@ -37,4 +37,9 @@ class SingleScriptlet extends \lang\Object implements WebLayout {
   public function staticResources($profile= null) {
     return ['^/static' => '{DOCUMENT_ROOT}'];
   }
+
+  /** @return string */
+  public function toString() {
+    return nameof($this).'('.$this->scriptlet.')';
+  }
 }

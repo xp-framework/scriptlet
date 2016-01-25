@@ -10,6 +10,8 @@ use lang\IllegalStateException;
  * @test  xp://scriptlet.unittest.WebConfigurationTest
  */
 class WebConfiguration extends \lang\Object implements WebLayout {
+  const INI = 'web.ini';
+
   protected $prop= null;
   
   /**
@@ -151,5 +153,10 @@ class WebConfiguration extends \lang\Object implements WebLayout {
    */
   public function staticResources($profile= null) {
     return $this->prop->readMap('static', 'resources', null);
+  }
+
+  /** @return string */
+  public function toString() {
+    return nameof($this).'('.$this->prop->toString().')';
   }
 }
