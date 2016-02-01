@@ -3,6 +3,11 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+# 7.0.1 / 2016-02-01
+
+* Adjusted location of web/config help, see xp-runners/reference#32
+  (@thekid)
+
 ## 7.0.0 / 2016-01-25
 
 * Added "xp web" command in alignment with xp-framework/rfc#303
