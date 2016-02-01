@@ -36,7 +36,7 @@ class HelloScriptlet extends \scriptlet\HttpScriptlet {
           <h1>Hello %s</h1>
         </body>
       </html>',
-      $request->getParam('name', 'World')
+      htmlspecialchars($request->getParam('name', 'World'))
     ));
   }
 }
