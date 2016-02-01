@@ -24,9 +24,9 @@ class HelloScriptlet extends \scriptlet\HttpScriptlet {
   /**
    * Perform GET request
    *
-   * @param   scriptlet.Request $request
-   * @param   scriptlet.Response $response
-   * @throws  scriptlet.ScriptletException
+   * @param  scriptlet.Request $request
+   * @param  scriptlet.Response $response
+   * @throws scriptlet.ScriptletException
    */
   public function doGet($request, $response) {
     $response->write(sprintf('<!DOCTYPE html>
