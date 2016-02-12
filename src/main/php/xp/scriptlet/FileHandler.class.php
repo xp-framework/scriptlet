@@ -74,6 +74,7 @@ class FileHandler extends AbstractUrlHandler {
       }
     }
 
+    clearstatcache();
     try {
       $f->open(File::READ);
     } catch (IOException $e) {

@@ -3,6 +3,12 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.0.1 / 2016-02-12
+
+* Fixed problem delivering files with an incorrect content length when
+  file size has changed between requests
+  (@thekid)
+
 ## 7.0.0 / 2016-02-01
 
 * Adjusted location of web/config help, see xp-runners/reference#32
