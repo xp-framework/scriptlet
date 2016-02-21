@@ -3,6 +3,10 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.0.0 / 2016-02-21
+
+* Added version compatibility with XP 7 - @thekid
+
 ## 7.0.1 / 2016-02-12
 
 * Fixed problem delivering files with an incorrect content length when
