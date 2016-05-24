@@ -425,9 +425,17 @@ class HttpScriptletRequest extends \lang\Object implements Request {
   /**
    * Gets the input stream
    *
+   * @deprecated Use in() instead
    * @param   io.streams.InputStream
    */
-  public function getInputStream() {
+  public function getInputStream() { return $this->in(); }
+
+  /**
+   * Gets the input stream
+   *
+   * @param   io.streams.InputStream
+   */
+  public function in() {
     if (null === $this->inputStream) {
       if (null === $this->readData) {
         $this->inputStream= new ChannelInputStream('input');
