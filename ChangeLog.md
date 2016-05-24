@@ -3,6 +3,8 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.0.1 / 2016-05-24
+
 * Deprecated `Response::getOutputStream()` in favor of new `out()` method.
   The interface hasn't changed though, retaining BC until the next major
   release!
