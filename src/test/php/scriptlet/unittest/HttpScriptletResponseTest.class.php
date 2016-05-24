@@ -127,4 +127,11 @@ class HttpScriptletResponseTest extends TestCase {
 
     $this->assertEquals('HelloWorld', $content);
   }
+
+  #[@test]
+  public function output_stream_closed_twice() {
+    $out= $this->r->getOutputStream();
+    $out->close();
+    $out->close();
+  }
 }

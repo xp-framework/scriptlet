@@ -43,6 +43,6 @@ class ScriptletOutputStream extends \lang\Object implements \io\streams\OutputSt
    * @return void
    */
   public function close() {
-    $this->response->flush();
+    $this->response->isCommitted() || $this->response->flush();
   }
 }

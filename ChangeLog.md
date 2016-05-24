@@ -3,6 +3,11 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Changed ScriptletOutputStream's close method to only flush response
+  if not previously done. Calling `close()` multiple times shouldn't be a
+  problem and streams typically don't mind.
+  (@thekid)
+
 ## 8.0.0 / 2016-02-21
 
 * **Adopted semantic versioning. See xp-framework/rfc#300** - @thekid 
