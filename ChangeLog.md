@@ -3,6 +3,10 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Deprecated `Response::getOutputStream()` in favor of new `out()` method.
+  The interface hasn't changed though, retaining BC until the next major
+  release!
+  (@thekid)
 * Changed ScriptletOutputStream's close method to only flush response
   if not previously done. Calling `close()` multiple times shouldn't be a
   problem and streams typically don't mind.

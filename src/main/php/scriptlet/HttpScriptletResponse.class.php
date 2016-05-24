@@ -126,15 +126,23 @@ class HttpScriptletResponse extends \lang\Object implements Response {
   /**
    * Gets the output stream
    *
+   * @deprecated Use out() instead
    * @param   io.streams.OutputStream
    */
-  public function getOutputStream() {
+  public function getOutputStream() { return $this->out(); }
+
+  /**
+   * Gets the output stream
+   *
+   * @param   io.streams.OutputStream
+   */
+  public function out() {
     if (null === $this->outputStream) {
       $this->outputStream= new ScriptletOutputStream($this);
     }
     return $this->outputStream;
   }
-  
+
   /**
    * Set a cookie. May be called multiple times with different cookies
    * to set more than one cookie.

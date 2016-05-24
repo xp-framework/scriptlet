@@ -51,7 +51,7 @@ class HttpScriptletResponseTest extends TestCase {
 
   #[@test]
   public function writeToOutputStream() {
-    $this->r->getOutputStream()->write('Hello');
+    $this->r->out()->write('Hello');
     $this->assertEquals('Hello', $this->r->getContent());
   }
 
@@ -130,7 +130,7 @@ class HttpScriptletResponseTest extends TestCase {
 
   #[@test]
   public function output_stream_closed_twice() {
-    $out= $this->r->getOutputStream();
+    $out= $this->r->out();
     $out->close();
     $out->close();
   }
