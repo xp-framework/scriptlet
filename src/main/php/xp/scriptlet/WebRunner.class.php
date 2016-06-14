@@ -12,7 +12,6 @@ use util\FilesystemPropertySource;
 use util\log\Logger;
 use util\log\context\EnvironmentAware;
 use rdbms\ConnectionManager;
-use peer\server\Server;
 use peer\server\PreforkingServer;
 use peer\server\ForkingServer;
 use peer\server\EventServer;
@@ -58,10 +57,11 @@ new import('lang.ResourceProvider');
  */
 class WebRunner {
   private static $modes= [
-    'serve'   => Server::class,
+    'serve'   => Serve::class,
     'prefork' => PreforkingServer::class,
     'fork'    => ForkingServer::class,
-    'event'   => EventServer::class
+    'event'   => EventServer::class,
+    'develop' => Develop::class
   ];
 
   /**
@@ -134,62 +134,14 @@ class WebRunner {
       }
     }
 
-    Console::writeLine('--> Startup ', $mode, '(', $address, ' & ', $arguments ?: '[]', ')');
-    Console::writeLine('--> Layout ', $layout);
     $server= self::server($mode, $address, $arguments);
-    Console::writeLine('--> ', $server);
 
-    $docroot= $webroot->resolve($docroot);
-    with ($protocol= $server->setProtocol(new HttpProtocol())); {
-      $pm= PropertyManager::getInstance();
-      $expand= function($in) use($webroot, $profile, $docroot) {
-        return is_string($in) ? strtr($in, [
-          '{WEBROOT}'       => $webroot,
-          '{PROFILE}'       => $profile,
-          '{DOCUMENT_ROOT}' => $docroot
-        ]) : $in;
-      };
+    Console::writeLine("\e[33m@", $server, "\e[0m");
+    Console::writeLine("\e[1mServing ", $layout);
+    Console::writeLine("\e[36m", str_repeat('═', 72), "\e[0m");
+    Console::writeLine();
 
-      $resources= $layout->staticResources($profile);
-      if (null === $resources) {
-        $protocol->setUrlHandler('default', '#^/#', new FileHandler(
-          $docroot,
-          $notFound= function() { return false; }
-        ));
-      } else {
-        foreach ($resources as $pattern => $location) {
-          $protocol->setUrlHandler('default', '#'.strtr($pattern, ['#' => '\\#']).'#', new FileHandler($expand($location)));
-        }
-      }
-
-      foreach ($layout->mappedApplications($profile) as $url => $application) {
-        $protocol->setUrlHandler('default', '/' == $url ? '##' : '#^('.preg_quote($url, '#').')($|/.+)#', new ScriptletHandler(
-          $application->scriptlet(),
-          array_map($expand, $application->arguments()),
-          array_map($expand, array_merge($application->environment(), ['DOCUMENT_ROOT' => $docroot])),
-          $application->filters()
-        ));
-        foreach ($application->config() as $element) {
-          $expanded= $expand($element);
-          if (0 == strncmp('res://', $expanded, 6)) {
-            $pm->appendSource(new ResourcePropertySource(substr($expanded, 6)));
-          } else {
-            $pm->appendSource(new FilesystemPropertySource($expanded));
-          }
-        }
-      }
-
-      $l= Logger::getInstance();
-      $pm->hasProperties('log') && $l->configure($pm->getProperties('log'));
-      $cm= ConnectionManager::getInstance();
-      $pm->hasProperties('database') && $cm->configure($pm->getProperties('database'));
-      Console::writeLine('--> ', $protocol);
-    }
-    $server->init();
-
-    Console::writeLine('==> Server started');
-    $server->service();
-    $server->shutdown();
+    $server->serve($layout, $webroot, $profile, $webroot->resolve($docroot));
     return 0;
   }
 }
