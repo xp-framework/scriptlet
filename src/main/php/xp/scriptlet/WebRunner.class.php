@@ -106,7 +106,6 @@ class WebRunner {
     $arguments= [];
 
     $config= new Config();
-    $cl= ClassLoader::getDefault();
     for ($i= 0; $i < sizeof($args); $i++) {
        if ('-r' === $args[$i]) {
         $docroot= $args[++$i];
@@ -119,25 +118,9 @@ class WebRunner {
       } else if ('-m' === $args[$i]) {
         $arguments= explode(',', $args[++$i]);
         $mode= array_shift($arguments);
-      } else if ('-' === $args[$i]) {
-        $layout= new ServeDocumentRootStatically();
-      } else if (is_file($args[$i])) {
-        $layout= new WebConfiguration(new Properties($args[$i]));
-      } else if (is_dir($args[$i])) {
-        $layout= new WebConfiguration(new Properties(new Path($args[$i], WebConfiguration::INI)));
-      } else if ($cl->providesClass($args[$i])) {
-        $class= $cl->loadClass($args[$i]);
-        if ($class->isSubclassOf(HttpScriptlet::class)) {
-          $layout= new SingleScriptlet($class->getName(), $config);
-        } else if ($class->isSubclassOf(WebLayout::class)) {
-          if ($class->hasMethod('newInstance')) {
-            $layout= $class->getMethod('newInstance')->invoke(null, [$config]);
-          } else {
-            $layout= $class->newInstance();
-          }
-        } else {
-          throw new IllegalArgumentException('Expecting either a scriptlet or a weblayout, '.$class->getName().' given');
-        }
+      } else {
+        $layout= (new Source($args[$i], $config))->layout();
+        break;
       }
     }
 
