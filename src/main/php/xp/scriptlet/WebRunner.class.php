@@ -54,7 +54,8 @@ new import('lang.ResourceProvider');
  *   $ xp web -m event
  *   ```
  * The address the server listens to can be supplied via *-a {host}:{port}*.
- * The profile can be changed via *-p {profile}* (and can be anything!).
+ * The profile can be changed via *-p {profile}* (and can be anything!). One
+ * or more configuration sources may be passed via *-c {file.ini|dir}*.
  */
 class WebRunner {
   private static $modes= [
