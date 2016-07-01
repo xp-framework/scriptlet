@@ -23,7 +23,7 @@ class SourceTest extends \unittest\TestCase {
 
   #[@beforeClass]
   public static function makeConfigDirectory() {
-    self::$dir= realpath(System::tempDir()).md5(uniqid()).'.xp'.DIRECTORY_SEPARATOR;
+    self::$dir= realpath(System::tempDir()).DIRECTORY_SEPARATOR.md5(uniqid()).'.xp'.DIRECTORY_SEPARATOR;
     if (is_dir(self::$dir) && !rmdir(self::$dir)) {
       throw new PrerequisitesNotMetError('Fixture directory exists, but cannot remove', null, self::$dir);
     }
