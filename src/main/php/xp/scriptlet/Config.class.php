@@ -12,16 +12,16 @@ use lang\ElementNotFoundException;
  * config sources; implicitely searching either `./etc` or `.` for property
  * files. The `properties()` method then searches these locations.
  */
-class Config {
+class Config implements \lang\Value {
   private $sources= [];
 
   /**
    * Creates a new config instance from given sources
    *
-   * @param  (string|util.PropertySource)... $source
+   * @param  string[]|util.PropertySource[] $sources
    */
-  public function __construct() {
-    foreach (func_get_args() as $source) {
+  public function __construct($sources= []) {
+    foreach ($sources as $source) {
       $this->append($source);
     }
   }
@@ -74,5 +74,25 @@ class Config {
       case 1: return $found[0];
       default: return new CompositeProperties($found);
     }
+  }
+
+  /**
+   * Compares a value to this config instance
+   *
+   * @param  var $value
+   * @return int
+   */
+  public function compareTo($value) {
+    return $value instanceof self ? Objects::compare($this->sources, $value->sources) : 1;
+  }
+
+  /** @return string */
+  public function hashCode() {
+    return 'C'.Objects::hashOf($this->sources);
+  }
+
+  /** @return string */
+  public function toString() {
+    return nameof($this).Objects::stringOf($this->sources);
   }
 }

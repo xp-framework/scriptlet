@@ -10,7 +10,7 @@ use scriptlet\Filter;
  */
 class WebApplication extends \lang\Object {
   protected $name = '';
-  protected $config = [];
+  protected $config;
   protected $scriptlet = '';
   protected $arguments = [];
   protected $filters = [];
@@ -49,14 +49,16 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's config
    *
-   * @param   string[]|string config
+   * @param   xp.scriptlet.Config|string[]|string config
    * @return  self this
    */
   public function withConfig($config) {
-    if (is_array($config)) {
+    if ($config instanceof Config) {
       $this->config= $config;
+    } else if (is_array($config)) {
+      $this->config= new Config($config);
     } else {
-      $this->config= [$config];
+      $this->config= new Config([$config]);
     }
     return $this;
   }
@@ -64,10 +66,10 @@ class WebApplication extends \lang\Object {
   /**
    * Returns this application's config
    *
-   * @return  string[]
+   * @return  xp.scriptlet.Config
    */
   public function config() {
-    return $this->config;
+    return $this->config ?: new Config();
   }
 
   /**
@@ -190,7 +192,7 @@ class WebApplication extends \lang\Object {
       "}",
       nameof($this),
       $this->name,
-      $this->config,
+      strtr($this->config->toString(), ["\n" => "\n  "]),
       $this->scriptlet,
       implode(' | ', WebDebug::namesOf($this->debug)),
       implode(', ', $this->arguments),
@@ -208,11 +210,11 @@ class WebApplication extends \lang\Object {
     return (
       $cmp instanceof self && 
       $this->name === $cmp->name && 
-      $this->config === $cmp->config && 
       $this->scriptlet === $cmp->scriptlet && 
       $this->debug === $cmp->debug && 
       $this->arguments === $cmp->arguments &&
-      $this->environment === $cmp->environment
+      $this->environment === $cmp->environment &&
+      0 === $this->config->compareTo($cmp->config)
     );
   }
 }

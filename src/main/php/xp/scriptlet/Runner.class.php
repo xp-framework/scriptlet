@@ -154,13 +154,8 @@ class Runner extends \lang\Object {
     // Initializer logger, properties and connections to property base, 
     // defaulting to the same directory the web.ini resides in
     $pm= PropertyManager::getInstance();
-    foreach ($application->config() as $element) {
-      $expanded= $this->expand($element);
-      if (0 == strncmp('res://', $expanded, 6)) {
-        $pm->appendSource(new ResourcePropertySource(substr($expanded, 6)));
-      } else {
-        $pm->appendSource(new FilesystemPropertySource($expanded));
-      }
+    foreach ($application->config()->sources() as $source) {
+      $pm->appendSource($source);
     }
     
     $l= Logger::getInstance();

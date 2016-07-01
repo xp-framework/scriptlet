@@ -176,13 +176,8 @@ class WebRunner {
           array_map($expand, array_merge($application->environment(), ['DOCUMENT_ROOT' => $docroot])),
           $application->filters()
         ));
-        foreach ($application->config() as $element) {
-          $expanded= $expand($element);
-          if (0 == strncmp('res://', $expanded, 6)) {
-            $pm->appendSource(new ResourcePropertySource(substr($expanded, 6)));
-          } else {
-            $pm->appendSource(new FilesystemPropertySource($expanded));
-          }
+        foreach ($application->config()->sources() as $source) {
+          $pm->appendSource($source);
         }
       }
 
