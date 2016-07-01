@@ -105,6 +105,7 @@ class WebRunner {
     $mode= 'serve';
     $arguments= [];
 
+    $config= new Config();
     $cl= ClassLoader::getDefault();
     for ($i= 0; $i < sizeof($args); $i++) {
        if ('-r' === $args[$i]) {
@@ -113,6 +114,8 @@ class WebRunner {
         $address= $args[++$i];
       } else if ('-p' === $args[$i]) {
         $profile= $args[++$i];
+      } else if ('-c' === $args[$i]) {
+        $config->append($args[++$i]);
       } else if ('-m' === $args[$i]) {
         $arguments= explode(',', $args[++$i]);
         $mode= array_shift($arguments);
@@ -125,9 +128,13 @@ class WebRunner {
       } else if ($cl->providesClass($args[$i])) {
         $class= $cl->loadClass($args[$i]);
         if ($class->isSubclassOf(HttpScriptlet::class)) {
-          $layout= new SingleScriptlet($class->getName());
+          $layout= new SingleScriptlet($class->getName(), $config);
         } else if ($class->isSubclassOf(WebLayout::class)) {
-          $layout= $class->newInstance();
+          if ($class->hasMethod('newInstance')) {
+            $layout= $class->getMethod('newInstance')->invoke(null, [$config]);
+          } else {
+            $layout= $class->newInstance();
+          }
         } else {
           throw new IllegalArgumentException('Expecting either a scriptlet or a weblayout, '.$class->getName().' given');
         }
