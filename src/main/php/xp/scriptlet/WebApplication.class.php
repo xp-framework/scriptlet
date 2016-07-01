@@ -9,7 +9,7 @@ use scriptlet\Filter;
  * @see      xp://xp.scriptlet.Runner
  */
 class WebApplication extends \lang\Object {
-  protected $name = '';
+  protected $name;
   protected $config;
   protected $scriptlet = '';
   protected $arguments = [];
@@ -20,7 +20,7 @@ class WebApplication extends \lang\Object {
   /**
    * Creates a new web application named by the given name
    *
-   * @param   string name
+   * @param   string $name
    */
   public function __construct($name) {
     $this->name= $name;
@@ -29,7 +29,7 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's name
    *
-   * @param   string name
+   * @param   string $name
    * @return  self this
    */
   public function withName($name) {
@@ -49,7 +49,7 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's config
    *
-   * @param   xp.scriptlet.Config|string[]|string config
+   * @param   xp.scriptlet.Config|string|string[] $config
    * @return  self this
    */
   public function withConfig($config) {
@@ -75,7 +75,7 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's debug flags
    *
-   * @param   int debug
+   * @param   int $debug
    * @return  self this
    */
   public function withDebug($debug) {
@@ -95,7 +95,7 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's scriptlet class name
    *
-   * @param   string scriptlet
+   * @param   string $scriptlet
    * @return  self this
    */
   public function withScriptlet($scriptlet) {
@@ -115,7 +115,7 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's arguments
    *
-   * @param   string[] arguments
+   * @param   string[] $arguments
    * @return  self this
    */
   public function withArguments($arguments) {
@@ -135,7 +135,7 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's filter class name
    *
-   * @param   scriptlet.Filter|string filter Either a filter instance or a filter class name
+   * @param   scriptlet.Filter|string $filter Either a filter instance or a filter class name
    * @return  xp.filter.WebApplication this
    */
   public function withFilter($filter) {
@@ -159,7 +159,7 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's environment
    *
-   * @param   [:string] environment
+   * @param   [:string] $environment
    * @return  self this
    */
   public function withEnvironment($environment) {
@@ -203,7 +203,7 @@ class WebApplication extends \lang\Object {
   /**
    * Returns whether another object is equal to this
    *
-   * @param   lang.Generic cmp
+   * @param   lang.Generic $cmp
    * @return  bool
    */
   public function equals($cmp) {
