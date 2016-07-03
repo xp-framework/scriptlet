@@ -72,10 +72,10 @@ class Runner extends \lang\Object {
   /**
    * Entry point method. Receives the following arguments from web.php:
    * 
-   * 1. The web root - a directory
-   * 2. The application source - either a directory or ":" + f.q.c.Name
-   * 3. The server profile - any name, really, defaulting to "dev"
-   * 4. The script URL - the resolved path, including leading "/"
+   * 0. The web root - a directory
+   * 1. The application source - either a directory or ":" + f.q.c.Name
+   * 2. The server profile - any name, really, defaulting to "dev"
+   * 3. The script URL - the resolved path, including leading "/"
    *
    * @param  string[] $args
    * @return void

@@ -38,14 +38,14 @@ class Source extends \lang\Object {
         throw new IllegalArgumentException('Cannot load '.$name, $e);
       }
 
-      if ($class->isSubclassOf('scriptlet.HttpScriptlet')) {
-        $this->layout= new SingleScriptlet($class->getName(), $config);
-      } else if ($class->isSubclassOf('xp.scriptlet.WebLayout')) {
+      if ($class->isSubclassOf('xp.scriptlet.WebLayout')) {
         if ($class->hasMethod('newInstance')) {
           $this->layout= $class->getMethod('newInstance')->invoke(null, [$config]);
         } else {
           $this->layout= $class->newInstance();
         }
+      } else if ($class->isSubclassOf('scriptlet.HttpScriptlet')) {
+        $this->layout= new SingleScriptlet($class->getName(), $config);
       } else {
         throw new IllegalArgumentException('Expecting either a scriptlet or a weblayout, '.$class->getName().' given');
       }
