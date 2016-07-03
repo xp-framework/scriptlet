@@ -18,7 +18,7 @@ class Server {
    * @return  int
    */
   public static function main(array $args) {
-    $args= [
+    $pass= [
       '-r', isset($args[0]) ? realpath($args[0]) : getcwd(),
       '-p', isset($args[2]) ? $args[2] : 'dev',
       '-a', isset($args[3]) ? $args[3] : 'localhost:8080',
@@ -29,13 +29,13 @@ class Server {
       $sources= explode(PATH_SEPARATOR, ltrim($args[1], ':'));
       $source= array_shift($sources);
       foreach ($sources as $dir) {
-        $args[]= '-c';
-        $args[]= $dir;
+        $pass[]= '-c';
+        $pass[]= $dir;
       }
-      $args[]= $source;
+      $pass[]= $source;
     }
 
-    WebRunner::main($args);
+    WebRunner::main($pass);
     return 0;
   }
 }
