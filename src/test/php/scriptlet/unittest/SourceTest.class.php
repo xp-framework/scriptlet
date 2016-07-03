@@ -15,12 +15,12 @@ class SourceTest extends \unittest\TestCase {
 
   #[@beforeClass]
   public static function defineScriptlet() {
-    self::$scriptlet= ClassLoader::defineClass(SourceTest_Scriptlet::class, HttpScriptlet::class, []);
+    self::$scriptlet= ClassLoader::defineClass(self::class.'_Scriptlet', HttpScriptlet::class, []);
   }
 
   #[@beforeClass]
   public static function defineLayout() {
-    self::$layout= ClassLoader::defineClass(SourceTest_Layout::class, Object::class, ['xp.scriptlet.WebLayout'], '{
+    self::$layout= ClassLoader::defineClass(self::class.'_Layout', Object::class, ['xp.scriptlet.WebLayout'], '{
       public function mappedApplications($profile= null) { /* Intentionally empty */ }
       public function staticResources($profile= null) { /* Intentionally empty */ }
     }');
