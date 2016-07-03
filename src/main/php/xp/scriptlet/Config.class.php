@@ -7,6 +7,7 @@ use util\CompositeProperties;
 use util\Objects;
 use lang\ElementNotFoundException;
 use lang\FunctionType;
+use lang\Primitive;
 new import('lang.ResourceProvider');
 
 /**
@@ -22,7 +23,7 @@ class Config implements \lang\Value {
   private $sources= [];
 
   static function __static() {
-    self::$expansion= new FunctionType(['string'], 'string');
+    self::$expansion= new FunctionType([Primitive::$STRING], Primitive::$STRING);
   }
 
   /**
