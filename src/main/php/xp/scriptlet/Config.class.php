@@ -6,11 +6,14 @@ use util\ResourcePropertySource;
 use util\CompositeProperties;
 use util\Objects;
 use lang\ElementNotFoundException;
+new import('lang.ResourceProvider');
 
 /**
  * The command line for any command allows specifiy explicit ("-c [source]")
  * config sources; implicitely searching either `./etc` or `.` for property
  * files. The `properties()` method then searches these locations.
+ *
+ * @test  xp://scriptlet.unittest.ConfigTest
  */
 class Config implements \lang\Value {
   private $sources= [];
@@ -35,10 +38,10 @@ class Config implements \lang\Value {
   public function append($source) {
     if ($source instanceof PropertySource) {
       $this->sources[]= $source;
-    } else if (is_dir($source)) {
-      $this->sources[]= new FilesystemPropertySource($source);
     } else if (0 === strncmp('res://', $source, 6)) {
       $this->sources[]= new ResourcePropertySource(substr($source, 6));
+    } else if (is_dir($source)) {
+      $this->sources[]= new FilesystemPropertySource($source);
     } else {
       $this->sources[]= new ResourcePropertySource($source);
     }
