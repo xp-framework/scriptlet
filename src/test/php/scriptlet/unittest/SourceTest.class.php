@@ -2,20 +2,25 @@
 
 use lang\IllegalArgumentException;
 use xp\scriptlet\Source;
+use xp\scriptlet\ServeDocumentRootStatically;
+use xp\scriptlet\WebConfiguration;
+use xp\scriptlet\SingleScriptlet;
+use scriptlet\HttpScriptlet;
 use lang\ClassLoader;
 use lang\System;
+use lang\Object;
 
 class SourceTest extends \unittest\TestCase {
   private static $scriptlet, $layout, $dir, $file;
 
   #[@beforeClass]
   public static function defineScriptlet() {
-    self::$scriptlet= ClassLoader::defineClass('scriptlet.unittest.SourceTest_Scriptlet', 'scriptlet.HttpScriptlet', []);
+    self::$scriptlet= ClassLoader::defineClass(SourceTest_Scriptlet::class, HttpScriptlet::class, []);
   }
 
   #[@beforeClass]
   public static function defineLayout() {
-    self::$layout= ClassLoader::defineClass('scriptlet.unittest.SourceTest_Layout', 'lang.Object', ['xp.scriptlet.WebLayout'], '{
+    self::$layout= ClassLoader::defineClass(SourceTest_Layout::class, Object::class, ['xp.scriptlet.WebLayout'], '{
       public function mappedApplications($profile= null) { /* Intentionally empty */ }
       public function staticResources($profile= null) { /* Intentionally empty */ }
     }');
@@ -43,22 +48,22 @@ class SourceTest extends \unittest\TestCase {
 
   #[@test]
   public function from_dash() {
-    $this->assertInstanceOf('xp.scriptlet.ServeDocumentRootStatically', (new Source('-'))->layout());
+    $this->assertInstanceOf(ServeDocumentRootStatically::class, (new Source('-'))->layout());
   }
 
   #[@test]
   public function from_directory() {
-    $this->assertInstanceOf('xp.scriptlet.WebConfiguration', (new Source(self::$dir))->layout());
+    $this->assertInstanceOf(WebConfiguration::class, (new Source(self::$dir))->layout());
   }
 
   #[@test]
   public function from_file() {
-    $this->assertInstanceOf('xp.scriptlet.WebConfiguration', (new Source(self::$file))->layout());
+    $this->assertInstanceOf(WebConfiguration::class, (new Source(self::$file))->layout());
   }
 
   #[@test]
   public function from_fully_qualified_scriptlet_name() {
-    $this->assertInstanceOf('xp.scriptlet.SingleScriptlet', (new Source(self::$scriptlet->getName()))->layout());
+    $this->assertInstanceOf(SingleScriptlet::class, (new Source(self::$scriptlet->getName()))->layout());
   }
 
   #[@test]
@@ -68,7 +73,7 @@ class SourceTest extends \unittest\TestCase {
 
   #[@test]
   public function from_fully_qualified_scriptlet_name_bc_with_colon_prefix() {
-    $this->assertInstanceOf('xp.scriptlet.SingleScriptlet', (new Source(':'.self::$scriptlet->getName()))->layout());
+    $this->assertInstanceOf(SingleScriptlet::class, (new Source(':'.self::$scriptlet->getName()))->layout());
   }
 
   #[@test]
