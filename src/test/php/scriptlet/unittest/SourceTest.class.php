@@ -5,6 +5,7 @@ use xp\scriptlet\Source;
 use xp\scriptlet\ServeDocumentRootStatically;
 use xp\scriptlet\WebConfiguration;
 use xp\scriptlet\SingleScriptlet;
+use xp\scriptlet\WebLayout;
 use scriptlet\HttpScriptlet;
 use lang\ClassLoader;
 use lang\System;
@@ -20,7 +21,7 @@ class SourceTest extends \unittest\TestCase {
 
   #[@beforeClass]
   public static function defineLayout() {
-    self::$layout= ClassLoader::defineClass(self::class.'_Layout', Object::class, ['xp.scriptlet.WebLayout'], '{
+    self::$layout= ClassLoader::defineClass(self::class.'_Layout', Object::class, [WebLayout::class], '{
       public function mappedApplications($profile= null) { /* Intentionally empty */ }
       public function staticResources($profile= null) { /* Intentionally empty */ }
     }');
