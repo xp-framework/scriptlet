@@ -9,10 +9,6 @@ use util\PropertyManager;
 use util\log\Logger;
 use util\log\context\EnvironmentAware;
 use rdbms\ConnectionManager;
-use peer\server\Server as DefaultServer;
-use peer\server\PreforkingServer;
-use peer\server\ForkingServer;
-use peer\server\EventServer;
 use scriptlet\HttpScriptlet;
 new import('lang.ResourceProvider');
 
@@ -56,10 +52,10 @@ new import('lang.ResourceProvider');
  */
 class WebRunner {
   private static $modes= [
-    'serve'   => DefaultServer::class,
-    'prefork' => PreforkingServer::class,
-    'fork'    => ForkingServer::class,
-    'event'   => EventServer::class
+    'serve'   => 'peer.server.Server',
+    'prefork' => 'peer.server.PreforkingServer',
+    'fork'    => 'peer.server.ForkingServer',
+    'event'   => 'peer.server.EventServer'
   ];
 
   /**
@@ -81,7 +77,7 @@ class WebRunner {
     }
 
     sscanf($address, '%[^:]:%d', $host, $port);
-    return (new XPClass($class))->getConstructor()->newInstance(array_merge(
+    return XPClass::forName($class)->getConstructor()->newInstance(array_merge(
       [$host, $port],
       $arguments
     ));
