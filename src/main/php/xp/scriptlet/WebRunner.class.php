@@ -6,9 +6,6 @@ use lang\ClassLoader;
 use lang\IllegalArgumentException;
 use util\cmd\Console;
 use util\PropertyManager;
-use util\Properties;
-use util\ResourcePropertySource;
-use util\FilesystemPropertySource;
 use util\log\Logger;
 use util\log\context\EnvironmentAware;
 use rdbms\ConnectionManager;
@@ -98,7 +95,6 @@ class WebRunner {
    */
   public static function main(array $args) {
     $webroot= new Path(getcwd());
-
     $docroot= new Path($webroot, 'static');
     $address= 'localhost:8080';
     $profile= 'dev';
