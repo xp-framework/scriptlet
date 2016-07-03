@@ -47,7 +47,7 @@ class Config implements \lang\Value {
     }
   }
 
-  /** @retun bool */
+  /** @return bool */
   public function isEmpty() { return empty($this->sources); }
 
   /** @return util.PropertySource[] */
