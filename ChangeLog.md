@@ -3,6 +3,11 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.0.2 / 2016-07-03
+
+* Fixed issue #9: Undefined offset error in AbstractState
+  (@thekid)
+
 ## 8.0.1 / 2016-05-25
 
 * Deprecated `Request::getInputStream()` in favor of new `in()` method.
