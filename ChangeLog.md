@@ -3,6 +3,10 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.1.0 / 2016-07-04
+
+* Merged PR #11: Web config - @thekid
+
 ## 8.0.2 / 2016-07-03
 
 * Fixed issue #9: Undefined offset error in AbstractState
