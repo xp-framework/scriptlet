@@ -93,10 +93,8 @@ class RunnerTest extends TestCase {
     self::$layout= \lang\ClassLoader::defineClass('Layout', 'lang.Object', ['xp.scriptlet.WebLayout'], '{
       private $config;
 
-      public static function newInstance($config) {
-        $self= new self();
-        $self->config= $config;
-        return $self;
+      public function __construct($config) {
+        $this->config= $config;
       }
 
       public function mappedApplications($profile= null) {

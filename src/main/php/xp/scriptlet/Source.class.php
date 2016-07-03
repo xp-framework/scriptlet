@@ -39,8 +39,8 @@ class Source extends \lang\Object {
       }
 
       if ($class->isSubclassOf('xp.scriptlet.WebLayout')) {
-        if ($class->hasMethod('newInstance')) {
-          $this->layout= $class->getMethod('newInstance')->invoke(null, [$config]);
+        if ($class->hasConstructor()) {
+          $this->layout= $class->getConstructor()->newInstance([$config]);
         } else {
           $this->layout= $class->newInstance();
         }
