@@ -2,6 +2,8 @@
 
 use io\Path;
 use util\Properties;
+use util\RegisteredPropertySource;
+use util\FileSystemPropertySource;
 use lang\XPClass;
 use lang\IllegalArgumentException;
 use lang\ClassLoadingException;
@@ -25,9 +27,9 @@ class Source extends \lang\Object {
     if ('-' === $source) {
       $this->layout= new ServeDocumentRootStatically();
     } else if (is_file($source)) {
-      $this->layout= new WebConfiguration(new Properties($source));
+      $this->layout= new WebConfiguration(new Properties($source), $config);
     } else if (is_dir($source)) {
-      $this->layout= new WebConfiguration(new Properties(new Path($source, WebConfiguration::INI)));
+      $this->layout= new WebConfiguration(new Properties(new Path($source, WebConfiguration::INI)), $config);
     } else {
       $name= ltrim($source, ':');
       try {

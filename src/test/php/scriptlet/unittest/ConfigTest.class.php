@@ -56,6 +56,14 @@ class ConfigTest extends \unittest\TestCase {
     $this->assertEquals([new ResourcePropertySource('live')], $config->sources());
   }
 
+  #[@test]
+  public function append_source() {
+    $config= new Config();
+    $source= new FilesystemPropertySource('.');
+    $config->append($source);
+    $this->assertEquals([$source], $config->sources());
+  }
+
   #[@test, @expect(ElementNotFoundException::class)]
   public function properties_raises_exception_when_nothing_found() {
     (new Config())->properties('test');
@@ -66,5 +74,12 @@ class ConfigTest extends \unittest\TestCase {
     $config= new Config();
     $config->append('user');
     $this->assertEquals('value', $config->properties('debug')->readString('section', 'key'));
+  }
+
+  #[@test]
+  public function expand() {
+    $config= new Config([], function($in) { return 'res://'.strtolower(substr($in, 1, -1)); });
+    $config->append('{USER}');
+    $this->assertEquals([new ResourcePropertySource('user')], $config->sources());
   }
 }

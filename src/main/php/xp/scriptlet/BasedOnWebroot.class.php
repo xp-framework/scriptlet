@@ -12,16 +12,18 @@ use io\Path;
  * @see   xp://xp.scriptlet.WebApplication
  */
 class BasedOnWebroot extends \lang\Object implements WebLayout {
-  private $webroot;
+  private $webroot, $config;
   private $layout= null;
 
   /**
    * Creates a new instance
    *
    * @param  io.Path $webroot
+   * @param  xp.scriptlet.Config $config
    */
-  public function __construct(Path $webroot) {
+  public function __construct(Path $webroot, Config $config= null) {
     $this->webroot= $webroot;
+    $this->config= $config;
   }
 
   /**
@@ -33,7 +35,7 @@ class BasedOnWebroot extends \lang\Object implements WebLayout {
     if (null === $this->layout) {
       $ini= new Path($this->webroot, 'etc', WebConfiguration::INI);
       if ($ini->exists()) {
-        $this->layout= new WebConfiguration(new Properties($ini->toString()));
+        $this->layout= new WebConfiguration(new Properties($ini->toString()), $this->config);
       } else {
         $this->layout= new ServeDocumentRootStatically();
       }

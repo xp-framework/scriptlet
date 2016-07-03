@@ -6,6 +6,7 @@ use util\ResourcePropertySource;
 use util\CompositeProperties;
 use util\Objects;
 use lang\ElementNotFoundException;
+use lang\FunctionType;
 new import('lang.ResourceProvider');
 
 /**
@@ -16,14 +17,22 @@ new import('lang.ResourceProvider');
  * @test  xp://scriptlet.unittest.ConfigTest
  */
 class Config implements \lang\Value {
+  private static $expansion;
+  private $expand;
   private $sources= [];
+
+  static function __static() {
+    self::$expansion= new FunctionType(['string'], 'string');
+  }
 
   /**
    * Creates a new config instance from given sources
    *
    * @param  string[]|util.PropertySource[] $sources
+   * @param  function(string): string $expand
    */
-  public function __construct($sources= []) {
+  public function __construct($sources= [], $expand= null) {
+    $this->expand= self::$expansion->cast($expand);
     foreach ($sources as $source) {
       $this->append($source);
     }
@@ -38,12 +47,15 @@ class Config implements \lang\Value {
   public function append($source) {
     if ($source instanceof PropertySource) {
       $this->sources[]= $source;
-    } else if (0 === strncmp('res://', $source, 6)) {
-      $this->sources[]= new ResourcePropertySource(substr($source, 6));
-    } else if (is_dir($source)) {
-      $this->sources[]= new FilesystemPropertySource($source);
     } else {
-      $this->sources[]= new ResourcePropertySource($source);
+      $resolved= $this->expand ? $this->expand->__invoke($source) : $source;
+      if (0 === strncmp('res://', $resolved, 6)) {
+        $this->sources[]= new ResourcePropertySource(substr($resolved, 6));
+      } else if (is_dir($resolved)) {
+        $this->sources[]= new FilesystemPropertySource($resolved);
+      } else {
+        $this->sources[]= new ResourcePropertySource($resolved);
+      }
     }
   }
 

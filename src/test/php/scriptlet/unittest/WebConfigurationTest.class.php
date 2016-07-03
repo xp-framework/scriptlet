@@ -1,14 +1,25 @@
 <?php namespace scriptlet\unittest;
 
-use unittest\TestCase;
+use util\RegisteredPropertySource;
 use xp\scriptlet\WebConfiguration;
+use xp\scriptlet\Config;
 
 /**
  * TestCase
  *
  * @see   xp://xp.scriptlet.WebConfiguration
  */
-class WebConfigurationTest extends TestCase {
+class WebConfigurationTest extends \unittest\TestCase {
+
+  /**
+   * Creates a web configuration instance
+   *
+   * @param  util.Properties $properties
+   * @return xp.scriptlet.WebConfiguration
+   */
+  private function newConfiguration($properties) {
+    return new WebConfiguration($properties, new Config([]));
+  }
 
   #[@test]
   public function configure_with_all_possible_settings() {
@@ -33,7 +44,7 @@ class WebConfigurationTest extends TestCase {
           ->withDebug(\xp\scriptlet\WebDebug::STACKTRACE | \xp\scriptlet\WebDebug::ERRORS)
           ->withArguments(['a', 'b'])
         ],
-        (new WebConfiguration($p))->mappedApplications('dev')
+        $this->newConfiguration($p)->mappedApplications('dev')
       );
     }
   }
@@ -46,7 +57,7 @@ class WebConfigurationTest extends TestCase {
       $p->writeSection('app::service');
       $p->writeString('app::service', 'debug', 'UNKNOWN');
 
-      (new WebConfiguration($p))->mappedApplications();
+      $this->newConfiguration($p)->mappedApplications();
     }
   }
 
@@ -55,7 +66,7 @@ class WebConfigurationTest extends TestCase {
     with ($p= \util\Properties::fromString('')); {
       $p->writeSection('app');
 
-      (new WebConfiguration($p))->mappedApplications();
+      $this->newConfiguration($p)->mappedApplications();
     }
   }
 
@@ -65,7 +76,7 @@ class WebConfigurationTest extends TestCase {
       $p->writeSection('app');
       $p->writeString('app', 'not.a.mapping', 1);
 
-      (new WebConfiguration($p))->mappedApplications();
+      $this->newConfiguration($p)->mappedApplications();
     }
   }
 
@@ -83,7 +94,7 @@ class WebConfigurationTest extends TestCase {
           '/service' => (new \xp\scriptlet\WebApplication('service'))->withConfig('{WEBROOT}/etc'), 
           '/'        => (new \xp\scriptlet\WebApplication('global'))->withConfig('{WEBROOT}/etc')
         ],
-        (new WebConfiguration($p))->mappedApplications()
+        $this->newConfiguration($p)->mappedApplications()
       );
     }
   }
@@ -94,7 +105,7 @@ class WebConfigurationTest extends TestCase {
       $p->writeSection('app');
       $p->writeString('app', 'mappings', '/service:service');
 
-      (new WebConfiguration($p))->mappedApplications();
+      $this->newConfiguration($p)->mappedApplications();
     }
   }
 
@@ -113,7 +124,7 @@ class WebConfigurationTest extends TestCase {
           '/service' => (new \xp\scriptlet\WebApplication('service'))->withConfig('{WEBROOT}/etc'), 
           '/'        => (new \xp\scriptlet\WebApplication('global'))->withConfig('{WEBROOT}/etc')
         ],
-        (new WebConfiguration($p))->mappedApplications()
+        $this->newConfiguration($p)->mappedApplications()
       );
     }
   }
@@ -124,7 +135,7 @@ class WebConfigurationTest extends TestCase {
       $p->writeSection('app');
       $p->writeString('app', 'map.service', '/service');
 
-      (new WebConfiguration($p))->mappedApplications();
+      $this->newConfiguration($p)->mappedApplications();
     }
   }
 }

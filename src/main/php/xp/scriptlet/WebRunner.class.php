@@ -98,18 +98,27 @@ class WebRunner {
    */
   public static function main(array $args) {
     $webroot= new Path(getcwd());
-    $layout= new BasedOnWebroot($webroot);
 
-    $docroot= 'static';
+    $docroot= new Path($webroot, 'static');
     $address= 'localhost:8080';
     $profile= 'dev';
     $mode= 'serve';
     $arguments= [];
 
-    $config= new Config();
+    $expand= function($in) use(&$webroot, &$docroot, &$profile) {
+      return is_string($in) ? strtr($in, [
+        '{WEBROOT}'       => $webroot,
+        '{PROFILE}'       => $profile,
+        '{DOCUMENT_ROOT}' => $docroot
+      ]) : $in;
+    };
+
+    $config= new Config([], $expand);
+    $layout= new BasedOnWebroot($webroot, $config);
+
     for ($i= 0; $i < sizeof($args); $i++) {
        if ('-r' === $args[$i]) {
-        $docroot= $args[++$i];
+        $docroot= $webroot->resolve($args[++$i]);
       } else if ('-a' === $args[$i]) {
         $address= $args[++$i];
       } else if ('-p' === $args[$i]) {
@@ -130,16 +139,8 @@ class WebRunner {
     $server= self::server($mode, $address, $arguments);
     Console::writeLine('--> ', $server);
 
-    $docroot= $webroot->resolve($docroot);
     with ($protocol= $server->setProtocol(new HttpProtocol())); {
       $pm= PropertyManager::getInstance();
-      $expand= function($in) use($webroot, $profile, $docroot) {
-        return is_string($in) ? strtr($in, [
-          '{WEBROOT}'       => $webroot,
-          '{PROFILE}'       => $profile,
-          '{DOCUMENT_ROOT}' => $docroot
-        ]) : $in;
-      };
 
       $resources= $layout->staticResources($profile);
       if (null === $resources) {

@@ -1,8 +1,8 @@
 <?php namespace xp\scriptlet;
 
+use util\Properties;
 use util\PropertyManager;
-use util\FilesystemPropertySource;
-use util\ResourcePropertySource;
+use util\RegisteredPropertySource;
 use util\log\Logger;
 use util\log\context\EnvironmentAware;
 use rdbms\ConnectionManager;
@@ -40,8 +40,8 @@ class Runner extends \lang\Object {
   /**
    * Creates a new scriptlet runner
    *
-   * @param   string webroot
-   * @param   string profile
+   * @param  string $webroot
+   * @param  string $profile
    */
   public function __construct($webroot, $profile= null) {
     $this->webroot= $webroot;
@@ -51,18 +51,18 @@ class Runner extends \lang\Object {
   /**
    * Configure this runner with a web.ini
    *
-   * @param   util.Properties $conf
-   * @throws  lang.IllegalStateException if the web is misconfigured
+   * @param  util.Properties $conf
+   * @throws lang.IllegalStateException if the web is misconfigured
    */
-  public function configure(\util\Properties $conf) {
-    $this->layout(new WebConfiguration($conf));
+  public function configure(Properties $conf) {
+    $this->layout(new WebConfiguration($conf, new Config([], [$this, 'expand'])));
   }
 
   /**
    * Sets layout to use
    *
-   * @param   xp.scriptlet.WebLayout $layout
-   * @return  self This
+   * @param  xp.scriptlet.WebLayout $layout
+   * @return self this
    */
   public function layout(WebLayout $layout) {
     $this->mappings= $layout->mappedApplications($this->profile);
@@ -77,18 +77,20 @@ class Runner extends \lang\Object {
    * 3. The server profile - any name, really, defaulting to "dev"
    * 4. The script URL - the resolved path, including leading "/"
    *
-   * @param   string[] args
+   * @param  string[] $args
+   * @return void
    */
   public static function main(array $args) {
-    (new self($args[0], $args[2]))->layout((new Source($args[1]))->layout())->run($args[3]);
+    $self= new self($args[0], $args[2]);
+    $self->layout((new Source($args[1], new Config([], [$self, 'expand'])))->layout())->run($args[3]);
   }
   
   /**
    * Find which application the given url maps to
    *
-   * @param   string url
-   * @return  xp.scriptlet.WebApplication
-   * @throws  lang.IllegalArgumentException if no app can be found
+   * @param  string $url
+   * @return xp.scriptlet.WebApplication
+   * @throws lang.IllegalArgumentException if no app can be found
    */
   public function applicationAt($url) {
     $url= '/'.ltrim($url, '/');
@@ -103,7 +105,7 @@ class Runner extends \lang\Object {
   /**
    * Return mappings
    *
-   * @return  [string:xp.scriptlet.WebApplication]
+   * @return [string:xp.scriptlet.WebApplication]
    */
   public function mappedApplications() {
     return $this->mappings;
@@ -112,9 +114,9 @@ class Runner extends \lang\Object {
   /**
    * Adds an application
    *
-   * @param   string url
-   * @param   xp.scriptlet.WebApplication application
-   * @return  xp.scriptlet.WebApplication the added application
+   * @param  string $url
+   * @param  xp.scriptlet.WebApplication $application
+   * @return xp.scriptlet.WebApplication the added application
    */
   public function mapApplication($url, WebApplication $application) {
     $this->mappings[$url]= $application;
@@ -128,8 +130,8 @@ class Runner extends \lang\Object {
    *   <li>PROFILE</li>
    * </ul>
    *
-   * @param   string value
-   * @return  string
+   * @param  string $value
+   * @return string
    */
   public function expand($value) {
     return is_string($value) ? strtr($value, [
@@ -141,7 +143,7 @@ class Runner extends \lang\Object {
   /**
    * Creates the scriptlet instance for the given URL and runs it
    *
-   * @param   string url default '/'
+   * @param  string $url default '/'
    */
   public function run($url= '/') {
   
