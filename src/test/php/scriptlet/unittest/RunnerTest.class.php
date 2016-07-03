@@ -581,6 +581,14 @@ class RunnerTest extends TestCase {
   }
 
   #[@test]
+  public function main_with_layout_class_bc_colon_prefix() {
+    $this->assertEquals(
+      '<h1>Welcome, we are open & xp.scriptlet.Config[]</h1>',
+      $this->run('.', ':'.self::$layout->getName(), 'dev', '/')
+    );
+  }
+
+  #[@test]
   public function properties() {
     $r= new Runner('/var/www', 'dev');
     $r->mapApplication('/debug', (new \xp\scriptlet\WebApplication('debug'))

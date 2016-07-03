@@ -82,7 +82,7 @@ class Runner extends \lang\Object {
    */
   public static function main(array $args) {
     $self= new self($args[0], $args[2]);
-    $config= explode(PATH_SEPARATOR, $args[1]);
+    $config= explode(PATH_SEPARATOR, ltrim($args[1], PATH_SEPARATOR));
     $source= array_shift($config);
     $self->layout((new Source($source, new Config($config, [$self, 'expand'])))->layout())->run($args[3]);
   }
