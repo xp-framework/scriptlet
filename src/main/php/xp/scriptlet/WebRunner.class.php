@@ -9,7 +9,7 @@ use util\PropertyManager;
 use util\log\Logger;
 use util\log\context\EnvironmentAware;
 use rdbms\ConnectionManager;
-use peer\server\Server;
+use peer\server\Server as DefaultServer;
 use peer\server\PreforkingServer;
 use peer\server\ForkingServer;
 use peer\server\EventServer;
@@ -56,7 +56,7 @@ new import('lang.ResourceProvider');
  */
 class WebRunner {
   private static $modes= [
-    'serve'   => Server::class,
+    'serve'   => DefaultServer::class,
     'prefork' => PreforkingServer::class,
     'fork'    => ForkingServer::class,
     'event'   => EventServer::class
