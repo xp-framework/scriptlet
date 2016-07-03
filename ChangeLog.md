@@ -3,6 +3,10 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.1.1 / 2016-07-04
+
+* Restored PHP 5.4 runtime compatibility - @thekid
+
 ## 8.1.0 / 2016-07-04
 
 * Merged PR #11: Web config - @thekid
