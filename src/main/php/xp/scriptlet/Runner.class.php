@@ -92,7 +92,7 @@ class Runner extends \lang\Object {
       if (0 === strlen($dir)) {
         // Skip
       } else if ('~' === $dir{0}) {
-        $config->append($args[0].substr($dir, 1));
+        $config->append($self->webroot.substr($dir, 1));
       } else {
         $config->append($dir);
       }
