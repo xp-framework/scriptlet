@@ -73,7 +73,7 @@ class Runner extends \lang\Object {
    * Entry point method. Receives the following arguments from web.php:
    * 
    * 0. The web root - a directory
-   * 1. The application source - either a directory or ":" + f.q.c.Name
+   * 1. The application source - either a directory or a layout or scriptlet class name
    * 2. The server profile - any name, really, defaulting to "dev"
    * 3. The script URL - the resolved path, including leading "/"
    *
@@ -82,7 +82,9 @@ class Runner extends \lang\Object {
    */
   public static function main(array $args) {
     $self= new self($args[0], $args[2]);
-    $self->layout((new Source($args[1], new Config([], [$self, 'expand'])))->layout())->run($args[3]);
+    $config= explode(PATH_SEPARATOR, $args[1]);
+    $source= array_shift($config);
+    $self->layout((new Source($source, new Config($config, [$self, 'expand'])))->layout())->run($args[3]);
   }
   
   /**

@@ -109,6 +109,6 @@ class Config implements \lang\Value {
 
   /** @return string */
   public function toString() {
-    return nameof($this).Objects::stringOf($this->sources);
+    return nameof($this).($this->sources ? Objects::stringOf($this->sources) : '[]');
   }
 }

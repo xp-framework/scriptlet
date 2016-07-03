@@ -17,17 +17,10 @@ use lang\System;
  * @see   xp://xp.scriptlet.Runner
  */
 class RunnerTest extends TestCase {
-  protected static $welcomeScriptlet= null;
-  protected static $errorScriptlet= null;
-  protected static $debugScriptlet= null;
-  protected static $xmlScriptlet= null;
-  protected static $exitScriptlet= null;
-  protected static $propertySource= null;
+  private static $welcomeScriptlet, $errorScriptlet, $debugScriptlet, $xmlScriptlet, $exitScriptlet;
+  private static $propertySource;
+  private static $layout;
   
-  /**
-   * Defines scriptlet classes used as fixtures
-   *
-   */
   #[@beforeClass]
   public static function defineScriptlets() {
     self::$errorScriptlet= \lang\ClassLoader::defineClass('ErrorScriptlet', 'scriptlet.HttpScriptlet', ['util.log.Traceable'], '{
@@ -40,8 +33,12 @@ class RunnerTest extends TestCase {
       }
     }');
     self::$welcomeScriptlet= \lang\ClassLoader::defineClass('WelcomeScriptlet', 'scriptlet.HttpScriptlet', [], '{
+      private $config;
+      public function __construct($config= null) {
+        $this->config= $config;
+      }
       public function doGet($request, $response) {
-        $response->write("<h1>Welcome, we are open</h1>");
+        $response->write("<h1>Welcome, we are open".($this->config ? " & ".$this->config->toString(): "")."</h1>");
       }
     }');
     self::$xmlScriptlet= \lang\ClassLoader::defineClass('XmlScriptletImpl', 'scriptlet.xml.XMLScriptlet', [], '{
@@ -52,7 +49,7 @@ class RunnerTest extends TestCase {
           ->withOutputMethod("xml")
           ->withTemplate((new \xml\XslTemplate())->matching("/")
             ->withChild((new \xml\Node("h1"))
-              ->withChild(new \xml\Node("xsl:value-of", NULL, array("select" => "/formresult/result")))
+              ->withChild(new \xml\Node("xsl:value-of", NULL, ["select" => "/formresult/result"]))
             )
           )
         ;
@@ -91,11 +88,30 @@ class RunnerTest extends TestCase {
     }');
   }
 
-  /**
-   * Sets up property source
-   *
-   * @return void
-   */
+  #[@beforeClass]
+  public static function createLayout() {
+    self::$layout= \lang\ClassLoader::defineClass('Layout', 'lang.Object', ['xp.scriptlet.WebLayout'], '{
+      private $config;
+
+      public static function newInstance($config) {
+        $self= new self();
+        $self->config= $config;
+        return $self;
+      }
+
+      public function mappedApplications($profile= null) {
+        return ["/" => (new \xp\scriptlet\WebApplication("test"))
+          ->withScriptlet("WelcomeScriptlet")
+          ->withArguments([$this->config])
+        ];
+      }
+
+      public function staticResources($profile= null) {
+        return null;
+      }
+    }');
+  }
+
   #[@beforeClass]
   public static function setupPropertySource() {
     self::$propertySource= \util\PropertyManager::getInstance()->appendSource(newinstance('util.PropertySource', [], '{
@@ -545,6 +561,22 @@ class RunnerTest extends TestCase {
     $this->assertEquals(
       '<h1>Welcome, we are open</h1>',
       $this->run('.', self::$welcomeScriptlet->getName(), 'dev', '/')
+    );
+  }
+
+  #[@test]
+  public function main_with_layout_class() {
+    $this->assertEquals(
+      '<h1>Welcome, we are open & xp.scriptlet.Config[]</h1>',
+      $this->run('.', self::$layout->getName(), 'dev', '/')
+    );
+  }
+
+  #[@test]
+  public function main_with_layout_class_and_config() {
+    $this->assertEquals(
+      '<h1>Welcome, we are open & xp.scriptlet.Config[util.ResourcePropertySource<res://config>]</h1>',
+      $this->run('.', self::$layout->getName().PATH_SEPARATOR.'config', 'dev', '/')
     );
   }
 
