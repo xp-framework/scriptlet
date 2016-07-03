@@ -2,9 +2,11 @@
 
 use io\Path;
 use util\Properties;
+use util\RegisteredPropertySource;
+use util\FileSystemPropertySource;
 use lang\XPClass;
 use lang\IllegalArgumentException;
-use lang\CLassLoadingException;
+use lang\ClassLoadingException;
 
 /**
  * Represent the source argument
@@ -18,28 +20,35 @@ class Source extends \lang\Object {
    * Creates a new instance
    *
    * @param  string $source
+   * @param  xp.scriptlet.Config $config
    * @throws lang.IllegalArgumentException
    */
-  public function __construct($source) {
+  public function __construct($source, Config $config= null) {
     if ('-' === $source) {
       $this->layout= new ServeDocumentRootStatically();
-    } else if (':' === $source{0}) {
-      $name= substr($source, 1);
+    } else if (is_file($source)) {
+      $this->layout= new WebConfiguration(new Properties($source), $config);
+    } else if (is_dir($source)) {
+      $this->layout= new WebConfiguration(new Properties(new Path($source, WebConfiguration::INI)), $config);
+    } else {
+      $name= ltrim($source, ':');
       try {
         $class= XPClass::forName($name);
-      } catch (CLassLoadingException $e) {
+      } catch (ClassLoadingException $e) {
         throw new IllegalArgumentException('Cannot load '.$name, $e);
       }
 
-      if ($class->isSubclassOf('scriptlet.HttpScriptlet')) {
-        $this->layout= new SingleScriptlet($class->getName());
-      } else if ($class->isSubclassOf('xp.scriptlet.WebLayout')) {
-        $this->layout= $class->newInstance();
+      if ($class->isSubclassOf('xp.scriptlet.WebLayout')) {
+        if ($class->hasConstructor()) {
+          $this->layout= $class->getConstructor()->newInstance([$config]);
+        } else {
+          $this->layout= $class->newInstance();
+        }
+      } else if ($class->isSubclassOf('scriptlet.HttpScriptlet')) {
+        $this->layout= new SingleScriptlet($class->getName(), $config);
       } else {
-        throw new IllegalArgumentException('Expecting either a scriptlet, a weblayout or a config file');
+        throw new IllegalArgumentException('Expecting either a scriptlet or a weblayout, '.$class->getName().' given');
       }
-    } else {
-      $this->layout= new WebConfiguration(new Properties((new Path($source, 'web.ini'))->toString()));
     }
   }
 

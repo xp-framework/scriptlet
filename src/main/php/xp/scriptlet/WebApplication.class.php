@@ -1,6 +1,7 @@
 <?php namespace xp\scriptlet;
 
 use scriptlet\Filter;
+use lang\XPClass;
 
 /**
  * Represents a web application
@@ -9,9 +10,9 @@ use scriptlet\Filter;
  * @see      xp://xp.scriptlet.Runner
  */
 class WebApplication extends \lang\Object {
-  protected $name = '';
-  protected $config = [];
-  protected $scriptlet = '';
+  protected $name;
+  protected $config = null;
+  protected $scriptlet = null;
   protected $arguments = [];
   protected $filters = [];
   protected $environment = [];
@@ -20,7 +21,7 @@ class WebApplication extends \lang\Object {
   /**
    * Creates a new web application named by the given name
    *
-   * @param   string name
+   * @param   string $name
    */
   public function __construct($name) {
     $this->name= $name;
@@ -29,7 +30,7 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's name
    *
-   * @param   string name
+   * @param   string $name
    * @return  self this
    */
   public function withName($name) {
@@ -49,14 +50,16 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's config
    *
-   * @param   string[]|string config
+   * @param   xp.scriptlet.Config|string|string[] $config
    * @return  self this
    */
   public function withConfig($config) {
-    if (is_array($config)) {
+    if ($config instanceof Config) {
       $this->config= $config;
+    } else if (is_array($config)) {
+      $this->config= new Config($config);
     } else {
-      $this->config= [$config];
+      $this->config= new Config([$config]);
     }
     return $this;
   }
@@ -64,16 +67,16 @@ class WebApplication extends \lang\Object {
   /**
    * Returns this application's config
    *
-   * @return  string[]
+   * @return  xp.scriptlet.Config
    */
   public function config() {
-    return $this->config;
+    return $this->config ?: new Config();
   }
 
   /**
    * Sets this application's debug flags
    *
-   * @param   int debug
+   * @param   int $debug
    * @return  self this
    */
   public function withDebug($debug) {
@@ -93,18 +96,24 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's scriptlet class name
    *
-   * @param   string scriptlet
+   * @param   string|lang.XPClass $scriptlet
    * @return  self this
    */
   public function withScriptlet($scriptlet) {
-    $this->scriptlet= $scriptlet;
+    if (null === $scriptlet) {
+      $this->scriptlet= null;
+    } else if ($scriptlet instanceof XPClass) {
+      $this->scriptlet= $scriptlet;
+    } else {
+      $this->scriptlet= XPClass::forName($scriptlet);
+    }
     return $this;
   }
   
   /**
    * Returns this application's scriptlet class
    *
-   * @return  string
+   * @return  lang.XPClass
    */
   public function scriptlet() {
     return $this->scriptlet;
@@ -113,7 +122,7 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's arguments
    *
-   * @param   string[] arguments
+   * @param   string[] $arguments
    * @return  self this
    */
   public function withArguments($arguments) {
@@ -133,7 +142,7 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's filter class name
    *
-   * @param   scriptlet.Filter|string filter Either a filter instance or a filter class name
+   * @param   scriptlet.Filter|string $filter Either a filter instance or a filter class name
    * @return  xp.filter.WebApplication this
    */
   public function withFilter($filter) {
@@ -157,7 +166,7 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's environment
    *
-   * @param   [:string] environment
+   * @param   [:string] $environment
    * @return  self this
    */
   public function withEnvironment($environment) {
@@ -190,8 +199,8 @@ class WebApplication extends \lang\Object {
       "}",
       nameof($this),
       $this->name,
-      $this->config,
-      $this->scriptlet,
+      $this->config ? strtr($this->config->toString(), ["\n" => "\n  "]) : '(none)',
+      $this->scriptlet ? $this->scriptlet->getName() : '(none)',
       implode(' | ', WebDebug::namesOf($this->debug)),
       implode(', ', $this->arguments),
       \xp::stringOf($this->environment, '  ')
@@ -201,18 +210,18 @@ class WebApplication extends \lang\Object {
   /**
    * Returns whether another object is equal to this
    *
-   * @param   lang.Generic cmp
+   * @param   lang.Generic $cmp
    * @return  bool
    */
   public function equals($cmp) {
     return (
       $cmp instanceof self && 
       $this->name === $cmp->name && 
-      $this->config === $cmp->config && 
-      $this->scriptlet === $cmp->scriptlet && 
       $this->debug === $cmp->debug && 
       $this->arguments === $cmp->arguments &&
-      $this->environment === $cmp->environment
+      $this->environment === $cmp->environment &&
+      $this->scriptlet === null ? null === $cmp->scriptlet : $this->scriptlet->equals($cmp->scriptlet) &&
+      0 === $this->config->compareTo($cmp->config)
     );
   }
 }

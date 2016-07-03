@@ -3,6 +3,7 @@
 use peer\URL;
 use peer\Socket;
 use scriptlet\ScriptletException;
+use lang\XPClass;
 
 /**
  * Scriptlet handler
@@ -13,16 +14,15 @@ class ScriptletHandler extends AbstractUrlHandler {
   /**
    * Constructor
    *
-   * @param   string name
+   * @param   lang.XPClass $scriptlet
    * @param   string[] args
    * @param   [:string] env
    */
-  public function __construct($name, $args, $env= [], $filters= []) {
-    $class= \lang\XPClass::forName($name);
-    if ($class->hasConstructor()) {
-      $this->scriptlet= $class->getConstructor()->newInstance((array)$args);
+  public function __construct(XPClass $scriptlet, $args, $env= [], $filters= []) {
+    if ($scriptlet->hasConstructor()) {
+      $this->scriptlet= $scriptlet->getConstructor()->newInstance((array)$args);
     } else {
-      $this->scriptlet= $class->newInstance();
+      $this->scriptlet= $scriptlet->newInstance();
     }
 
     foreach ($filters as $filter) {

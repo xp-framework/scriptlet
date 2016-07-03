@@ -17,17 +17,10 @@ use lang\System;
  * @see   xp://xp.scriptlet.Runner
  */
 class RunnerTest extends TestCase {
-  protected static $welcomeScriptlet= null;
-  protected static $errorScriptlet= null;
-  protected static $debugScriptlet= null;
-  protected static $xmlScriptlet= null;
-  protected static $exitScriptlet= null;
-  protected static $propertySource= null;
+  private static $welcomeScriptlet, $errorScriptlet, $debugScriptlet, $xmlScriptlet, $exitScriptlet;
+  private static $propertySource;
+  private static $layout;
   
-  /**
-   * Defines scriptlet classes used as fixtures
-   *
-   */
   #[@beforeClass]
   public static function defineScriptlets() {
     self::$errorScriptlet= \lang\ClassLoader::defineClass('ErrorScriptlet', 'scriptlet.HttpScriptlet', ['util.log.Traceable'], '{
@@ -40,8 +33,12 @@ class RunnerTest extends TestCase {
       }
     }');
     self::$welcomeScriptlet= \lang\ClassLoader::defineClass('WelcomeScriptlet', 'scriptlet.HttpScriptlet', [], '{
+      private $config;
+      public function __construct($config= null) {
+        $this->config= $config;
+      }
       public function doGet($request, $response) {
-        $response->write("<h1>Welcome, we are open</h1>");
+        $response->write("<h1>Welcome, we are open".($this->config ? " & ".$this->config->toString(): "")."</h1>");
       }
     }');
     self::$xmlScriptlet= \lang\ClassLoader::defineClass('XmlScriptletImpl', 'scriptlet.xml.XMLScriptlet', [], '{
@@ -52,7 +49,7 @@ class RunnerTest extends TestCase {
           ->withOutputMethod("xml")
           ->withTemplate((new \xml\XslTemplate())->matching("/")
             ->withChild((new \xml\Node("h1"))
-              ->withChild(new \xml\Node("xsl:value-of", NULL, array("select" => "/formresult/result")))
+              ->withChild(new \xml\Node("xsl:value-of", NULL, ["select" => "/formresult/result"]))
             )
           )
         ;
@@ -91,11 +88,28 @@ class RunnerTest extends TestCase {
     }');
   }
 
-  /**
-   * Sets up property source
-   *
-   * @return void
-   */
+  #[@beforeClass]
+  public static function createLayout() {
+    self::$layout= \lang\ClassLoader::defineClass('Layout', 'lang.Object', ['xp.scriptlet.WebLayout'], '{
+      private $config;
+
+      public function __construct($config) {
+        $this->config= $config;
+      }
+
+      public function mappedApplications($profile= null) {
+        return ["/" => (new \xp\scriptlet\WebApplication("test"))
+          ->withScriptlet("WelcomeScriptlet")
+          ->withArguments([$this->config])
+        ];
+      }
+
+      public function staticResources($profile= null) {
+        return null;
+      }
+    }');
+  }
+
   #[@beforeClass]
   public static function setupPropertySource() {
     self::$propertySource= \util\PropertyManager::getInstance()->appendSource(newinstance('util.PropertySource', [], '{
@@ -173,140 +187,42 @@ class RunnerTest extends TestCase {
   }
 
   /**
-   * Test expand() method
+   * Invoke Runner::main() and return output
    *
+   * @param  string $arg The web root
+   * @param  string $arg The configuration directory
+   * @param  string $arg The server profile
+   * @param  string $arg The script URL
+   * @return string
    */
-  #[@test]
-  public function expandServerProfile() {
-    $this->assertEquals('etc/dev/', $this->newRunner('dev')->expand('etc/{PROFILE}/'));
+  private function run($webroot, $config, $profile, $url) {
+    ob_start();
+    Runner::main([$webroot, $config, $profile, $url]);
+    $content= ob_get_contents();
+    ob_end_clean();
+    return $content;
   }
 
   /**
-   * Test expand() method
+   * Asserts a given buffer contains the given bytes       
    *
+   * @param   string bytes
+   * @param   string buffer
+   * @throws  unittest.AssertionFailedError
    */
-  #[@test]
-  public function expandWebRoot() {
-    $this->assertEquals('/var/www/htdocs', $this->newRunner('dev')->expand('{WEBROOT}/htdocs'));
+  protected function assertContained($bytes, $buffer, $message= 'Not contained') {
+    strstr($buffer, $bytes) || $this->fail($message, $buffer, $bytes);
   }
 
   /**
-   * Test expand() method
+   * Asserts a given buffer does not contain the given bytes       
    *
+   * @param   string bytes
+   * @param   string buffer
+   * @throws  unittest.AssertionFailedError
    */
-  #[@test]
-  public function expandWebRootAndServerProfile() {
-    $this->assertEquals('/var/www/etc/prod/', $this->newRunner('prod')->expand('{WEBROOT}/etc/{PROFILE}/'));
-  }
-
-  /**
-   * Test expand() method
-   *
-   */
-  #[@test]
-  public function expandUnknownVariable() {
-    $this->assertEquals('{ROOT}', $this->newRunner('prod')->expand('{ROOT}'));
-  }
-
-  /**
-   * Test matching of URL against configuration works
-   *
-   */
-  #[@test, @expect(class= 'lang.IllegalArgumentException', withMessage= 'Could not find app responsible for request to /')]
-  public function noApplication() {
-    with ($p= \util\Properties::fromString('')); {
-      $p->writeSection('app');
-      $p->writeString('app', 'map.service', '/service');
-      $p->writeSection('app::service');
-
-      $r= new Runner('/htdocs');
-      $r->configure($p);
-      $r->applicationAt('/');
-    }
-  }
-
-  /**
-   * Test matching of URL against configuration works
-   *
-   */
-  #[@test]
-  public function welcomeApplication() {
-    $this->assertEquals(
-      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
-      $this->newRunner()->applicationAt('/')
-    );
-  }
-
-  /**
-   * Test matching of URL against configuration works
-   *
-   */
-  #[@test]
-  public function welcomeApplicationAtEmptyUrl() {
-    $this->assertEquals(
-      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
-      $this->newRunner()->applicationAt('')
-    );
-  }
-
-  /**
-   * Test matching of URL against configuration works
-   *
-   */
-  #[@test]
-  public function welcomeApplicationAtDoubleSlash() {
-    $this->assertEquals(
-      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
-      $this->newRunner()->applicationAt('//')
-    );
-  }
-
-  /**
-   * Test matching of URL against configuration works
-   *
-   */
-  #[@test]
-  public function errorApplication() {
-    $this->assertEquals(
-      (new \xp\scriptlet\WebApplication('error'))->withConfig('/var/www/etc')->withScriptlet('ErrorScriptlet'),
-      $this->newRunner()->applicationAt('/error')
-    );
-  }
-
-  /**
-   * Test matching of URL against configuration works
-   *
-   */
-  #[@test]
-  public function welcomeApplicationAtUrlEvenWithErrorInside() {
-    $this->assertEquals(
-      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
-      $this->newRunner()->applicationAt('/url/with/error/inside')
-    );
-  }
-
-  /**
-   * Test matching of URL against configuration works
-   *
-   */
-  #[@test]
-  public function welcomeApplicationAtUrlBeginningWithErrors() {
-    $this->assertEquals(
-      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
-      $this->newRunner()->applicationAt('/errors')
-    );
-  }
-
-  /**
-   * Test matching of URL against configuration works
-   *
-   */
-  #[@test]
-  public function errorApplicationAtErrorPath() {
-    $this->assertEquals(
-      (new \xp\scriptlet\WebApplication('error'))->withConfig('/var/www/etc')->withScriptlet('ErrorScriptlet'),
-      $this->newRunner()->applicationAt('/error/happened')
-    );
+  protected function assertNotContained($bytes, $buffer, $message= 'Contained') {
+    strstr($buffer, $bytes) && $this->fail($message, $buffer, $bytes);
   }
 
   /**
@@ -333,12 +249,97 @@ class RunnerTest extends TestCase {
     ob_end_clean();
     return $content;
   }
-  
-  /**
-   * Test normal page display
-   *
-   */
+
   #[@test]
+  public function expandServerProfile() {
+    $this->assertEquals('etc/dev/', $this->newRunner('dev')->expand('etc/{PROFILE}/'));
+  }
+
+  #[@test]
+  public function expandWebRoot() {
+    $this->assertEquals('/var/www/htdocs', $this->newRunner('dev')->expand('{WEBROOT}/htdocs'));
+  }
+
+  #[@test]
+  public function expandWebRootAndServerProfile() {
+    $this->assertEquals('/var/www/etc/prod/', $this->newRunner('prod')->expand('{WEBROOT}/etc/{PROFILE}/'));
+  }
+
+  #[@test]
+  public function expandUnknownVariable() {
+    $this->assertEquals('{ROOT}', $this->newRunner('prod')->expand('{ROOT}'));
+  }
+
+  #[@test, @expect(class= 'lang.IllegalArgumentException', withMessage= 'Could not find app responsible for request to /')]
+  public function noApplication() {
+    with ($p= \util\Properties::fromString('')); {
+      $p->writeSection('app');
+      $p->writeString('app', 'map.service', '/service');
+      $p->writeSection('app::service');
+
+      $r= new Runner('/htdocs');
+      $r->configure($p);
+      $r->applicationAt('/');
+    }
+  }
+
+  #[@test]
+  public function welcomeApplication() {
+    $this->assertEquals(
+      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
+      $this->newRunner()->applicationAt('/')
+    );
+  }
+
+  #[@test]
+  public function welcomeApplicationAtEmptyUrl() {
+    $this->assertEquals(
+      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
+      $this->newRunner()->applicationAt('')
+    );
+  }
+
+  #[@test]
+  public function welcomeApplicationAtDoubleSlash() {
+    $this->assertEquals(
+      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
+      $this->newRunner()->applicationAt('//')
+    );
+  }
+
+  #[@test]
+  public function errorApplication() {
+    $this->assertEquals(
+      (new \xp\scriptlet\WebApplication('error'))->withConfig('/var/www/etc')->withScriptlet('ErrorScriptlet'),
+      $this->newRunner()->applicationAt('/error')
+    );
+  }
+
+  #[@test]
+  public function welcomeApplicationAtUrlEvenWithErrorInside() {
+    $this->assertEquals(
+      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
+      $this->newRunner()->applicationAt('/url/with/error/inside')
+    );
+  }
+
+  #[@test]
+  public function welcomeApplicationAtUrlBeginningWithErrors() {
+    $this->assertEquals(
+      (new \xp\scriptlet\WebApplication('welcome'))->withConfig('/var/www/etc')->withScriptlet('WelcomeScriptlet'),
+      $this->newRunner()->applicationAt('/errors')
+    );
+  }
+
+  #[@test]
+  public function errorApplicationAtErrorPath() {
+    $this->assertEquals(
+      (new \xp\scriptlet\WebApplication('error'))->withConfig('/var/www/etc')->withScriptlet('ErrorScriptlet'),
+      $this->newRunner()->applicationAt('/error/happened')
+    );
+  }
+
+  #[@test]  
   public function pageInProdMode() {
     $this->assertEquals(
       '<h1>Welcome, we are open</h1>', 
@@ -346,10 +347,6 @@ class RunnerTest extends TestCase {
     );
   }
 
-  /**
-   * Test normal page display
-   *
-   */
   #[@test]
   public function pageWithWarningsInProdMode() {
     $warning= 'Warning! Do not read if you have work to do!';
@@ -364,10 +361,6 @@ class RunnerTest extends TestCase {
     $this->assertEquals([], $matches);
   }
 
-  /**
-   * Test normal page display with warnings
-   *
-   */
   #[@test]
   public function pageWithWarningsInDevMode() {
     $warning= 'Warning! Do not read if you have work to do!';
@@ -382,10 +375,6 @@ class RunnerTest extends TestCase {
     $this->assertEquals($warning, $matches[0]);
   }
 
-  /**
-   * Test error page display
-   *
-   */
   #[@test]
   public function errorPageInProdMode() {
     $content= $this->runWith('prod', '/error');
@@ -399,32 +388,6 @@ class RunnerTest extends TestCase {
     );
   }
 
-  /**
-   * Asserts a given buffer contains the given bytes       
-   *
-   * @param   string bytes
-   * @param   string buffer
-   * @throws  unittest.AssertionFailedError
-   */
-  protected function assertContained($bytes, $buffer, $message= 'Not contained') {
-    strstr($buffer, $bytes) || $this->fail($message, $buffer, $bytes);
-  }
-
-  /**
-   * Asserts a given buffer does not contain the given bytes       
-   *
-   * @param   string bytes
-   * @param   string buffer
-   * @throws  unittest.AssertionFailedError
-   */
-  protected function assertNotContained($bytes, $buffer, $message= 'Contained') {
-    strstr($buffer, $bytes) && $this->fail($message, $buffer, $bytes);
-  }
-
-  /**
-   * Test error page display
-   *
-   */
   #[@test]
   public function errorPageLoggingInProdMode() {
     with ($cat= \util\log\Logger::getInstance()->getCategory('scriptlet')); {
@@ -444,10 +407,6 @@ class RunnerTest extends TestCase {
     }
   }
 
-  /**
-   * Test error page display
-   *
-   */
   #[@test]
   public function errorPageLoggingInDevMode() {
     with ($cat= \util\log\Logger::getInstance()->getCategory('scriptlet')); {
@@ -467,10 +426,6 @@ class RunnerTest extends TestCase {
     }
   }
 
-  /**
-   * Test error page display
-   *
-   */
   #[@test]
   public function errorPageInDevMode() {
     $content= $this->runWith('dev', '/error');
@@ -491,10 +446,6 @@ class RunnerTest extends TestCase {
     );
   }
 
-  /**
-   * Test debug page display
-   *
-   */
   #[@test]
   public function debugPage() {
     $content= $this->runWith('dev', '/debug');
@@ -511,10 +462,6 @@ class RunnerTest extends TestCase {
     );
   }
 
-  /**
-   * Test error page display
-   *
-   */
   #[@test]
   public function incompleteApp() {
     $content= $this->runWith(null, '/incomplete');
@@ -523,16 +470,12 @@ class RunnerTest extends TestCase {
 
     $this->assertEquals('412', $error[1], 'error message');
     $this->assertEquals(
-      'Exception lang.ClassNotFoundException (Class "" could not be found) {', 
+      'Exception lang.IllegalStateException (No scriptlet in xp.scriptlet.WebApplication(incomplete)@{', 
       $compound[1],
       'exception compound message'
     );
   }
 
-  /**
-   * Test XML app display
-   *
-   */
   #[@test]
   public function xmlScriptletAppInProdMode() {
     $content= $this->runWith('prod', '/xml');
@@ -542,10 +485,6 @@ class RunnerTest extends TestCase {
     );
   }
 
-  /**
-   * Test XML app display
-   *
-   */
   #[@test]
   public function xmlScriptletAppInDevMode() {
     $content= $this->runWith('dev', '/xml');
@@ -559,30 +498,18 @@ class RunnerTest extends TestCase {
     $this->assertContained('<formerrors', $content, 'formerrors');
   }
 
-  /**
-   * Test exit app
-   *
-   */
   #[@test]
   public function exitScriptletWithZeroExitCode() {
     $content= $this->runWith('dev', '/exit', ['code' => '0']);
     $this->assertEquals('', $content);
   }
 
-  /**
-   * Test exit app
-   *
-   */
   #[@test]
   public function exitScriptletWithZeroExitCodeAndMessage() {
     $content= $this->runWith('dev', '/exit', ['code' => '0', 'message' => 'Sorry']);
     $this->assertEquals('Sorry', $content);
   }
 
-  /**
-   * Test exit app
-   *
-   */
   #[@test]
   public function exitScriptletWithNonZeroExitCode() {
     $content= $this->runWith('dev', '/exit', ['code' => '1']);
@@ -593,10 +520,6 @@ class RunnerTest extends TestCase {
     $this->assertEquals([], $compound, 'exception compound message');
   }
 
-  /**
-   * Test exit app
-   *
-   */
   #[@test]
   public function exitScriptletWithNonZeroExitCodeAndMessage() {
     $content= $this->runWith('dev', '/exit', ['code' => '1', 'message' => 'Sorry']);
@@ -607,18 +530,8 @@ class RunnerTest extends TestCase {
     $this->assertEquals('Sorry', $compound[1], 'exception compound message');
   }
 
-  /**
-   * Test main() method, which receives the following arguments:
-   *
-   * <ol>
-   *   <li>The web root</li>
-   *   <li>The configuration directory</li>
-   *   <li>The server profile</li>
-   *   <li>The script URL</li>
-   * </ol>
-   */
   #[@test]
-  public function callingMain() {
+  public function main_with_directory() {
     $temp= System::tempDir();
 
     // Create web.ini in system's temp dir
@@ -634,15 +547,61 @@ class RunnerTest extends TestCase {
     );
     $ini->close();
 
-    // Run
-    ob_start();
-    Runner::main([$temp, $temp, 'dev', '/']);
-    $content= ob_get_contents();
-    ob_end_clean();
-    $ini->unlink();
+    try {
+      $this->assertEquals('<h1>Welcome, we are open</h1>', $this->run('.', $temp, 'dev', '/'));
+    } finally {
+      $ini->unlink();
+    }
+  }
 
-    // Assert
-    $this->assertEquals('<h1>Welcome, we are open</h1>', $content);
+  #[@test]
+  public function main_with_scriptlet_class() {
+    $this->assertEquals(
+      '<h1>Welcome, we are open</h1>',
+      $this->run('.', self::$welcomeScriptlet->getName(), 'dev', '/')
+    );
+  }
+
+  #[@test]
+  public function main_with_layout_class() {
+    $this->assertEquals(
+      '<h1>Welcome, we are open & xp.scriptlet.Config[]</h1>',
+      $this->run('.', self::$layout->getName(), 'dev', '/')
+    );
+  }
+
+  #[@test]
+  public function main_with_layout_class_and_config_resources() {
+    $this->assertEquals(
+      '<h1>Welcome, we are open & xp.scriptlet.Config[util.ResourcePropertySource<res://config>]</h1>',
+      $this->run('.', self::$layout->getName().PATH_SEPARATOR.'config', 'dev', '/')
+    );
+  }
+
+  #[@test]
+  public function main_with_layout_class_and_config_dir() {
+    $temp= realpath('.');
+    $this->assertEquals(
+      '<h1>Welcome, we are open & xp.scriptlet.Config[util.FilesystemPropertySource<'.$temp.'>]</h1>',
+      $this->run('.', self::$layout->getName().PATH_SEPARATOR.$temp, 'dev', '/')
+    );
+  }
+
+  #[@test]
+  public function main_with_layout_class_and_config_tilde() {
+    $temp= realpath('.');
+    $this->assertEquals(
+      '<h1>Welcome, we are open & xp.scriptlet.Config[util.FilesystemPropertySource<'.$temp.'>]</h1>',
+      $this->run('.', self::$layout->getName().PATH_SEPARATOR.'~', 'dev', '/')
+    );
+  }
+
+  #[@test]
+  public function main_with_layout_class_bc_colon_prefix() {
+    $this->assertEquals(
+      '<h1>Welcome, we are open & xp.scriptlet.Config[]</h1>',
+      $this->run('.', ':'.self::$layout->getName(), 'dev', '/')
+    );
   }
 
   #[@test]
