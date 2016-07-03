@@ -1,6 +1,7 @@
 <?php namespace xp\scriptlet;
 
 use scriptlet\Filter;
+use lang\XPClass;
 
 /**
  * Represents a web application
@@ -10,8 +11,8 @@ use scriptlet\Filter;
  */
 class WebApplication extends \lang\Object {
   protected $name;
-  protected $config;
-  protected $scriptlet = '';
+  protected $config = null;
+  protected $scriptlet = null;
   protected $arguments = [];
   protected $filters = [];
   protected $environment = [];
@@ -95,18 +96,24 @@ class WebApplication extends \lang\Object {
   /**
    * Sets this application's scriptlet class name
    *
-   * @param   string $scriptlet
+   * @param   string|lang.XPClass $scriptlet
    * @return  self this
    */
   public function withScriptlet($scriptlet) {
-    $this->scriptlet= $scriptlet;
+    if (null === $scriptlet) {
+      $this->scriptlet= null;
+    } else if ($scriptlet instanceof XPClass) {
+      $this->scriptlet= $scriptlet;
+    } else {
+      $this->scriptlet= XPClass::forName($scriptlet);
+    }
     return $this;
   }
   
   /**
    * Returns this application's scriptlet class
    *
-   * @return  string
+   * @return  lang.XPClass
    */
   public function scriptlet() {
     return $this->scriptlet;
@@ -192,8 +199,8 @@ class WebApplication extends \lang\Object {
       "}",
       nameof($this),
       $this->name,
-      strtr($this->config->toString(), ["\n" => "\n  "]),
-      $this->scriptlet,
+      $this->config ? strtr($this->config->toString(), ["\n" => "\n  "]) : '(none)',
+      $this->scriptlet ? $this->scriptlet->getName() : '(none)',
       implode(' | ', WebDebug::namesOf($this->debug)),
       implode(', ', $this->arguments),
       \xp::stringOf($this->environment, '  ')
@@ -210,10 +217,10 @@ class WebApplication extends \lang\Object {
     return (
       $cmp instanceof self && 
       $this->name === $cmp->name && 
-      $this->scriptlet === $cmp->scriptlet && 
       $this->debug === $cmp->debug && 
       $this->arguments === $cmp->arguments &&
       $this->environment === $cmp->environment &&
+      $this->scriptlet === null ? null === $cmp->scriptlet : $this->scriptlet->equals($cmp->scriptlet) &&
       0 === $this->config->compareTo($cmp->config)
     );
   }

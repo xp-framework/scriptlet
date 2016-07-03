@@ -10,7 +10,8 @@ use scriptlet\HttpScriptlet;
 use scriptlet\HttpScriptletRequest;
 use scriptlet\HttpScriptletResponse;
 use peer\http\HttpConstants;
-use lang\XPClass;
+use lang\IllegalStateException;
+new import('lang.ResourceProvider');
 
 /**
  * Scriptlet runner
@@ -24,7 +25,6 @@ class Runner extends \lang\Object {
     $mappings   = null;
 
   static function __static() {
-    XPClass::forName('lang.ResourceProvider');
     if (!function_exists('getallheaders')) {
       eval('function getallheaders() {
         $headers= [];
@@ -186,7 +186,9 @@ class Runner extends \lang\Object {
     $instance= null;
     $e= null;
     try {
-      $class= \lang\XPClass::forName($application->scriptlet());
+      if (!($class= $application->scriptlet())) {
+        throw new IllegalStateException('No scriptlet in '.$application->toString());
+      }
       if (!$class->hasConstructor()) {
         $instance= $class->newInstance();
       } else {

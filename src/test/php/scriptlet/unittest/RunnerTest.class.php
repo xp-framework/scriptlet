@@ -523,7 +523,7 @@ class RunnerTest extends TestCase {
 
     $this->assertEquals('412', $error[1], 'error message');
     $this->assertEquals(
-      'Exception lang.ClassNotFoundException (Class "" could not be found) {', 
+      'Exception lang.IllegalStateException (No scriptlet in xp.scriptlet.WebApplication(incomplete)@{', 
       $compound[1],
       'exception compound message'
     );

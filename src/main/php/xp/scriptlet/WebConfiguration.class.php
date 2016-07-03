@@ -92,7 +92,7 @@ class WebConfiguration extends \lang\Object implements WebLayout {
     }
 
     $app= new WebApplication($application);
-    $app->withScriptlet($this->readString($profile, $section, 'class', ''));
+    $app->withScriptlet($this->readString($profile, $section, 'class', null));
 
     // Configure app
     $config= $this->config ? clone $this->config : new Config();
