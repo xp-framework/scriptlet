@@ -573,10 +573,28 @@ class RunnerTest extends TestCase {
   }
 
   #[@test]
-  public function main_with_layout_class_and_config() {
+  public function main_with_layout_class_and_config_resources() {
     $this->assertEquals(
       '<h1>Welcome, we are open & xp.scriptlet.Config[util.ResourcePropertySource<res://config>]</h1>',
       $this->run('.', self::$layout->getName().PATH_SEPARATOR.'config', 'dev', '/')
+    );
+  }
+
+  #[@test]
+  public function main_with_layout_class_and_config_dir() {
+    $temp= realpath('.');
+    $this->assertEquals(
+      '<h1>Welcome, we are open & xp.scriptlet.Config[util.FilesystemPropertySource<'.$temp.'>]</h1>',
+      $this->run('.', self::$layout->getName().PATH_SEPARATOR.$temp, 'dev', '/')
+    );
+  }
+
+  #[@test]
+  public function main_with_layout_class_and_config_tilde() {
+    $temp= realpath('.');
+    $this->assertEquals(
+      '<h1>Welcome, we are open & xp.scriptlet.Config[util.FilesystemPropertySource<'.$temp.'>]</h1>',
+      $this->run('.', self::$layout->getName().PATH_SEPARATOR.'~', 'dev', '/')
     );
   }
 

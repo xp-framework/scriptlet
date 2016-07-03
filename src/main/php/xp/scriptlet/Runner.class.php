@@ -52,10 +52,11 @@ class Runner extends \lang\Object {
    * Configure this runner with a web.ini
    *
    * @param  util.Properties $conf
+   * @param  string[]|util.PropertySource[] $sources
    * @throws lang.IllegalStateException if the web is misconfigured
    */
-  public function configure(Properties $conf) {
-    $this->layout(new WebConfiguration($conf, new Config([], [$this, 'expand'])));
+  public function configure(Properties $conf, $sources= []) {
+    $this->layout(new WebConfiguration($conf, new Config($sources, [$this, 'expand'])));
   }
 
   /**
@@ -82,9 +83,22 @@ class Runner extends \lang\Object {
    */
   public static function main(array $args) {
     $self= new self($args[0], $args[2]);
-    $config= explode(PATH_SEPARATOR, ltrim($args[1], ':'));
-    $source= array_shift($config);
-    $self->layout((new Source($source, new Config($config, [$self, 'expand'])))->layout())->run($args[3]);
+
+    $sources= explode(PATH_SEPARATOR, ltrim($args[1], ':'));
+    $source= array_shift($sources);
+
+    $config= new Config([], [$self, 'expand']);
+    foreach ($sources as $dir) {
+      if (0 === strlen($dir)) {
+        // Skip
+      } else if ('~' === $dir{0}) {
+        $config->append($args[0].substr($dir, 1));
+      } else {
+        $config->append($dir);
+      }
+    }
+
+    $self->layout((new Source($source, $config))->layout())->run($args[3]);
   }
   
   /**
