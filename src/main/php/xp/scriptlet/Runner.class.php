@@ -141,18 +141,19 @@ class Runner extends \lang\Object {
 
   /**
    * Expand variables in string. Handles the following placeholders:
-   * <ul>
-   *   <li>WEBROOT</li>
-   *   <li>PROFILE</li>
-   * </ul>
+   *
+   * - WEBROOT
+   * - PROFILE
+   * - DOCUMENT_ROOT
    *
    * @param  string $value
    * @return string
    */
   public function expand($value) {
     return is_string($value) ? strtr($value, [
-      '{WEBROOT}' => $this->webroot,
-      '{PROFILE}' => $this->profile
+      '{WEBROOT}'       => $this->webroot,
+      '{PROFILE}'       => $this->profile,
+      '{DOCUMENT_ROOT}' => getenv('DOCUMENT_ROOT')
     ]) : $value;
   }
   
