@@ -3,6 +3,10 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.1.2 / 2016-07-04
+
+* Mered PR #12: Remove obsolete class text/parser/DateParser - @guel1973 
+
 ## 8.1.1 / 2016-07-04
 
 * Restored PHP 5.4 runtime compatibility - @thekid
