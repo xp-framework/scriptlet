@@ -1,8 +1,7 @@
 <?php namespace scriptlet\xml\workflow\checkers;
 
-use text\parser\DateParser;
+use util\Date;
 use util\DateUtil;
-
 
 /**
  * Checks whether given values are within an date range
@@ -19,7 +18,7 @@ class DateRangeChecker extends ParamChecker {
   public
     $minValue  = null,
     $maxValue  = null;
-  
+
   /**
    * Constructor
    *
@@ -38,7 +37,7 @@ class DateRangeChecker extends ParamChecker {
     $this->minValue= $this->parseDate($min, true);
     $this->maxValue= $this->parseDate($max, false);
   }
-  
+
   /**
    * Helper method
    *
@@ -48,29 +47,29 @@ class DateRangeChecker extends ParamChecker {
    */
   protected function parseDate($input, $lower) {
     switch ($input) {
-      case '__NOW__': 
+      case '__NOW__':
         if ($lower) {
-          $r= DateUtil::getMidnight(\util\Date::now());
+          $r= DateUtil::getMidnight(Date::now());
         } else {
-          $r= DateUtil::getMidnight(DateUtil::addDays(\util\Date::now(), 1));
+          $r= DateUtil::getMidnight(DateUtil::addDays(Date::now(), 1));
         }
         break;
 
-      case '__FUTURE__': 
-        $r= \util\Date::now(); 
+      case '__FUTURE__':
+        $r= Date::now();
         break;
 
-      case '__UNLIMITED__': 
+      case '__UNLIMITED__':
         $r= null;
         break;
-      
+
       default:
-        $r= DateParser::parse($input);
+        $r= new Date($input);
     }
-    
+
     return $r;
   }
-  
+
   /**
    * Check a given value
    *
@@ -84,6 +83,6 @@ class DateRangeChecker extends ParamChecker {
       } else if ($this->maxValue && $v->isAfter($this->maxValue)) {
         return 'toolate';
       }
-    }    
+    }
   }
 }
