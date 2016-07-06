@@ -13,16 +13,6 @@ abstract class Standalone extends \lang\Object {
   public function __construct($server, $url) {
     $this->server= $server;
     $this->url= $url;
-    $this->logging= function($host, $method, $query, $status) {
-      static $requests= 0;
-
-      Console::writef(
-        "\r  \e[36m%d\e[0m requests served @ %s [%.3fkB]",
-        ++$requests,
-        date('r'),
-        memory_get_usage() / 1024
-      );
-    };
   }
 
   /** @return string */
@@ -40,7 +30,16 @@ abstract class Standalone extends \lang\Object {
    */
   public function serve(WebLayout $layout, $profile, $webroot, $docroot) {
     $this->server->init();
-    $protocol= $this->server->setProtocol(new HttpProtocol($this->logging));
+    $protocol= $this->server->setProtocol(new HttpProtocol(function($host, $method, $query, $status) {
+      Console::writeLinef(
+        '  [%s] %.3fkB %s %s -> %s',
+        date('Y-m-d H:i:s'),
+        memory_get_usage() / 1024,
+        $method,
+        $query,
+        $status
+      );
+    }));
 
     $pm= PropertyManager::getInstance();
     $expand= function($in) use($webroot, $profile, $docroot) {
@@ -81,6 +80,7 @@ abstract class Standalone extends \lang\Object {
     $pm->hasProperties('database') && $cm->configure($pm->getProperties('database'));
 
     Console::writeLine("\e[33;1m>\e[0m Server started: \e[35;4m", $this->url, "\e[0m (", date('r'), ')');
+    Console::writeLine('  PID ', getmypid(), '; press Ctrl+C to exit');
     Console::writeLine();
 
     $this->server->service();

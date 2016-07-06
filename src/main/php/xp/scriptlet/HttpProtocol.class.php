@@ -113,7 +113,7 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
       // Console::$err->writeLine('Malformed request "', addcslashes($header, "\0..\17"), '" from ', $socket->host);
       return $socket->close();
     }
-    $offset= strpos($header, "\r\n")+ 2;
+    $offset= strpos($header, "\r\n") + 2;
     $headers= [];
     if ($t= strtok(substr($header, $offset, $p- $offset), "\r\n")) do {
       sscanf($t, "%[^:]: %[^\r\n]", $name, $value);
