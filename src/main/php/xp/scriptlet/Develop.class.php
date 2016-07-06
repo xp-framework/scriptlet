@@ -53,6 +53,7 @@ class Develop extends \lang\Object {
     with ($runtime->newInstance($options, 'web', '', []), function($proc) {
       $proc->in->close();
       Console::writeLine("\e[33;1m>\e[0m Server started: \e[35;4m", $this->url, "\e[0m (", date('r'), ')');
+      Console::writeLine('  PID ', $proc->getProcessId(), '; press Ctrl+C to exit');
       Console::writeLine();
 
       while (null !== ($line= $proc->err->readLine())) {
