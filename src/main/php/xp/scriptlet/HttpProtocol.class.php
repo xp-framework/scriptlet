@@ -80,16 +80,16 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
     foreach ($handlers as $pattern => $handler) {
       if (preg_match($pattern, $query)) {
         try {
-          if (false === $handler->handleRequest($method, $query, $headers, $body, $socket)) continue;
-          return 'OK';
+          if (null === ($status= $handler->handleRequest($method, $query, $headers, $body, $socket))) continue;
+          return [$status, ''];
         } catch (IOException $e) {
-          return 'Error '.$e->compoundMessage();
+          return [520, $e->compoundMessage()];
         }
       }
     }
 
     $handlers[':error']->handleRequest($method, $query, $headers, $body, $socket);
-    return 'Unhandled';
+    return [520, 'Unhandled'];
   }
 
   /**
@@ -137,7 +137,7 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
     gc_enable();
     sscanf($headers['Host'], '%[^:]:%d', $host, $port);
     $status= $this->handleRequest(strtolower($host), $method, $query, $headers, $body, $socket);
-    $this->logging->__invoke($host, $method, $query, $status);
+    $this->logging->__invoke($host, $method, $query, $status[0], $status[1]);
     gc_collect_cycles();
     gc_disable();
     \xp::gc();

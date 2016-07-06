@@ -41,6 +41,7 @@ class ScriptletHandler extends AbstractUrlHandler {
    * @param   [:string] headers request headers
    * @param   string data post data
    * @param   peer.Socket socket
+   * @return  int
    */
   public function handleRequest($method, $query, array $headers, $data, Socket $socket) {
     $url= new URL('http://'.(isset($headers['Host']) ? $headers['Host'] : 'localhost').$query);
@@ -81,13 +82,14 @@ class ScriptletHandler extends AbstractUrlHandler {
     } catch (ScriptletException $e) {
       $e->printStackTrace();
       $this->sendErrorMessage($socket, $e->getStatus(), nameof($e), $e->getMessage());
-      return;
+      return $e->getStatus();
     }
 
     if (!$response->isCommitted()) {
       $response->flush();
     }
     $response->sendContent();
+    return $response->statusCode;
   }
 
   /**

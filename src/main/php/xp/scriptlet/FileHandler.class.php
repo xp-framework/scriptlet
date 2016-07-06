@@ -52,6 +52,7 @@ class FileHandler extends AbstractUrlHandler {
    * @param   [:string] headers request headers
    * @param   string data post data
    * @param   peer.Socket socket
+   * @return  int
    */
   public function handleRequest($method, $query, array $headers, $data, Socket $socket) {
     $url= parse_url($query);
@@ -70,7 +71,7 @@ class FileHandler extends AbstractUrlHandler {
       $d= strtotime($mod);
       if ($lastModified <= $d) {
         $this->sendHeader($socket, 304, 'Not modified', []);
-        return;
+        return 304;
       }
     }
 
@@ -80,7 +81,7 @@ class FileHandler extends AbstractUrlHandler {
     } catch (IOException $e) {
       $this->sendErrorMessage($socket, 500, 'Internal server error', $e->getMessage());
       $f->close();
-      return;
+      return 500;
     }
 
     // Send OK header and data in 8192 byte chunks
@@ -93,6 +94,7 @@ class FileHandler extends AbstractUrlHandler {
       $socket->write($f->read(8192));
     }
     $f->close();
+    return 200;
   }
 
   /**

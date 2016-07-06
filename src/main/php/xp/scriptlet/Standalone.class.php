@@ -30,14 +30,16 @@ abstract class Standalone extends \lang\Object {
    */
   public function serve(WebLayout $layout, $profile, $webroot, $docroot) {
     $this->server->init();
-    $protocol= $this->server->setProtocol(new HttpProtocol(function($host, $method, $query, $status) {
+    $protocol= $this->server->setProtocol(new HttpProtocol(function($host, $method, $query, $status, $error) {
       Console::writeLinef(
-        '  [%s] %.3fkB %s %s -> %s',
+        "  \e[33m[%s %d %.3fkB]\e[0m %d %s %s",
         date('Y-m-d H:i:s'),
+        getmypid(),
         memory_get_usage() / 1024,
+        $status,
         $method,
         $query,
-        $status
+        $error
       );
     }));
 
@@ -54,7 +56,7 @@ abstract class Standalone extends \lang\Object {
     if (null === $resources) {
       $protocol->setUrlHandler('default', '#^/#', new FileHandler(
         $docroot,
-        $notFound= function() { return false; }
+        $notFound= function() { return null; }  // Continue to next handler
       ));
     } else {
       foreach ($resources as $pattern => $location) {
