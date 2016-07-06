@@ -32,8 +32,13 @@ abstract class Standalone extends \lang\Object {
 
   /**
    * Serve requests
+   *
+   * @param  xp.scriptlet.WebLayout $layout
+   * @param  string $profile
+   * @param  string $webroot
+   * @param  string $docroot
    */
-  public function serve(WebLayout $layout, $webroot, $profile, $docroot) {
+  public function serve(WebLayout $layout, $profile, $webroot, $docroot) {
     $this->server->init();
     $protocol= $this->server->setProtocol(new HttpProtocol($this->logging));
 
@@ -65,13 +70,8 @@ abstract class Standalone extends \lang\Object {
         array_map($expand, array_merge($application->environment(), ['DOCUMENT_ROOT' => $docroot])),
         $application->filters()
       ));
-      foreach ($application->config() as $element) {
-        $expanded= $expand($element);
-        if (0 == strncmp('res://', $expanded, 6)) {
-          $pm->appendSource(new ResourcePropertySource(substr($expanded, 6)));
-        } else {
-          $pm->appendSource(new FilesystemPropertySource($expanded));
-        }
+      foreach ($application->config()->sources() as $source) {
+        $pm->appendSource($source);
       }
     }
 

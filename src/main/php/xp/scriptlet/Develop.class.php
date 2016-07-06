@@ -10,31 +10,18 @@ use util\cmd\Console;
  * @see   http://php.net/manual/en/features.commandline.webserver.php
  */
 class Develop extends \lang\Object {
-  private $host, $port, $url, $output;
+  private $host, $port, $url;
   
   /**
    * Creates a new instance
    *
    * @param  string $host
    * @param  int $port
-   * @param  bool $verbose Whether to use verbose output. Optional, defaults to false.
    */
-  public function __construct($host, $port, $verbose= false) {
+  public function __construct($host, $port) {
     $this->host= $host;
     $this->port= $port;
     $this->url= 'http://'.$host.':'.$port.'/';
-
-    if ($verbose) {
-      $this->output= function($line) {
-        Console::writeLine("  \e[36m", $line, "\e[0m");
-      };
-    } else {
-      $this->output= function($line) {
-        static $requests= 0;
-
-        Console::write("\r  \e[36m", $requests++, "\e[0m requests served @ ", date('r'));
-      };
-    }
   }
 
   /** @return string */
@@ -44,8 +31,13 @@ class Develop extends \lang\Object {
 
   /**
    * Serve requests
+   *
+   * @param  xp.scriptlet.WebLayout $layout
+   * @param  string $profile
+   * @param  string $webroot
+   * @param  string $docroot
    */
-  public function serve(WebLayout $layout, $webroot, $profile, $docroot) {
+  public function serve(WebLayout $layout, $profile, $webroot, $docroot) {
     $runtime= Runtime::getInstance();
     $startup= $runtime->startupOptions();
     $backing= typeof($startup)->getField('backing')->setAccessible(true)->get($startup);
@@ -64,7 +56,7 @@ class Develop extends \lang\Object {
       Console::writeLine();
 
       while (null !== ($line= $proc->err->readLine())) {
-        $this->output->__invoke($line);
+        Console::writeLine("  \e[36m", $line, "\e[0m");
       }
     });
   }
