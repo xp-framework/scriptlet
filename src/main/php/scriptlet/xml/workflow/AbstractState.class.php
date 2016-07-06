@@ -46,33 +46,33 @@ class AbstractState extends \lang\Object implements Traceable {
    */
   protected function addHandlerToFormresult($handler, $node, $request) {
     $node->addChild(Node::fromArray($handler->values[HVAL_PERSISTENT], 'values'));
-    foreach (array_keys($handler->values[HVAL_FORMPARAM]) as $key) {
+    if (isset($handler->values[HVAL_FORMPARAM])) foreach ($handler->values[HVAL_FORMPARAM] as $key => $value) {
 
       // Skip parameters which were set via setFormValue() and which were
       // posted via request to avoid duplicate parameters. We do not need
       // to use $response->addFormValue() because this is done in
       // XMLScriptlet::processRequest() called in XMLScriptlet::doGet().
       if ($request->hasParam($key)) continue;
-      $request->setParam($key, $handler->values[HVAL_FORMPARAM][$key]);
+      $request->setParam($key, $value);
     }
     
     // Add wrapper parameter representation if the handler has a wrapper
     // and this wrapper implements the IFormresultAggregate interface
     if ($handler->hasWrapper() && $handler->wrapper instanceof IFormresultAggregate) {
       $wrapper= $node->addChild(new Node('wrapper'));
-      foreach (array_keys($handler->wrapper->paraminfo) as $name) {
+      foreach ($handler->wrapper->paraminfo as $name => $paraminfo) {
         $param= $wrapper->addChild(new Node('param', null, [
           'name'       => $name,
-          'type'       => $handler->wrapper->paraminfo[$name]['type'],
-          'occurrence' => $handler->wrapper->paraminfo[$name]['occurrence'],
+          'type'       => $paraminfo['type'],
+          'occurrence' => $paraminfo['occurrence'],
         ]));
-        if ($handler->wrapper->paraminfo[$name]['values']) {
-          foreach ($handler->wrapper->paraminfo[$name]['values'] as $key => $value) {
+        if ($paraminfo['values']) {
+          foreach ($paraminfo['values'] as $key => $value) {
             $param->addChild(new Node('value', $value, ['name' => $key]));
           }
         }
-        if ($handler->wrapper->paraminfo[$name]['default']) {
-          $param->addChild(new Node('default', $handler->wrapper->paraminfo[$name]['default']));
+        if ($paraminfo['default']) {
+          $param->addChild(new Node('default', $paraminfo['default']));
         }
       }
     }

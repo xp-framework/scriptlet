@@ -3,6 +3,23 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.1.2 / 2016-07-04
+
+* Merged PR #12: Remove obsolete class text/parser/DateParser - @guel1973
+
+## 8.1.1 / 2016-07-04
+
+* Restored PHP 5.4 runtime compatibility - @thekid
+
+## 8.1.0 / 2016-07-04
+
+* Merged PR #11: Web config - @thekid
+
+## 8.0.2 / 2016-07-03
+
+* Fixed issue #9: Undefined offset error in AbstractState
+  (@thekid)
+
 ## 8.0.1 / 2016-05-25
 
 * Deprecated `Request::getInputStream()` in favor of new `in()` method.

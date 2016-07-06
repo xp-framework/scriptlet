@@ -1,8 +1,8 @@
 <?php namespace xp\scriptlet;
 
+use util\Properties;
 use util\PropertyManager;
-use util\FilesystemPropertySource;
-use util\ResourcePropertySource;
+use util\RegisteredPropertySource;
 use util\log\Logger;
 use util\log\context\EnvironmentAware;
 use rdbms\ConnectionManager;
@@ -10,7 +10,8 @@ use scriptlet\HttpScriptlet;
 use scriptlet\HttpScriptletRequest;
 use scriptlet\HttpScriptletResponse;
 use peer\http\HttpConstants;
-use lang\XPClass;
+use lang\IllegalStateException;
+new import('lang.ResourceProvider');
 
 /**
  * Scriptlet runner
@@ -24,7 +25,6 @@ class Runner extends \lang\Object {
     $mappings   = null;
 
   static function __static() {
-    XPClass::forName('lang.ResourceProvider');
     if (!function_exists('getallheaders')) {
       eval('function getallheaders() {
         $headers= [];
@@ -40,8 +40,8 @@ class Runner extends \lang\Object {
   /**
    * Creates a new scriptlet runner
    *
-   * @param   string webroot
-   * @param   string profile
+   * @param  string $webroot
+   * @param  string $profile
    */
   public function __construct($webroot, $profile= null) {
     $this->webroot= $webroot;
@@ -51,18 +51,19 @@ class Runner extends \lang\Object {
   /**
    * Configure this runner with a web.ini
    *
-   * @param   util.Properties $conf
-   * @throws  lang.IllegalStateException if the web is misconfigured
+   * @param  util.Properties $conf
+   * @param  string[]|util.PropertySource[] $sources
+   * @throws lang.IllegalStateException if the web is misconfigured
    */
-  public function configure(\util\Properties $conf) {
-    $this->layout(new WebConfiguration($conf));
+  public function configure(Properties $conf, $sources= []) {
+    $this->layout(new WebConfiguration($conf, new Config($sources, [$this, 'expand'])));
   }
 
   /**
    * Sets layout to use
    *
-   * @param   xp.scriptlet.WebLayout $layout
-   * @return  self This
+   * @param  xp.scriptlet.WebLayout $layout
+   * @return self this
    */
   public function layout(WebLayout $layout) {
     $this->mappings= $layout->mappedApplications($this->profile);
@@ -72,23 +73,40 @@ class Runner extends \lang\Object {
   /**
    * Entry point method. Receives the following arguments from web.php:
    * 
-   * 1. The web root - a directory
-   * 2. The application source - either a directory or ":" + f.q.c.Name
-   * 3. The server profile - any name, really, defaulting to "dev"
-   * 4. The script URL - the resolved path, including leading "/"
+   * 0. The web root - a directory
+   * 1. The application source - either a directory or a layout or scriptlet class name
+   * 2. The server profile - any name, really, defaulting to "dev"
+   * 3. The script URL - the resolved path, including leading "/"
    *
-   * @param   string[] args
+   * @param  string[] $args
+   * @return void
    */
   public static function main(array $args) {
-    (new self($args[0], $args[2]))->layout((new Source($args[1]))->layout())->run($args[3]);
+    $self= new self($args[0], $args[2]);
+
+    $sources= explode(PATH_SEPARATOR, ltrim($args[1], ':'));
+    $source= array_shift($sources);
+
+    $config= new Config([], [$self, 'expand']);
+    foreach ($sources as $dir) {
+      if (0 === strlen($dir)) {
+        // Skip
+      } else if ('~' === $dir{0}) {
+        $config->append($self->webroot.substr($dir, 1));
+      } else {
+        $config->append($dir);
+      }
+    }
+
+    $self->layout((new Source($source, $config))->layout())->run($args[3]);
   }
   
   /**
    * Find which application the given url maps to
    *
-   * @param   string url
-   * @return  xp.scriptlet.WebApplication
-   * @throws  lang.IllegalArgumentException if no app can be found
+   * @param  string $url
+   * @return xp.scriptlet.WebApplication
+   * @throws lang.IllegalArgumentException if no app can be found
    */
   public function applicationAt($url) {
     $url= '/'.ltrim($url, '/');
@@ -103,7 +121,7 @@ class Runner extends \lang\Object {
   /**
    * Return mappings
    *
-   * @return  [string:xp.scriptlet.WebApplication]
+   * @return [string:xp.scriptlet.WebApplication]
    */
   public function mappedApplications() {
     return $this->mappings;
@@ -112,9 +130,9 @@ class Runner extends \lang\Object {
   /**
    * Adds an application
    *
-   * @param   string url
-   * @param   xp.scriptlet.WebApplication application
-   * @return  xp.scriptlet.WebApplication the added application
+   * @param  string $url
+   * @param  xp.scriptlet.WebApplication $application
+   * @return xp.scriptlet.WebApplication the added application
    */
   public function mapApplication($url, WebApplication $application) {
     $this->mappings[$url]= $application;
@@ -123,25 +141,26 @@ class Runner extends \lang\Object {
 
   /**
    * Expand variables in string. Handles the following placeholders:
-   * <ul>
-   *   <li>WEBROOT</li>
-   *   <li>PROFILE</li>
-   * </ul>
    *
-   * @param   string value
-   * @return  string
+   * - WEBROOT
+   * - PROFILE
+   * - DOCUMENT_ROOT
+   *
+   * @param  string $value
+   * @return string
    */
   public function expand($value) {
     return is_string($value) ? strtr($value, [
-      '{WEBROOT}' => $this->webroot,
-      '{PROFILE}' => $this->profile
+      '{WEBROOT}'       => $this->webroot,
+      '{PROFILE}'       => $this->profile,
+      '{DOCUMENT_ROOT}' => getenv('DOCUMENT_ROOT')
     ]) : $value;
   }
   
   /**
    * Creates the scriptlet instance for the given URL and runs it
    *
-   * @param   string url default '/'
+   * @param  string $url default '/'
    */
   public function run($url= '/') {
   
@@ -154,13 +173,8 @@ class Runner extends \lang\Object {
     // Initializer logger, properties and connections to property base, 
     // defaulting to the same directory the web.ini resides in
     $pm= PropertyManager::getInstance();
-    foreach ($application->config() as $element) {
-      $expanded= $this->expand($element);
-      if (0 == strncmp('res://', $expanded, 6)) {
-        $pm->appendSource(new ResourcePropertySource(substr($expanded, 6)));
-      } else {
-        $pm->appendSource(new FilesystemPropertySource($expanded));
-      }
+    foreach ($application->config()->sources() as $source) {
+      $pm->appendSource($source);
     }
     
     $l= Logger::getInstance();
@@ -189,7 +203,9 @@ class Runner extends \lang\Object {
     $instance= null;
     $e= null;
     try {
-      $class= \lang\XPClass::forName($application->scriptlet());
+      if (!($class= $application->scriptlet())) {
+        throw new IllegalStateException('No scriptlet in '.$application->toString());
+      }
       if (!$class->hasConstructor()) {
         $instance= $class->newInstance();
       } else {

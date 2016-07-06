@@ -6,15 +6,9 @@ use lang\ClassLoader;
 use lang\IllegalArgumentException;
 use util\cmd\Console;
 use util\PropertyManager;
-use util\Properties;
-use util\ResourcePropertySource;
-use util\FilesystemPropertySource;
 use util\log\Logger;
 use util\log\context\EnvironmentAware;
 use rdbms\ConnectionManager;
-use peer\server\PreforkingServer;
-use peer\server\ForkingServer;
-use peer\server\EventServer;
 use scriptlet\HttpScriptlet;
 new import('lang.ResourceProvider');
 
@@ -53,15 +47,16 @@ new import('lang.ResourceProvider');
  *   $ xp web -m event
  *   ```
  * The address the server listens to can be supplied via *-a {host}:{port}*.
- * The profile can be changed via *-p {profile}* (and can be anything!).
+ * The profile can be changed via *-p {profile}* (and can be anything!). One
+ * or more configuration sources may be passed via *-c {file.ini|dir}*.
  */
 class WebRunner {
   private static $modes= [
-    'serve'   => Serve::class,
-    'prefork' => PreforkingServer::class,
-    'fork'    => ForkingServer::class,
-    'event'   => EventServer::class,
-    'develop' => Develop::class
+    'serve'   => 'xp.scriptlet.Serve',
+    'prefork' => 'xp.scriptlet.Prefork',
+    'fork'    => 'xp.scriptlet.Fork',
+    'event'   => 'xp.scriptlet.Event',
+    'develop' => 'xp.scriptlet.Develop'
   ];
 
   /**
@@ -83,7 +78,7 @@ class WebRunner {
     }
 
     sscanf($address, '%[^:]:%d', $host, $port);
-    return (new XPClass($class))->getConstructor()->newInstance(array_merge(
+    return XPClass::forName($class)->getConstructor()->newInstance(array_merge(
       [$host, $port],
       $arguments
     ));
@@ -97,40 +92,38 @@ class WebRunner {
    */
   public static function main(array $args) {
     $webroot= new Path(getcwd());
-    $layout= new BasedOnWebroot($webroot);
-
-    $docroot= 'static';
+    $docroot= new Path($webroot, 'static');
     $address= 'localhost:8080';
     $profile= 'dev';
     $mode= 'serve';
     $arguments= [];
 
-    $cl= ClassLoader::getDefault();
+    $expand= function($in) use(&$webroot, &$docroot, &$profile) {
+      return is_string($in) ? strtr($in, [
+        '{WEBROOT}'       => $webroot,
+        '{PROFILE}'       => $profile,
+        '{DOCUMENT_ROOT}' => $docroot
+      ]) : $in;
+    };
+
+    $config= new Config([], $expand);
+    $layout= new BasedOnWebroot($webroot, $config);
+
     for ($i= 0; $i < sizeof($args); $i++) {
        if ('-r' === $args[$i]) {
-        $docroot= $args[++$i];
+        $docroot= $webroot->resolve($args[++$i]);
       } else if ('-a' === $args[$i]) {
         $address= $args[++$i];
       } else if ('-p' === $args[$i]) {
         $profile= $args[++$i];
+      } else if ('-c' === $args[$i]) {
+        $config->append($args[++$i]);
       } else if ('-m' === $args[$i]) {
         $arguments= explode(',', $args[++$i]);
         $mode= array_shift($arguments);
-      } else if ('-' === $args[$i]) {
-        $layout= new ServeDocumentRootStatically();
-      } else if (is_file($args[$i])) {
-        $layout= new WebConfiguration(new Properties($args[$i]));
-      } else if (is_dir($args[$i])) {
-        $layout= new WebConfiguration(new Properties(new Path($args[$i], WebConfiguration::INI)));
-      } else if ($cl->providesClass($args[$i])) {
-        $class= $cl->loadClass($args[$i]);
-        if ($class->isSubclassOf(HttpScriptlet::class)) {
-          $layout= new SingleScriptlet($class->getName());
-        } else if ($class->isSubclassOf(WebLayout::class)) {
-          $layout= $class->newInstance();
-        } else {
-          throw new IllegalArgumentException('Expecting either a scriptlet or a weblayout, '.$class->getName().' given');
-        }
+      } else {
+        $layout= (new Source($args[$i], $config))->layout();
+        break;
       }
     }
 
@@ -141,7 +134,7 @@ class WebRunner {
     Console::writeLine("\e[36m", str_repeat('═', 72), "\e[0m");
     Console::writeLine();
 
-    $server->serve($layout, $webroot, $profile, $webroot->resolve($docroot));
+    $server->serve($layout, $profile, $webroot, $webroot->resolve($docroot));
     return 0;
   }
 }

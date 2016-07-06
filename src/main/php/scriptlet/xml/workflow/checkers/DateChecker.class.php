@@ -1,7 +1,8 @@
 <?php namespace scriptlet\xml\workflow\checkers;
- 
-use text\parser\DateParser;
 
+use lang\IllegalArgumentException;
+use lang\Object;
+use util\Date;
 
 /**
  * Checks given date on validity
@@ -13,7 +14,7 @@ use text\parser\DateParser;
  *
  * @purpose  Checker
  */
-class DateChecker extends \lang\Object {
+class DateChecker extends Object {
 
   /**
    * Check a given value
@@ -21,13 +22,13 @@ class DateChecker extends \lang\Object {
    * @param   array value
    * @return  string error or NULL on success
    */
-  public function check($value) { 
+  public function check($value) {
     foreach ($value as $v) {
       try {
-        DateParser::parse($v);
-      } catch (\lang\FormatException $e) {
+        new Date($v);
+      } catch (IllegalArgumentException $e) {
         return 'invalid';
       }
-    }    
+    }
   }
 }

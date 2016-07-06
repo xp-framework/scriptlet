@@ -6,16 +6,11 @@ use unittest\TestCase;
 use util\Date;
 use io\Folder;
 
-/**
- * TestCase for scriptlet.HttpSession class.
- *
- * @purpose   TestCase
- */
 class HttpSessionTest extends TestCase {
-  protected $session= null;
+  private $session= null;
 
-  /** @return  scriptlet.HttpSession */
-  protected function _session() { return new HttpSession(); }
+  /** @return scriptlet.HttpSession */
+  private function _session() { return new HttpSession(); }
 
   /**
    * Setup testcase environment for next testcase

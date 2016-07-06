@@ -12,15 +12,17 @@ use lang\IllegalStateException;
 class WebConfiguration extends \lang\Object implements WebLayout {
   const INI = 'web.ini';
 
-  protected $prop= null;
+  private $prop, $config;
   
   /**
    * Creates a new web configuration instance
    *
-   * @param   util.Properties prop
+   * @param  util.Properties $prop
+   * @param  xp.scriptlet.Config $config
    */
-  public function __construct(Properties $prop) {
+  public function __construct(Properties $prop, Config $config= null) {
     $this->prop= $prop;
+    $this->config= $config;
   }
 
   /**
@@ -90,9 +92,14 @@ class WebConfiguration extends \lang\Object implements WebLayout {
     }
 
     $app= new WebApplication($application);
-    $app->withScriptlet($this->readString($profile, $section, 'class', ''));
-    
-    $app->withConfig($this->readArray($profile, $section, 'prop-base', '{WEBROOT}/etc'));
+    $app->withScriptlet($this->readString($profile, $section, 'class', null));
+
+    // Configure app
+    $config= $this->config ? clone $this->config : new Config();
+    foreach ($this->readArray($profile, $section, 'prop-base', ['{WEBROOT}/etc']) as $prop) {
+      $config->append($prop);
+    }
+    $app->withConfig($config);
 
     // Determine debug level
     $flags= WebDebug::NONE;

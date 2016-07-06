@@ -6,15 +6,17 @@
  * @see   xp://xp.scriptlet.WebApplication
  */
 class SingleScriptlet extends \lang\Object implements WebLayout {
-  private $scriptlet;
+  private $scriptlet, $config;
 
   /**
    * Creates a new instance
    *
-   * @param  string $scripltet
+   * @param  string $scriptlet
+   * @param  xp.scriptlet.Config $config
    */
-  public function __construct($scriptlet) {
+  public function __construct($scriptlet, Config $config= null) {
     $this->scriptlet= $scriptlet;
+    $this->config= $config;
   }
 
   /**
@@ -25,7 +27,7 @@ class SingleScriptlet extends \lang\Object implements WebLayout {
    * @throws  lang.IllegalStateException if the web is misconfigured
    */
   public function mappedApplications($profile= null) {
-    return ['/' => (new WebApplication('default'))->withScriptlet($this->scriptlet)];
+    return ['/' => (new WebApplication('default'))->withScriptlet($this->scriptlet)->withConfig($this->config)];
   }
 
   /**
@@ -40,6 +42,6 @@ class SingleScriptlet extends \lang\Object implements WebLayout {
 
   /** @return string */
   public function toString() {
-    return nameof($this).'('.$this->scriptlet.')';
+    return nameof($this).'('.$this->scriptlet.($this->config ? ' << '.$this->config->toString() : '').')';
   }
 }
