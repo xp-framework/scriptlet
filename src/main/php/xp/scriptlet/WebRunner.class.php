@@ -46,6 +46,10 @@ new import('lang.ResourceProvider');
  *   ```sh
  *   $ xp web -m event
  *   ```
+ * - Use [development webserver](http://php.net/features.commandline.webserver):
+ *   ```sh
+ *   $ xp web -m develop
+ *   ```
  * The address the server listens to can be supplied via *-a {host}:{port}*.
  * The profile can be changed via *-p {profile}* (and can be anything!). One
  * or more configuration sources may be passed via *-c {file.ini|dir}*.

@@ -3,6 +3,10 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.2.0 / 2016-07-11
+
+* Merged PR #10: Development webserver - @thekid
+
 ## 8.1.2 / 2016-07-04
 
 * Merged PR #12: Remove obsolete class text/parser/DateParser - @guel1973

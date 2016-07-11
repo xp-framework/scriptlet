@@ -56,7 +56,7 @@ class Develop extends \lang\Object {
       Console::writeLine('  PID ', $proc->getProcessId(), '; press Ctrl+C to exit');
       Console::writeLine();
 
-      while (null !== ($line= $proc->err->readLine())) {
+      while (is_string($line= $proc->err->readLine())) {
         Console::writeLine("  \e[36m", $line, "\e[0m");
       }
     });
