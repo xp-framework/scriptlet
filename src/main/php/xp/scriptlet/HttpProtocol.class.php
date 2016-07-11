@@ -9,7 +9,17 @@ use peer\Socket;
  */
 class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
   protected $handlers = [];
+  private $logging;
   public $server = null;
+
+  /**
+   * Creates a new instance with a given logging
+   *
+   * @param  var $logging
+   */
+  public function __construct($logging) {
+    $this->logging= $logging;
+  }
 
   /**
    * Initialize Protocol
@@ -70,17 +80,16 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
     foreach ($handlers as $pattern => $handler) {
       if (preg_match($pattern, $query)) {
         try {
-          if (false === $handler->handleRequest($method, $query, $headers, $body, $socket)) continue;
-          Console::$out->writeLine('OK');
+          if (null === ($status= $handler->handleRequest($method, $query, $headers, $body, $socket))) continue;
+          return [$status, ''];
         } catch (IOException $e) {
-          Console::$out->writeLine('Error ', $e->compoundMessage());
+          return [520, $e->compoundMessage()];
         }
-        return;
       }
     }
 
-    Console::$err->writeLine('Unhandled (', $this->handlers, ')');
     $handlers[':error']->handleRequest($method, $query, $headers, $body, $socket);
+    return [520, 'Unhandled'];
   }
 
   /**
@@ -96,15 +105,15 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
         $header.= $socket->readBinary(1024);
       }
     } catch (IOException $e) {
-      Console::$err->writeLine($e);
+      // Console::$err->writeLine($e);
       return $socket->close();
     }
 
-    if (4 != sscanf($header, '%s %[^ ] HTTP/%d.%d', $method, $query, $major, $minor)) {
-      Console::$err->writeLine('Malformed request "', addcslashes($header, "\0..\17"), '" from ', $socket->host);
+    if (4 !== sscanf($header, '%s %[^ ] HTTP/%d.%d', $method, $query, $major, $minor)) {
+      // Console::$err->writeLine('Malformed request "', addcslashes($header, "\0..\17"), '" from ', $socket->host);
       return $socket->close();
     }
-    $offset= strpos($header, "\r\n")+ 2;
+    $offset= strpos($header, "\r\n") + 2;
     $headers= [];
     if ($t= strtok(substr($header, $offset, $p- $offset), "\r\n")) do {
       sscanf($t, "%[^:]: %[^\r\n]", $name, $value);
@@ -125,21 +134,10 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
       return $socket->close();
     }
 
-    sscanf($headers['Host'], '%[^:]:%d', $host, $port);
-    Console::$out->writef(
-      '[%.3f %s %s @ %s] %s %s (%d bytes): ',
-      memory_get_usage() / 1024,
-      date('Y-m-d H:i:s'),
-      @$headers['User-Agent'],
-      $host,
-      $method,
-      $query,
-      strlen($body)
-    );
-
     gc_enable();
-    $this->handleRequest(strtolower($host), $method, $query, $headers, $body, $socket);
-
+    sscanf($headers['Host'], '%[^:]:%d', $host, $port);
+    $status= $this->handleRequest(strtolower($host), $method, $query, $headers, $body, $socket);
+    $this->logging->__invoke($host, $method, $query, $status[0], $status[1]);
     gc_collect_cycles();
     gc_disable();
     \xp::gc();
@@ -153,7 +151,7 @@ class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
    * @param   lang.XPException e
    */
   public function handleError($socket, $e) {
-    Console::$err->writeLine('* ', $socket->host, '~', $e);
+    // Console::$err->writeLine('* ', $socket->host, '~', $e);
     $socket->close();
   }
 

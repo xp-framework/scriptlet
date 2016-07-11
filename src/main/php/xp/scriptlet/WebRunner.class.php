@@ -52,10 +52,11 @@ new import('lang.ResourceProvider');
  */
 class WebRunner {
   private static $modes= [
-    'serve'   => 'peer.server.Server',
-    'prefork' => 'peer.server.PreforkingServer',
-    'fork'    => 'peer.server.ForkingServer',
-    'event'   => 'peer.server.EventServer'
+    'serve'   => 'xp.scriptlet.Serve',
+    'prefork' => 'xp.scriptlet.Prefork',
+    'fork'    => 'xp.scriptlet.Fork',
+    'event'   => 'xp.scriptlet.Event',
+    'develop' => 'xp.scriptlet.Develop'
   ];
 
   /**
@@ -126,49 +127,14 @@ class WebRunner {
       }
     }
 
-    Console::writeLine('--> Startup ', $mode, '(', $address, ' & ', $arguments ?: '[]', ')');
-    Console::writeLine('--> Layout ', $layout);
     $server= self::server($mode, $address, $arguments);
-    Console::writeLine('--> ', $server);
 
-    with ($protocol= $server->setProtocol(new HttpProtocol())); {
-      $pm= PropertyManager::getInstance();
+    Console::writeLine("\e[33m@", $server, "\e[0m");
+    Console::writeLine("\e[1mServing ", $layout);
+    Console::writeLine("\e[36m", str_repeat('═', 72), "\e[0m");
+    Console::writeLine();
 
-      $resources= $layout->staticResources($profile);
-      if (null === $resources) {
-        $protocol->setUrlHandler('default', '#^/#', new FileHandler(
-          $docroot,
-          $notFound= function() { return false; }
-        ));
-      } else {
-        foreach ($resources as $pattern => $location) {
-          $protocol->setUrlHandler('default', '#'.strtr($pattern, ['#' => '\\#']).'#', new FileHandler($expand($location)));
-        }
-      }
-
-      foreach ($layout->mappedApplications($profile) as $url => $application) {
-        $protocol->setUrlHandler('default', '/' == $url ? '##' : '#^('.preg_quote($url, '#').')($|/.+)#', new ScriptletHandler(
-          $application->scriptlet(),
-          array_map($expand, $application->arguments()),
-          array_map($expand, array_merge($application->environment(), ['DOCUMENT_ROOT' => $docroot])),
-          $application->filters()
-        ));
-        foreach ($application->config()->sources() as $source) {
-          $pm->appendSource($source);
-        }
-      }
-
-      $l= Logger::getInstance();
-      $pm->hasProperties('log') && $l->configure($pm->getProperties('log'));
-      $cm= ConnectionManager::getInstance();
-      $pm->hasProperties('database') && $cm->configure($pm->getProperties('database'));
-      Console::writeLine('--> ', $protocol);
-    }
-    $server->init();
-
-    Console::writeLine('==> Server started');
-    $server->service();
-    $server->shutdown();
+    $server->serve($layout, $profile, $webroot, $webroot->resolve($docroot));
     return 0;
   }
 }
