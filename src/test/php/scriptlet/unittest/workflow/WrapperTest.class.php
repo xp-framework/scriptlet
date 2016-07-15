@@ -79,7 +79,7 @@ class WrapperTest extends \unittest\TestCase {
   #[@test]
   public function getParamNames() {
     $this->assertEquals(
-      ['orderdate', 'shirt_size', 'shirt_qty', 'notify_me', 'options', 'person_ids'], 
+      ['orderdate', 'shirt_size', 'shirt_qty', 'notify_me', 'options', 'person_ids'],
       $this->wrapper->getParamNames()
     );
   }
@@ -578,5 +578,33 @@ class WrapperTest extends \unittest\TestCase {
       ]
     ]);
     $this->assertFalse($this->handler->errorsOccured());
+  }
+
+  /**
+   * Test the load() method
+   *
+   */
+  #[@test]
+  public function multipleFileUpload() {
+    $this->wrapper->registerParamInfo(
+      'attachments',
+      Wrapper::OCCURRENCE_MULTIPLE | OCCURRENCE_OPTIONAL,
+      null,
+      ['scriptlet.xml.workflow.casters.ToFileData'],
+      ['scriptlet.xml.workflow.checkers.FileUploadPrechecker'],
+      null
+    );
+
+    $this->loadFromRequest([
+      'attachments' => [
+        'name'     => ["test.txt", "test2.txt"],
+        'type'     => ["text/plain", "text/plain"],
+        'tmp_name' => ["/tmp/phpKLEGHj", "/tmp/phpKLEGew"],
+        'error'    => [0,0],
+        'size'     => [0,0]
+      ]
+    ]);
+    $this->assertInstanceOf('array', $this->wrapper->getValue('attachments'));
+    $this->assertInstanceOf('scriptlet\xml\workflow\FileData', $this->wrapper->getValue('attachments')[0]);
   }
 }

@@ -281,6 +281,14 @@ class HttpScriptletRequest extends \lang\Object implements Request {
    * @return string
    */
   protected function importParam($value) {
+
+    // Handle file uploads - these are represented as arrays containg elements for each
+    // file being uploaded
+    // TODO: Do filenames need utf-8 conversion?
+    if (is_array($value)) {
+      return $value;
+    }
+
     if (false === iconv('utf-8', \xp::ENCODING, $value)) {
       \xp::gc(__FILE__, __LINE__ - 1);
       return iconv('iso-8859-1', \xp::ENCODING, $value);
