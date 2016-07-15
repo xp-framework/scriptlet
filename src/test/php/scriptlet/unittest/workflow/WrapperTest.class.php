@@ -581,7 +581,7 @@ class WrapperTest extends \unittest\TestCase {
   }
 
   /**
-   * Test the load() method
+   * Test the load() method for multiple files
    *
    */
   #[@test]
