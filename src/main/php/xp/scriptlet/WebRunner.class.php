@@ -73,7 +73,7 @@ class WebRunner {
    * @throws lang.IllegalArgumentException
    */
   private static function server($mode, $address, $arguments) {
-    if (!($class= @self::$modes[$mode])) {
+    if (!isset(self::$modes[$mode])) {
       throw new IllegalArgumentException(sprintf(
         'Unkown server mode "%s", supported: [%s]',
         $mode,
@@ -90,7 +90,7 @@ class WebRunner {
       $port= (int)substr($address, $p + 1);
     }
 
-    return XPClass::forName($class)->getConstructor()->newInstance(array_merge(
+    return XPClass::forName(self::$modes[$mode])->getConstructor()->newInstance(array_merge(
       [$host, $port],
       $arguments
     ));
@@ -133,6 +133,8 @@ class WebRunner {
       } else if ('-m' === $args[$i]) {
         $arguments= explode(',', $args[++$i]);
         $mode= array_shift($arguments);
+      } else if ('-s' === $args[$i]) {
+        $layout= (new Source($args[++$i], $config))->layout();
       } else {
         $layout= (new Source($args[$i], $config))->layout();
         break;

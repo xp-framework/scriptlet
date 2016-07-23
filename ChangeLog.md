@@ -3,6 +3,9 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Also allow explicitely passing `-s [source]` instead of having to pass
+  it as last parameter. Useful e.g. in Dockerfiles.
+  (@thekid)
 * Allow omitting the port in `-a`; defaulting it to **8080** - @thekid.
 
 ## 8.2.0 / 2016-07-11
