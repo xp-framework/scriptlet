@@ -3,6 +3,8 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.2.1 / 2016-07-23
+
 * Also allow explicitely passing `-s [source]` instead of having to pass
   it as last parameter. Useful e.g. in Dockerfiles.
   (@thekid)
