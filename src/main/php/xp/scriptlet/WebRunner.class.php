@@ -50,7 +50,7 @@ new import('lang.ResourceProvider');
  *   ```sh
  *   $ xp web -m develop
  *   ```
- * The address the server listens to can be supplied via *-a {host}:{port}*.
+ * The address the server listens to can be supplied via *-a {host}[:{port}]*.
  * The profile can be changed via *-p {profile}* (and can be anything!). One
  * or more configuration sources may be passed via *-c {file.ini|dir}*.
  */
@@ -81,7 +81,15 @@ class WebRunner {
       ));
     }
 
-    sscanf($address, '%[^:]:%d', $host, $port);
+    $p= strpos($address, ':', '[' === $address{0} ? strpos($address, ']') : 0);
+    if (false === $p) {
+      $host= $address;
+      $port= 8080;
+    } else {
+      $host= substr($address, 0, $p);
+      $port= (int)substr($address, $p + 1);
+    }
+
     return XPClass::forName($class)->getConstructor()->newInstance(array_merge(
       [$host, $port],
       $arguments

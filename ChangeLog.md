@@ -3,6 +3,8 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Allow omitting the port in `-a`; defaulting it to **8080** - @thekid.
+
 ## 8.2.0 / 2016-07-11
 
 * Merged PR #10: Development webserver - @thekid
