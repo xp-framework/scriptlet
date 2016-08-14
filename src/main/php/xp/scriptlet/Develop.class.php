@@ -60,7 +60,8 @@ class Develop extends \lang\Object {
     ]);
     $options->withSetting('user_dir', $source.PATH_SEPARATOR.implode(PATH_SEPARATOR, $config));
 
-    // Pass classpath
+    // Pass classpath (TODO: This is fixed in XP 7.6.0, remove once
+    // this becomes minimum dependency)
     $cp= [];
     foreach (ClassLoader::getLoaders() as $delegate) {
       if ($delegate instanceof FileSystemClassLoader || $delegate instanceof ArchiveClassLoader) {
