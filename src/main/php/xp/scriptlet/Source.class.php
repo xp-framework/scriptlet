@@ -29,7 +29,7 @@ class Source extends \lang\Object {
     } else if (is_file($source)) {
       $this->layout= new WebConfiguration(new Properties($source), $config);
     } else if (is_dir($source)) {
-      $this->layout= new WebConfiguration(new Properties(new Path($source, WebConfiguration::INI)), $config);
+      $this->layout= new BasedOnWebroot($source, $config);
     } else {
       $name= ltrim($source, ':');
       try {

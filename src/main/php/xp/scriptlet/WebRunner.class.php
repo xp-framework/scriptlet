@@ -109,17 +109,8 @@ class WebRunner {
     $profile= 'dev';
     $mode= 'serve';
     $arguments= [];
-
-    $expand= function($in) use(&$webroot, &$docroot, &$profile) {
-      return is_string($in) ? strtr($in, [
-        '{WEBROOT}'       => $webroot,
-        '{PROFILE}'       => $profile,
-        '{DOCUMENT_ROOT}' => $docroot
-      ]) : $in;
-    };
-
-    $config= new Config([], $expand);
-    $layout= new BasedOnWebroot($webroot, $config);
+    $config= [];
+    $source= '.';
 
     for ($i= 0; $i < sizeof($args); $i++) {
        if ('-r' === $args[$i]) {
@@ -129,26 +120,20 @@ class WebRunner {
       } else if ('-p' === $args[$i]) {
         $profile= $args[++$i];
       } else if ('-c' === $args[$i]) {
-        $config->append($args[++$i]);
+        $config[]= $args[++$i];
       } else if ('-m' === $args[$i]) {
         $arguments= explode(',', $args[++$i]);
         $mode= array_shift($arguments);
       } else if ('-s' === $args[$i]) {
-        $layout= (new Source($args[++$i], $config))->layout();
+        $source= $args[++$i];
       } else {
-        $layout= (new Source($args[$i], $config))->layout();
+        $source= $args[$i];
         break;
       }
     }
 
     $server= self::server($mode, $address, $arguments);
-
-    Console::writeLine("\e[33m@", $server, "\e[0m");
-    Console::writeLine("\e[1mServing ", $layout);
-    Console::writeLine("\e[36m", str_repeat('═', 72), "\e[0m");
-    Console::writeLine();
-
-    $server->serve($layout, $profile, $webroot, $webroot->resolve($docroot));
+    $server->serve($source, $profile, $webroot, $webroot->resolve($docroot), $config);
     return 0;
   }
 }

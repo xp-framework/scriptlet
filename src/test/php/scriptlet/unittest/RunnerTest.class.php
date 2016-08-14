@@ -189,13 +189,21 @@ class RunnerTest extends TestCase {
   /**
    * Invoke Runner::main() and return output
    *
-   * @param  string $arg The web root
-   * @param  string $arg The configuration directory
-   * @param  string $arg The server profile
-   * @param  string $arg The script URL
+   * @param  string $webroot The web root
+   * @param  string $config The configuration directory
+   * @param  string $profile The server profile
+   * @param  string $url The script URL
    * @return string
    */
   private function run($webroot, $config, $profile, $url) {
+    $_ENV= [];
+    $_SERVER= [
+      'SERVER_PROTOCOL' => 'HTTP/1.1',
+      'REQUEST_METHOD'  => 'GET',
+      'REQUEST_URI'     => $url,
+      'HTTP_HOST'       => 'localhost',
+    ];
+
     ob_start();
     Runner::main([$webroot, $config, $profile, $url]);
     $content= ob_get_contents();
@@ -531,11 +539,10 @@ class RunnerTest extends TestCase {
   }
 
   #[@test]
-  public function main_with_directory() {
-    $temp= System::tempDir();
+  public function main_with_web_ini() {
 
     // Create web.ini in system's temp dir
-    $ini= new \io\File($temp, 'web.ini');
+    $ini= new \io\TempFile('ini');
     $ini->open(\io\File::WRITE);
     $ini->write(
       "[app]\n".
@@ -548,7 +555,7 @@ class RunnerTest extends TestCase {
     $ini->close();
 
     try {
-      $this->assertEquals('<h1>Welcome, we are open</h1>', $this->run('.', $temp, 'dev', '/'));
+      $this->assertEquals('<h1>Welcome, we are open</h1>', $this->run('.', $ini->getURI(), 'dev', '/'));
     } finally {
       $ini->unlink();
     }

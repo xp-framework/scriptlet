@@ -100,7 +100,7 @@ class Runner extends \lang\Object {
 
     $self->layout((new Source($source, $config))->layout())->run($args[3]);
   }
-  
+
   /**
    * Find which application the given url maps to
    *
