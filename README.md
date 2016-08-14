@@ -48,10 +48,10 @@ Override `doPost()` or any of the other methods named after HTTP request types t
 
 Running it
 ----------
-Use the `xpws` runner to serve your scriptlet:
+Use the `xp web` runner to serve your scriptlet:
 
 ```sh
-$ xpws -c com.example.web.HelloScriptlet
+$ xp web com.example.web.HelloScriptlet
 [xpws-dev#7312] running localhost:8080 @ /path/to/web/project - Press <Enter> to exit
 ```
 
