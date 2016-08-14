@@ -3,6 +3,11 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.2.4 / 2016-08-14
+
+* Merged PR #14: Fix classpath passed to development webserver 
+  (@thekid)
+
 ## 8.2.3 / 2016-08-14
 
 * Fixed code in XP webserver to merge POST and GET parameters in the same
