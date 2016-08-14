@@ -6,6 +6,7 @@ use xp\scriptlet\ServeDocumentRootStatically;
 use xp\scriptlet\WebConfiguration;
 use xp\scriptlet\SingleScriptlet;
 use xp\scriptlet\WebLayout;
+use xp\scriptlet\BasedOnWebroot;
 use scriptlet\HttpScriptlet;
 use lang\ClassLoader;
 use lang\System;
@@ -54,7 +55,7 @@ class SourceTest extends \unittest\TestCase {
 
   #[@test]
   public function from_directory() {
-    $this->assertInstanceOf(WebConfiguration::class, (new Source(self::$dir))->layout());
+    $this->assertInstanceOf(BasedOnWebroot::class, (new Source(self::$dir))->layout());
   }
 
   #[@test]

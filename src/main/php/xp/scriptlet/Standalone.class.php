@@ -23,12 +23,13 @@ abstract class Standalone extends \lang\Object {
   /**
    * Serve requests
    *
-   * @param  xp.scriptlet.WebLayout $layout
+   * @param  string $source
    * @param  string $profile
-   * @param  string $webroot
-   * @param  string $docroot
+   * @param  io.Path $webroot
+   * @param  io.Path $docroot
+   * @param  string[] $config
    */
-  public function serve(WebLayout $layout, $profile, $webroot, $docroot) {
+  public function serve($source, $profile, $webroot, $docroot, $config) {
     $this->server->init();
     $protocol= $this->server->setProtocol(new HttpProtocol(function($host, $method, $query, $status, $error) {
       Console::writeLinef(
@@ -51,6 +52,12 @@ abstract class Standalone extends \lang\Object {
         '{DOCUMENT_ROOT}' => $docroot
       ]) : $in;
     };
+    $layout= (new Source($source, new Config($config, $expand)))->layout();
+
+    Console::writeLine("\e[33m@", $this, "\e[0m");
+    Console::writeLine("\e[1mServing ", $layout);
+    Console::writeLine("\e[36m", str_repeat('═', 72), "\e[0m");
+    Console::writeLine();
 
     $resources= $layout->staticResources($profile);
     if (null === $resources) {
@@ -71,8 +78,8 @@ abstract class Standalone extends \lang\Object {
         array_map($expand, array_merge($application->environment(), ['DOCUMENT_ROOT' => $docroot])),
         $application->filters()
       ));
-      foreach ($application->config()->sources() as $source) {
-        $pm->appendSource($source);
+      foreach ($application->config()->sources() as $s) {
+        $pm->appendSource($s);
       }
     }
 

@@ -65,7 +65,5 @@ class BasedOnWebroot extends \lang\Object implements WebLayout {
   }
 
   /** @return string */
-  public function toString() {
-    return nameof($this).'('.$this->webroot.')';
-  }
+  public function toString() { return nameof($this).'('.$this->webroot.')'; }
 }
