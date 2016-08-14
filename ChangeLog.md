@@ -3,11 +3,15 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
-## 8.2.2 / 2016-08-14
+## 8.2.3 / 2016-08-14
 
 * Fixed code in XP webserver to merge POST and GET parameters in the same
   way that PHP's SAPIs do.
   (@thekid)
+
+## 8.2.2 / 2016-07-23
+
+* Add compatibility with `xp-framework/rdbms` 8.0-SERIES - @thekid
 
 ## 8.2.1 / 2016-07-23
 

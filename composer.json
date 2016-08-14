@@ -9,7 +9,7 @@
     "xp-framework/core": "^7.0 | ^6.5",
     "xp-framework/http": "^7.0 | ^6.2",
     "xp-framework/xml": "^7.0 | ^6.3",
-    "xp-framework/rdbms": "^7.0 | ^6.5",
+    "xp-framework/rdbms": "^8.0 | ^7.0 | ^6.5",
     "xp-framework/mail": "^7.0 | ^6.1",
     "xp-framework/logging": "^7.0 | ^6.5",
     "xp-framework/networking": "^7.0 | ^6.6",
