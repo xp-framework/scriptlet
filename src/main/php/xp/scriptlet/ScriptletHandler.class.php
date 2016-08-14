@@ -64,7 +64,14 @@ class ScriptletHandler extends AbstractUrlHandler {
       }
     }
     $request->setHeaders($headers);
-    $request->setParams($url->getParams());
+
+    // Merge POST and GET parameters
+    if ('application/x-www-form-urlencoded' === $headers['Content-Type']) {
+      parse_str($data, $params);
+      $request->setParams(array_merge($url->getParams(), $params));
+    } else {
+      $request->setParams($url->getParams());
+    }
 
     // Rewire request and response I/O
     $request->readData= function() use($data) {

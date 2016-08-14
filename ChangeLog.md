@@ -3,6 +3,12 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.2.2 / 2016-08-14
+
+* Fixed code in XP webserver to merge POST and GET parameters in the same
+  way that PHP's SAPIs do.
+  (@thekid)
+
 ## 8.2.1 / 2016-07-23
 
 * Also allow explicitely passing `-s [source]` instead of having to pass
