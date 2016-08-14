@@ -54,6 +54,11 @@ abstract class Standalone extends \lang\Object {
     };
     $layout= (new Source($source, new Config($config, $expand)))->layout();
 
+    Console::writeLine("\e[33m@", $this, "\e[0m");
+    Console::writeLine("\e[1mServing ", $layout);
+    Console::writeLine("\e[36m", str_repeat('═', 72), "\e[0m");
+    Console::writeLine();
+
     $resources= $layout->staticResources($profile);
     if (null === $resources) {
       $protocol->setUrlHandler('default', '#^/#', new FileHandler(
@@ -83,9 +88,6 @@ abstract class Standalone extends \lang\Object {
     $cm= ConnectionManager::getInstance();
     $pm->hasProperties('database') && $cm->configure($pm->getProperties('database'));
 
-    Console::writeLine("\e[1mServing ", $layout);
-    Console::writeLine("\e[36m", str_repeat('═', 72), "\e[0m");
-    Console::writeLine();
     Console::writeLine("\e[33;1m>\e[0m Server started: \e[35;4m", $this->url, "\e[0m (", date('r'), ')');
     Console::writeLine('  PID ', getmypid(), '; press Ctrl+C to exit');
     Console::writeLine();
