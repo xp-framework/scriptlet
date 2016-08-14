@@ -67,6 +67,7 @@ class Develop extends \lang\Object {
         $cp[]= $delegate->path;
       }
     }
+    set_include_path('');
     $options->withClassPath($cp);
 
     // Export environment
