@@ -18,11 +18,11 @@ class BasedOnWebroot extends \lang\Object implements WebLayout {
   /**
    * Creates a new instance
    *
-   * @param  io.Path $webroot
+   * @param  io.Path|string $webroot
    * @param  xp.scriptlet.Config $config
    */
-  public function __construct(Path $webroot, Config $config= null) {
-    $this->webroot= $webroot;
+  public function __construct($webroot, Config $config= null) {
+    $this->webroot= $webroot instanceof Path ? $webroot : new Path($webroot);
     $this->config= $config;
   }
 
