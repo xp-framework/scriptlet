@@ -33,11 +33,16 @@ class BasedOnWebroot extends \lang\Object implements WebLayout {
    */
   private function determineLayout() {
     if (null === $this->layout) {
-      $ini= new Path($this->webroot, 'etc', WebConfiguration::INI);
+      $ini= new Path($this->webroot, WebConfiguration::INI);
       if ($ini->exists()) {
         $this->layout= new WebConfiguration(new Properties($ini->toString()), $this->config);
       } else {
-        $this->layout= new ServeDocumentRootStatically();
+        $ini= new Path($this->webroot, 'etc', WebConfiguration::INI);
+        if ($ini->exists()) {
+          $this->layout= new WebConfiguration(new Properties($ini->toString()), $this->config);
+        } else {
+          $this->layout= new ServeDocumentRootStatically();
+        }
       }
     }
     return $this->layout;
