@@ -3,6 +3,12 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.2.5 / 2016-08-17
+
+* Merged PR #15: Remove duplicate '/etc' in case of apache request. Fixes
+  a bug causes by the refactoring done in 8.2.4.
+  (@beorgler, @kiesel, @thekid)
+
 ## 8.2.4 / 2016-08-14
 
 * Merged PR #14: Fix classpath passed to development webserver 
