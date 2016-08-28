@@ -280,7 +280,7 @@ class RunnerTest extends TestCase {
 
   #[@test, @expect(class= 'lang.IllegalArgumentException', withMessage= 'Could not find app responsible for request to /')]
   public function noApplication() {
-    with ($p= new \util\Properties()); {
+    with ($p= new \util\Properties(null)); {
       $p->load(new \io\streams\MemoryInputStream(''));
       $p->writeSection('app');
       $p->writeString('app', 'map.service', '/service');

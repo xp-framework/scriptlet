@@ -31,8 +31,9 @@ class WebConfigurationTest extends \unittest\TestCase {
     return new WebConfiguration($properties, new Config([]));
   }
 
+  /** @return util.Properties */
   private function newProperties() {
-    $p= new Properties();
+    $p= new Properties(null);
     $p->load(new MemoryInputStream(''));
     return $p;
   }
