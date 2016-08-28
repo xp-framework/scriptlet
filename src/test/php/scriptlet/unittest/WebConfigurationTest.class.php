@@ -5,6 +5,8 @@ use xp\scriptlet\WebConfiguration;
 use xp\scriptlet\Config;
 use scriptlet\HttpScriptlet;
 use lang\ClassLoader;
+use util\Properties;
+use io\streams\MemoryInputStream;
 
 /**
  * TestCase
@@ -29,9 +31,15 @@ class WebConfigurationTest extends \unittest\TestCase {
     return new WebConfiguration($properties, new Config([]));
   }
 
+  private function newProperties() {
+    $p= new Properties();
+    $p->load(new MemoryInputStream(''));
+    return $p;
+  }
+
   #[@test]
   public function configure_with_all_possible_settings() {
-    with ($p= \util\Properties::fromString('')); {
+    with ($p= $this->newProperties()); {
       $p->writeSection('app');
       $p->writeString('app', 'map.service', '/service');
 
@@ -59,7 +67,7 @@ class WebConfigurationTest extends \unittest\TestCase {
 
   #[@test, @expect(class= 'lang.IllegalArgumentException', withMessage= 'No flag named WebDebug::UNKNOWN')]
   public function configure_with_unknown_debug_flags_raises_exception() {
-    with ($p= \util\Properties::fromString('')); {
+    with ($p= $this->newProperties()); {
       $p->writeSection('app');
       $p->writeString('app', 'map.service', '/service');
       $p->writeSection('app::service');
@@ -71,7 +79,7 @@ class WebConfigurationTest extends \unittest\TestCase {
 
   #[@test, @expect(class= 'lang.IllegalStateException', withMessage= 'Web misconfigured: "app" section missing or broken')]
   public function configure_with_empty_mappings_raises_exception() {
-    with ($p= \util\Properties::fromString('')); {
+    with ($p= $this->newProperties()); {
       $p->writeSection('app');
 
       $this->newConfiguration($p)->mappedApplications();
@@ -80,7 +88,7 @@ class WebConfigurationTest extends \unittest\TestCase {
 
   #[@test, @expect(class= 'lang.IllegalStateException', withMessage= 'Web misconfigured: "app" section missing or broken')]
   public function configure_with_invalid_mappings_raises_exception() {
-    with ($p= \util\Properties::fromString('')); {
+    with ($p= $this->newProperties()); {
       $p->writeSection('app');
       $p->writeString('app', 'not.a.mapping', 1);
 
@@ -90,7 +98,7 @@ class WebConfigurationTest extends \unittest\TestCase {
 
   #[@test]
   public function old_style_mappings_via_pipe_syntax_supported() {
-    with ($p= \util\Properties::fromString('')); {
+    with ($p= $this->newProperties()); {
       $p->writeSection('app');
       $p->writeString('app', 'mappings', '/service:service|/:global');
 
@@ -109,7 +117,7 @@ class WebConfigurationTest extends \unittest\TestCase {
 
   #[@test, @expect(class= 'lang.IllegalStateException', withMessage= 'Web misconfigured: Section app::service mapped by /service missing')]
   public function old_style_mappings_without_corresponding_section_raises_exception() {
-    with ($p= \util\Properties::fromString('')); {
+    with ($p= $this->newProperties()); {
       $p->writeSection('app');
       $p->writeString('app', 'mappings', '/service:service');
 
@@ -119,7 +127,7 @@ class WebConfigurationTest extends \unittest\TestCase {
 
   #[@test]
   public function mappings() {
-    with ($p= \util\Properties::fromString('')); {
+    with ($p= $this->newProperties()); {
       $p->writeSection('app');
       $p->writeString('app', 'map.service', '/service');
       $p->writeString('app', 'map.global', '/');
@@ -139,7 +147,7 @@ class WebConfigurationTest extends \unittest\TestCase {
 
   #[@test, @expect(class= 'lang.IllegalStateException', withMessage= 'Web misconfigured: Section app::service mapped by /service missing')]
   public function mappings_without_corresponding_section_raises_exception() {
-    with ($p= \util\Properties::fromString('')); {
+    with ($p= $this->newProperties()); {
       $p->writeSection('app');
       $p->writeString('app', 'map.service', '/service');
 

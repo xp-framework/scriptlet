@@ -6,7 +6,7 @@
   "description" : "Scriptlets for the XP Framework",
   "keywords": ["module", "xp"],
   "require" : {
-    "xp-framework/core": "^7.0 | ^6.5",
+    "xp-framework/core": "^8.0 | ^7.0 | ^6.5",
     "xp-framework/http": "^7.0 | ^6.2",
     "xp-framework/xml": "^7.0 | ^6.3",
     "xp-framework/rdbms": "^8.0 | ^7.0 | ^6.5",

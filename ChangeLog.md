@@ -3,6 +3,12 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.3.0 / 2016-08-28
+
+* Added forward compatibility with XP 8.0.0: Refrain from using deprecated
+  `util.Properties::fromString()`
+  (@thekid)
+
 ## 8.2.5 / 2016-08-17
 
 * Merged PR #15: Remove duplicate '/etc' in case of apache request. Fixes
