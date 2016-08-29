@@ -3,6 +3,11 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.3.3 / 2016-08-29
+
+* Made compatible with xp-framework/network v8.0.0
+  (@thekid)
+
 ## 8.3.2 / 2016-08-29
 
 * Made compatible with xp-framework/rdbms v9.0.0, xp-framework/http v8.0.0
