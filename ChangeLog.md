@@ -3,6 +3,12 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.3.2 / 2016-08-29
+
+* Made compatible with xp-framework/rdbms v9.0.0, xp-framework/http v8.0.0
+  and xp-framework/xml v8.0.0 - see xp-framework/rfc#310
+  (@thekid)
+
 ## 8.3.1 / 2016-08-29
 
 * Made `xp web` honor the contents of the *SERVER_PROFILE* environment
