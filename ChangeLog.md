@@ -3,6 +3,12 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.3.1 / 2016-08-29
+
+* Made `xp web` honor the contents of the *SERVER_PROFILE* environment
+  variable like web-main from the SAPI adapters does.
+  (@thekid)
+
 ## 8.3.0 / 2016-08-28
 
 * Added forward compatibility with XP 8.0.0: Refrain from using deprecated

@@ -106,7 +106,7 @@ class WebRunner {
     $webroot= new Path(getcwd());
     $docroot= new Path($webroot, 'static');
     $address= 'localhost:8080';
-    $profile= 'dev';
+    $profile= getenv('SERVER_PROFILE') ?: 'dev';
     $mode= 'serve';
     $arguments= [];
     $config= [];
