@@ -240,7 +240,7 @@ class Runner extends \lang\Object {
 
       if (isset($application->logLevels()[$e->getStatus()])) {
         $logLevel= $application->logLevels()[$e->getStatus()];
-        $cat->$logLevel($e);
+        $cat->{$logLevel}($e);
       } else {
         $cat->error($e);
       }
