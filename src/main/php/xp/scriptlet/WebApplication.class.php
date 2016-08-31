@@ -17,6 +17,7 @@ class WebApplication extends \lang\Object {
   protected $filters = [];
   protected $environment = [];
   protected $debug = 0;
+  protected $logLevels = [];
 
   /**
    * Creates a new web application named by the given name
@@ -182,7 +183,28 @@ class WebApplication extends \lang\Object {
   public function environment() {
     return $this->environment;
   }
-  
+
+  /**
+   * Sets log level for specific scriptlet exceptions
+   *
+   * @param int $httpStatusCode
+   * @param string $logLevel
+   * @return self this
+   */
+  public function withLogLevel($httpStatusCode, $logLevel) {
+    $this->logLevels[$httpStatusCode]= $logLevel;
+    return $this;
+  }
+
+  /**
+   * Returns log level configuration for scriptlet exceptions
+   *
+   * @return array
+   */
+  public function logLevels() {
+    return $this->logLevels;
+  }
+
   /**
    * Creates a string representation of this object
    *
