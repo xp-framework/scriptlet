@@ -210,7 +210,7 @@ class WebApplication extends \lang\Object {
   /**
    * Returns log level configuration for scriptlet exceptions
    *
-   * @return array
+   * @return string[]
    */
   public function logLevels() {
     return $this->logLevels;
