@@ -2,6 +2,9 @@
 
 use scriptlet\Filter;
 use lang\XPClass;
+use util\Objects;
+use util\log\LogCategory;
+use lang\IllegalArgumentException;
 
 /**
  * Represents a web application
@@ -17,6 +20,7 @@ class WebApplication extends \lang\Object {
   protected $filters = [];
   protected $environment = [];
   protected $debug = 0;
+  protected $logLevels = [];
 
   /**
    * Creates a new web application named by the given name
@@ -182,7 +186,36 @@ class WebApplication extends \lang\Object {
   public function environment() {
     return $this->environment;
   }
-  
+
+  /**
+   * Sets log level for specific scriptlet exceptions
+   *
+   * @param int $httpStatusCode
+   * @param string $logLevel
+   * @return self this
+   */
+  public function withLogLevel($httpStatusCode, $logLevel) {
+    if (!method_exists(LogCategory::class, $logLevel)) {
+      throw new IllegalArgumentException(sprintf(
+        'Invalid log level "%s" configured for status code %d of application "%s"',
+        $logLevel,
+        $httpStatusCode,
+        $this->name()
+      ));
+    }
+    $this->logLevels[$httpStatusCode]= $logLevel;
+    return $this;
+  }
+
+  /**
+   * Returns log level configuration for scriptlet exceptions
+   *
+   * @return string[]
+   */
+  public function logLevels() {
+    return $this->logLevels;
+  }
+
   /**
    * Creates a string representation of this object
    *
@@ -196,6 +229,7 @@ class WebApplication extends \lang\Object {
       "  [debug        ] %s\n".
       "  [arguments    ] [%s]\n".
       "  [environment  ] %s\n".
+      "  [logLevels  ] %s\n".
       "}",
       nameof($this),
       $this->name,
@@ -203,7 +237,8 @@ class WebApplication extends \lang\Object {
       $this->scriptlet ? $this->scriptlet->getName() : '(none)',
       implode(' | ', WebDebug::namesOf($this->debug)),
       implode(', ', $this->arguments),
-      \xp::stringOf($this->environment, '  ')
+      \xp::stringOf($this->environment, '  '),
+      \xp::stringOf($this->logLevels(), '  ')
     );
   }
   
@@ -221,6 +256,7 @@ class WebApplication extends \lang\Object {
       $this->arguments === $cmp->arguments &&
       $this->environment === $cmp->environment &&
       $this->scriptlet === null ? null === $cmp->scriptlet : $this->scriptlet->equals($cmp->scriptlet) &&
+      Objects::equal($this->logLevels, $cmp->logLevels) &&
       0 === $this->config->compareTo($cmp->config)
     );
   }

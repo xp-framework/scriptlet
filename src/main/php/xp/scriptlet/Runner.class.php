@@ -1,5 +1,6 @@
 <?php namespace xp\scriptlet;
 
+use scriptlet\ScriptletException;
 use util\Properties;
 use util\PropertyManager;
 use util\RegisteredPropertySource;
@@ -236,8 +237,13 @@ class Runner extends \lang\Object {
 
       // Service
       $instance->service($request, $response);
-    } catch (\scriptlet\ScriptletException $e) {
-      $cat->error($e);
+    } catch (ScriptletException $e) {
+      if (isset($application->logLevels()[$e->getStatus()])) {
+        $logLevel= $application->logLevels()[$e->getStatus()];
+        $cat->{$logLevel}($e);
+      } else {
+        $cat->error($e);
+      }
 
       // TODO: Instead of checking for a certain method, this should
       // check if the scriptlet class implements a certain interface

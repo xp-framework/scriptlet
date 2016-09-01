@@ -118,6 +118,12 @@ class WebConfiguration extends \lang\Object implements WebLayout {
     foreach ($this->readArray($profile, $section, 'filters', []) as $filter) {
       $app->withFiter($filter);
     }
+
+    // Log levels for http status codes
+    $logLevels= $this->readMap($profile, $section, 'log-level', []);
+    foreach ($logLevels as $httpStatusCode => $logLevel) {
+      $app->withLogLevel($httpStatusCode, $logLevel);
+    }
    
     return $app;
   }
