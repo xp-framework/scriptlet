@@ -1,5 +1,7 @@
 <?php namespace xp\scriptlet;
 
+use lang\IllegalArgumentException;
+use scriptlet\ScriptletException;
 use util\Properties;
 use util\PropertyManager;
 use util\RegisteredPropertySource;
@@ -236,10 +238,18 @@ class Runner extends \lang\Object {
 
       // Service
       $instance->service($request, $response);
-    } catch (\scriptlet\ScriptletException $e) {
+    } catch (ScriptletException $e) {
 
       if (isset($application->logLevels()[$e->getStatus()])) {
         $logLevel= $application->logLevels()[$e->getStatus()];
+        if (!method_exists($cat, $logLevel)) {
+          throw new IllegalArgumentException(sprintf(
+            'Invalid log level "%s" configured for status code %d of application "%s"',
+            $logLevel,
+            $e->getStatus(),
+            $application->name()
+          ));
+        }
         $cat->{$logLevel}($e);
       } else {
         $cat->error($e);
