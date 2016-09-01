@@ -3,6 +3,11 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.4.0 / 2016-09-01
+
+* Merged pull request #16: Configurable log level for scriptlet exceptions
+  (@johannes85)
+
 ## 8.3.3 / 2016-08-29
 
 * Made compatible with xp-framework/network v8.0.0
