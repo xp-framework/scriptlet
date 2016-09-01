@@ -49,7 +49,7 @@ class WebConfigurationTest extends \unittest\TestCase {
       $p->writeString('app::service', 'prop-base', '{WEBROOT}/etc/{PROFILE}');
       $p->writeString('app::service', 'init-envs', 'ROLE:admin|CLUSTER:a');
       $p->writeString('app::service', 'init-params', 'a|b');
-      $p->writeHash('app::service', 'log-level', [404 => 'warn', 403 => 'error']);
+      $p->writeMap('app::service', 'log-level', [404 => 'warn', 403 => 'error']);
 
       $p->writeSection('app::service@dev');
       $p->writeString('app::service@dev', 'debug', 'STACKTRACE|ERRORS');
