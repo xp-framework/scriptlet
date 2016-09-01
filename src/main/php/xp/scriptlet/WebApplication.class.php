@@ -2,6 +2,7 @@
 
 use scriptlet\Filter;
 use lang\XPClass;
+use util\Objects;
 
 /**
  * Represents a web application
@@ -245,7 +246,7 @@ class WebApplication extends \lang\Object {
       $this->arguments === $cmp->arguments &&
       $this->environment === $cmp->environment &&
       $this->scriptlet === null ? null === $cmp->scriptlet : $this->scriptlet->equals($cmp->scriptlet) &&
-      $this->logLevels === $cmp->logLevels &&
+      Objects::equal($this->logLevels, $cmp->logLevels) &&
       0 === $this->config->compareTo($cmp->config)
     );
   }
