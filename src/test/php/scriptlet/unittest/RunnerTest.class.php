@@ -1,6 +1,9 @@
 <?php namespace scriptlet\unittest;
 
+use lang\ClassLoader;
+use peer\http\HttpConstants;
 use unittest\TestCase;
+use util\log\Logger;
 use xp\scriptlet\Runner;
 use xml\Stylesheet;
 use xml\Node;
@@ -10,6 +13,7 @@ use scriptlet\HttpScriptlet;
 use scriptlet\xml\XMLScriptlet;
 use lang\Runtime;
 use lang\System;
+use xp\scriptlet\WebApplication;
 
 /**
  * TestCase
@@ -17,13 +21,13 @@ use lang\System;
  * @see   xp://xp.scriptlet.Runner
  */
 class RunnerTest extends TestCase {
-  private static $welcomeScriptlet, $errorScriptlet, $debugScriptlet, $xmlScriptlet, $exitScriptlet;
+  private static $welcomeScriptlet, $errorScriptlet, $debugScriptlet, $xmlScriptlet, $exitScriptlet, $notFoundScriptlet;
   private static $propertySource;
   private static $layout;
   
   #[@beforeClass]
   public static function defineScriptlets() {
-    self::$errorScriptlet= \lang\ClassLoader::defineClass('ErrorScriptlet', 'scriptlet.HttpScriptlet', ['util.log.Traceable'], '{
+    self::$errorScriptlet= ClassLoader::defineClass('ErrorScriptlet', 'scriptlet.HttpScriptlet', ['util.log.Traceable'], '{
       public function setTrace($cat) {
         $cat->debug("Injected", nameof($cat));
       }
@@ -32,7 +36,7 @@ class RunnerTest extends TestCase {
         throw new \lang\IllegalAccessException("No shoes, no shorts, no service");
       }
     }');
-    self::$welcomeScriptlet= \lang\ClassLoader::defineClass('WelcomeScriptlet', 'scriptlet.HttpScriptlet', [], '{
+    self::$welcomeScriptlet= ClassLoader::defineClass('WelcomeScriptlet', 'scriptlet.HttpScriptlet', [], '{
       private $config;
       public function __construct($config= null) {
         $this->config= $config;
@@ -41,7 +45,7 @@ class RunnerTest extends TestCase {
         $response->write("<h1>Welcome, we are open".($this->config ? " & ".$this->config->toString(): "")."</h1>");
       }
     }');
-    self::$xmlScriptlet= \lang\ClassLoader::defineClass('XmlScriptletImpl', 'scriptlet.xml.XMLScriptlet', [], '{
+    self::$xmlScriptlet= ClassLoader::defineClass('XmlScriptletImpl', 'scriptlet.xml.XMLScriptlet', [], '{
       protected function _response() {
         $res= parent::_response();
         $stylesheet= (new \xml\Stylesheet())
@@ -61,7 +65,7 @@ class RunnerTest extends TestCase {
         $response->addFormresult(new \xml\Node("result", "Welcome, we are open"));
       }
     }');
-    self::$debugScriptlet= \lang\ClassLoader::defineClass('DebugScriptlet', 'scriptlet.HttpScriptlet', [], '{
+    self::$debugScriptlet= ClassLoader::defineClass('DebugScriptlet', 'scriptlet.HttpScriptlet', [], '{
       protected $title, $date;
 
       public function __construct($title, $date) {
@@ -81,9 +85,14 @@ class RunnerTest extends TestCase {
         $response->write("<h2>".nameof($config)."</h2>");
       }
     }');
-    self::$exitScriptlet= \lang\ClassLoader::defineClass('ExitScriptlet', 'scriptlet.HttpScriptlet', [], '{
+    self::$exitScriptlet= ClassLoader::defineClass('ExitScriptlet', 'scriptlet.HttpScriptlet', [], '{
       public function doGet($request, $response) {
         \lang\Runtime::halt($request->getParam("code"), $request->getParam("message"));
+      }
+    }');
+    self::$notFoundScriptlet= ClassLoader::defineClass('NotFoundScriptlet', 'scriptlet.HttpScriptlet', [], '{
+      public function doGet($request, $response) {
+        throw new \scriptlet\ScriptletException("Not found", \peer\http\HttpConstants::STATUS_NOT_FOUND);
       }
     }');
   }
@@ -173,6 +182,17 @@ class RunnerTest extends TestCase {
       ->withScriptlet(self::$exitScriptlet->getName())
     );
 
+    // The not found application with default error level (error)
+    $r->mapApplication('/notfounderror', (new WebApplication('notfounderror'))
+      ->withScriptlet(self::$notFoundScriptlet->getName())
+    );
+
+    // The not found application with error level warn
+    $r->mapApplication('/notfoundwarn', (new WebApplication('notfoundwarn'))
+      ->withScriptlet(self::$notFoundScriptlet->getName())
+      ->withLogLevel(HttpConstants::STATUS_NOT_FOUND, 'warn')
+    );
+
     // The welcome application
     $r->mapApplication('/', (new \xp\scriptlet\WebApplication('welcome'))
       ->withScriptlet(self::$welcomeScriptlet->getName())
@@ -182,7 +202,7 @@ class RunnerTest extends TestCase {
         : \xp\scriptlet\WebDebug::NONE
       )
     );
-    
+
     return $r;
   }
 
@@ -433,6 +453,22 @@ class RunnerTest extends TestCase {
         $buffer
       );
     }
+  }
+
+  #[@test]
+  public function notFoundExceptionLevelConfigure() {
+    $cat= Logger::getInstance()->getCategory('scriptlet');
+    $appender= $cat->addAppender(new BufferedAppender());
+
+    $this->runWith('dev', '/notfounderror');
+    $buffer= $appender->getBuffer();
+    $this->assertContained('error] Exception', $buffer);
+
+    $this->runWith('dev', '/notfoundwarn');
+    $buffer= $appender->getBuffer();
+    $this->assertContained('warn] Exception', $buffer);
+
+    $cat->removeAppender($appender);
   }
 
   #[@test]
