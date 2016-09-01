@@ -218,6 +218,7 @@ class WebApplication extends \lang\Object {
       "  [debug        ] %s\n".
       "  [arguments    ] [%s]\n".
       "  [environment  ] %s\n".
+      "  [logLevels  ] %s\n".
       "}",
       nameof($this),
       $this->name,
@@ -225,7 +226,8 @@ class WebApplication extends \lang\Object {
       $this->scriptlet ? $this->scriptlet->getName() : '(none)',
       implode(' | ', WebDebug::namesOf($this->debug)),
       implode(', ', $this->arguments),
-      \xp::stringOf($this->environment, '  ')
+      \xp::stringOf($this->environment, '  '),
+      \xp::stringOf($this->logLevels(), '  ')
     );
   }
   
@@ -243,6 +245,7 @@ class WebApplication extends \lang\Object {
       $this->arguments === $cmp->arguments &&
       $this->environment === $cmp->environment &&
       $this->scriptlet === null ? null === $cmp->scriptlet : $this->scriptlet->equals($cmp->scriptlet) &&
+      $this->logLevels === $cmp->logLevels &&
       0 === $this->config->compareTo($cmp->config)
     );
   }
