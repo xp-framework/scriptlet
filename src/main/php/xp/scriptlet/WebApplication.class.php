@@ -3,6 +3,8 @@
 use scriptlet\Filter;
 use lang\XPClass;
 use util\Objects;
+use util\log\LogCategory;
+use lang\IllegalArgumentException;
 
 /**
  * Represents a web application
@@ -193,6 +195,14 @@ class WebApplication extends \lang\Object {
    * @return self this
    */
   public function withLogLevel($httpStatusCode, $logLevel) {
+    if (!method_exists(LogCategory::class, $logLevel)) {
+      throw new IllegalArgumentException(sprintf(
+        'Invalid log level "%s" configured for status code %d of application "%s"',
+        $logLevel,
+        $httpStatusCode,
+        $this->name()
+      ));
+    }
     $this->logLevels[$httpStatusCode]= $logLevel;
     return $this;
   }

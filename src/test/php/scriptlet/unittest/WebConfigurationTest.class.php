@@ -1,6 +1,7 @@
 <?php namespace scriptlet\unittest;
 
 use util\RegisteredPropertySource;
+use xp\scriptlet\WebApplication;
 use xp\scriptlet\WebConfiguration;
 use xp\scriptlet\Config;
 use scriptlet\HttpScriptlet;
@@ -67,6 +68,12 @@ class WebConfigurationTest extends \unittest\TestCase {
         $this->newConfiguration($p)->mappedApplications('dev')
       );
     }
+  }
+
+  #[@test, @expect(class= 'lang.IllegalArgumentException', withMessage= 'Invalid log level "invalid" configured for status code 404 of application "test"')]
+  public function configure_with_invalid_loglevel() {
+    (new WebApplication('test'))
+      ->withLogLevel(404, 'invalid');
   }
 
   #[@test, @expect(class= 'lang.IllegalArgumentException', withMessage= 'No flag named WebDebug::UNKNOWN')]

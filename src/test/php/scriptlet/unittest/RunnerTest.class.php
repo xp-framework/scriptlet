@@ -193,12 +193,6 @@ class RunnerTest extends TestCase {
       ->withLogLevel(HttpConstants::STATUS_NOT_FOUND, 'warn')
     );
 
-    // The not found application with invvalid error level level
-    $r->mapApplication('/notfoundinvalidlevel', (new WebApplication('notfoundinvalidlevel'))
-      ->withScriptlet(self::$notFoundScriptlet->getName())
-      ->withLogLevel(HttpConstants::STATUS_NOT_FOUND, 'invalid')
-    );
-
     // The welcome application
     $r->mapApplication('/', (new \xp\scriptlet\WebApplication('welcome'))
       ->withScriptlet(self::$welcomeScriptlet->getName())
@@ -475,11 +469,6 @@ class RunnerTest extends TestCase {
     $this->assertContained('warn] Exception', $buffer);
 
     $cat->removeAppender($appender);
-  }
-
-  #[@test, @expect(class= 'lang.IllegalArgumentException', withMessage= 'Invalid log level "invalid" configured for status code 404 of application "notfoundinvalidlevel"')]
-  public function notFoundInvalidExceptionLevel() {
-    $this->runWith('dev', '/notfoundinvalidlevel');
   }
 
   #[@test]
