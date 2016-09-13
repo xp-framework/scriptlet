@@ -195,7 +195,7 @@ class WebApplication extends \lang\Object {
    * @return self this
    */
   public function withLogLevel($httpStatusCode, $logLevel) {
-    if (!method_exists(LogCategory::class, $logLevel)) {
+    if (!method_exists('util\log\LogCategory', $logLevel)) {
       throw new IllegalArgumentException(sprintf(
         'Invalid log level "%s" configured for status code %d of application "%s"',
         $logLevel,
