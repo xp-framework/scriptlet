@@ -8,6 +8,8 @@ Scriptlets for the XP Framework ChangeLog
 * Merged pull request #17: Made code php 5.4 compatible - fixing a regression
   introduced in 8.4.0.
   (@johannes85)
+* Merged pull request #13: Fix problem w/ file upload checking
+  (@guel1973, @kiesel)
 
 ## 8.4.0 / 2016-09-01
 
