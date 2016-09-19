@@ -294,4 +294,22 @@ class HttpScriptletRequestTest extends \unittest\TestCase {
 
     $this->assertEquals('value', $r->getCookie('name')->getValue());
   }
+
+  #[@test]
+  public function setMultipleArrayAsParam() {
+    $fileArray= [
+      "__handler"=> "handler.employee/support.employeesupporthandler",
+      "attachment" => [
+        "name"     => ["test.txt"],
+        "type"     => ["text/plain"],
+        "tmp_name" => ["/tmp/phpKLEGHj"],
+        "error"    => [0],
+        "size"     => [0]
+      ]
+    ];
+
+    $r= $this->newRequest('GET', 'http://localhost/', []);
+
+    $this->assertNull($r->setParams($fileArray));
+  }
 }
