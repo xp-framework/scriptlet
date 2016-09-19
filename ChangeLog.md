@@ -3,6 +3,12 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.4.1 / 2016-09-19
+
+* Merged pull request #17: Made code php 5.4 compatible - fixing a regression
+  introduced in 8.4.0.
+  (@johannes85)
+
 ## 8.4.0 / 2016-09-01
 
 * Merged pull request #16: Configurable log level for scriptlet exceptions
