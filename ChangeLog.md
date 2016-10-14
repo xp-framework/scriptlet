@@ -3,6 +3,12 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.4.2 / 2016-10-14
+
+* Fixed request to also honor a `Cookie` header and not only react on the
+  `$_COOKIE` superglobal; which is not set inside standalone servers.
+  (@thekid)
+
 ## 8.4.1 / 2016-09-19
 
 * Merged pull request #17: Made code php 5.4 compatible - fixing a regression

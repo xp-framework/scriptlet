@@ -116,8 +116,15 @@ class HttpScriptletRequest extends \lang\Object implements Request {
     if (is_array($this->cookies)) return;
 
     $this->cookies= [];
-    foreach ($_COOKIE as $name => $value) {
-      $this->cookies[$name]= new Cookie($name, $value);
+    if (isset($this->headers['Cookie'])) {
+      foreach (explode(';', $this->headers['Cookie']) as $cookie) {
+        sscanf(trim($cookie), "%[^=]=%[^\r]", $name, $value);
+        $this->cookies[$name]= new Cookie($name, $value);
+      }
+    } else {
+      foreach ($_COOKIE as $name => $value) {
+        $this->cookies[$name]= new Cookie($name, $value);
+      }
     }
   }
 

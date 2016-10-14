@@ -288,11 +288,19 @@ class HttpScriptletRequestTest extends \unittest\TestCase {
   }
 
   #[@test]
-  public function methodName() {
-    $_COOKIE['name']= 'value';
+  public function cookieSuperglobalHonored() {
+    $_COOKIE['name']= 'from-superglobal';
     $r= $this->newRequest('GET', 'http://localhost/', []);
 
-    $this->assertEquals('value', $r->getCookie('name')->getValue());
+    $this->assertEquals('from-superglobal', $r->getCookie('name')->getValue());
+  }
+
+  #[@test]
+  public function cookieHeaderHonored() {
+    $_COOKIE= [];
+    $r= $this->newRequest('GET', 'http://localhost/', ['Cookie' => 'name=from-header']);
+
+    $this->assertEquals('from-header', $r->getCookie('name')->getValue());
   }
 
   #[@test]
