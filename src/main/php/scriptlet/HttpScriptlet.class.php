@@ -413,7 +413,15 @@ class HttpScriptlet extends \lang\Object {
       }
     } catch (ScriptletException $e) {
       throw $e;
-    } catch (\lang\XPException $e) {
+    } catch (\lang\SystemExit $e) {
+      throw $e;
+    } catch (\Exception $e) {   // PHP 5
+      throw new ScriptletException(
+        'Request processing failed ['.$method.']: '.$e->getMessage(),
+        HttpConstants::STATUS_INTERNAL_SERVER_ERROR,
+        $e
+      );
+    } catch (\Throwable $e) {   // PHP 7
       throw new ScriptletException(
         'Request processing failed ['.$method.']: '.$e->getMessage(),
         HttpConstants::STATUS_INTERNAL_SERVER_ERROR,
