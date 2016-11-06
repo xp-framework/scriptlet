@@ -3,6 +3,8 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.4.3 / 2016-11-06
+
 * Fixed #18: Uncaught errors end scriptlets - @thekid
 
 ## 8.4.2 / 2016-10-14
