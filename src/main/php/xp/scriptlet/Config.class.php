@@ -30,14 +30,30 @@ class Config implements \lang\Value {
    * Creates a new config instance from given sources
    *
    * @param  string[]|util.PropertySource[] $sources
-   * @param  function(string): string $expand
+   * @param  [:string]|function(string): string $expand
    */
   public function __construct($sources= [], $expand= null) {
-    $this->expand= self::$expansion->cast($expand);
+    if (self::$expansion->isInstance($expand)) {
+      $this->expand= self::$expansion->cast($expand);
+    } else if (null === $expand) {
+      $this->expand= $expand;
+    } else {
+      $this->expand= function($in) use($expand) {
+        return is_string($in) ? strtr($in, $expand) : $in;
+      };
+    }
     foreach ($sources as $source) {
       $this->append($source);
     }
   }
+
+  /**
+   * Expand variables in a given string
+   *
+   * @param  string $in
+   * @return string
+   */
+  public function expand($in) { return $this->expand ? $this->expand->__invoke($in) : $in; }
 
   /**
    * Appends property source
@@ -49,7 +65,7 @@ class Config implements \lang\Value {
     if ($source instanceof PropertySource) {
       $this->sources[]= $source;
     } else {
-      $resolved= $this->expand ? $this->expand->__invoke($source) : $source;
+      $resolved= $this->expand($source);
       if (0 === strncmp('res://', $resolved, 6)) {
         $this->sources[]= new ResourcePropertySource(substr($resolved, 6));
       } else if (is_dir($resolved)) {
