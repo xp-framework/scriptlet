@@ -14,7 +14,7 @@ use lang\ClassLoadingException;
  * @test  xp://scriptlet.unittest.SourceTest
  */
 class Source extends \lang\Object {
-  private $layout;
+  private $site;
 
   /**
    * Creates a new instance
@@ -25,11 +25,11 @@ class Source extends \lang\Object {
    */
   public function __construct($source, Config $config= null) {
     if ('-' === $source) {
-      $this->layout= new ServeDocumentRootStatically();
+      $this->site= new ServeDocumentRootStatically();
     } else if (is_file($source)) {
-      $this->layout= new WebConfiguration(new Properties($source), $config);
+      $this->site= new WebConfiguration(new Properties($source), $config);
     } else if (is_dir($source)) {
-      $this->layout= new BasedOnWebroot($source, $config);
+      $this->site= new BasedOnWebroot($source, $config);
     } else {
       $name= ltrim($source, ':');
       try {
@@ -38,20 +38,22 @@ class Source extends \lang\Object {
         throw new IllegalArgumentException('Cannot load '.$name, $e);
       }
 
-      if ($class->isSubclassOf('xp.scriptlet.WebLayout')) {
+      if ($class->isSubclassOf('scriptlet.Site')) {
+        $this->site= $class->newInstance($config);
+      } else if ($class->isSubclassOf('xp.scriptlet.WebLayout')) {
         if ($class->hasConstructor()) {
-          $this->layout= $class->getConstructor()->newInstance([$config]);
+          $this->site= $class->getConstructor()->newInstance([$config]);
         } else {
-          $this->layout= $class->newInstance();
+          $this->site= $class->newInstance();
         }
       } else if ($class->isSubclassOf('scriptlet.HttpScriptlet')) {
-        $this->layout= new SingleScriptlet($class->getName(), $config);
+        $this->site= new SingleScriptlet($class->getName(), $config);
       } else {
-        throw new IllegalArgumentException('Expecting either a scriptlet or a weblayout, '.$class->getName().' given');
+        throw new IllegalArgumentException('Expecting either a scriptlet or a website, '.$class->getName().' given');
       }
     }
   }
 
-  /** @return xp.scriptlet.WebLayout */
-  public function layout() { return $this->layout; }
+  /** @return scriptlet.Site */
+  public function site() { return $this->site; }
 }
