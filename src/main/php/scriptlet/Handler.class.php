@@ -27,7 +27,7 @@ class Handler implements Routing {
     try {
       $structure= $this->actions->named($action)->handle($request, $response, $argument);
       if (null !== $structure) {
-        $response->write($this->templates->render($action, array_merge($structure, [
+        $response->write($this->templates->render(strtolower($action), array_merge($structure, [
           'request' => [
             'action'  => ['name' => $action, 'argument' => $argument],
             'headers' => $request->getHeaders(),
