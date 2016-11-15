@@ -21,7 +21,7 @@ class SourceTest extends \unittest\TestCase {
   }
 
   #[@beforeClass]
-  public static function defineLayout() {
+  public static function site() {
     self::$layout= ClassLoader::defineClass(self::class.'_Layout', Object::class, [WebLayout::class], '{
       public function mappedApplications($profile= null) { /* Intentionally empty */ }
       public function staticResources($profile= null) { /* Intentionally empty */ }
@@ -50,51 +50,51 @@ class SourceTest extends \unittest\TestCase {
 
   #[@test]
   public function from_dash() {
-    $this->assertInstanceOf(ServeDocumentRootStatically::class, (new Source('-'))->layout());
+    $this->assertInstanceOf(ServeDocumentRootStatically::class, (new Source('-'))->site());
   }
 
   #[@test]
   public function from_directory() {
-    $this->assertInstanceOf(BasedOnWebroot::class, (new Source(self::$dir))->layout());
+    $this->assertInstanceOf(BasedOnWebroot::class, (new Source(self::$dir))->site());
   }
 
   #[@test]
   public function from_file() {
-    $this->assertInstanceOf(WebConfiguration::class, (new Source(self::$file))->layout());
+    $this->assertInstanceOf(WebConfiguration::class, (new Source(self::$file))->site());
   }
 
   #[@test]
   public function from_fully_qualified_scriptlet_name() {
-    $this->assertInstanceOf(SingleScriptlet::class, (new Source(self::$scriptlet->getName()))->layout());
+    $this->assertInstanceOf(SingleScriptlet::class, (new Source(self::$scriptlet->getName()))->site());
   }
 
   #[@test]
   public function from_fully_qualified_layout_name() {
-    $this->assertInstanceOf(self::$layout, (new Source(self::$layout->getName()))->layout());
+    $this->assertInstanceOf(self::$layout, (new Source(self::$layout->getName()))->site());
   }
 
   #[@test]
   public function from_fully_qualified_scriptlet_name_bc_with_colon_prefix() {
-    $this->assertInstanceOf(SingleScriptlet::class, (new Source(':'.self::$scriptlet->getName()))->layout());
+    $this->assertInstanceOf(SingleScriptlet::class, (new Source(':'.self::$scriptlet->getName()))->site());
   }
 
   #[@test]
   public function from_fully_qualified_layout_name_bc_with_colon_prefix() {
-    $this->assertInstanceOf(self::$layout, (new Source(':'.self::$layout->getName()))->layout());
+    $this->assertInstanceOf(self::$layout, (new Source(':'.self::$layout->getName()))->site());
   }
 
   #[@test, @expect(IllegalArgumentException::class), @values(['lang.Object', ':lang.Object'])]
   public function cannot_create_when_passed_class_which_is_neither_scriptlet_nor_layout($name) {
-    (new Source($name))->layout();
+    (new Source($name))->site();
   }
 
   #[@test, @expect(IllegalArgumentException::class), @values(['does.not.exist', ':does.not.exist'])]
   public function cannot_create_when_passed_class_does_not_exist($name) {
-    (new Source($name))->layout();
+    (new Source($name))->site();
   }
 
   #[@test, @expect(IllegalArgumentException::class), @values(['', ':'])]
   public function cannot_create_when_passed_class_is_empty($name) {
-    (new Source($name))->layout();
+    (new Source($name))->site();
   }
 }

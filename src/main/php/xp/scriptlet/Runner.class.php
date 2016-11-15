@@ -99,7 +99,7 @@ class Runner extends \lang\Object {
       }
     }
 
-    $self->layout((new Source($source, $config))->layout())->run($args[3]);
+    $self->layout((new Source($source, $config))->site())->run($args[3]);
   }
 
   /**
