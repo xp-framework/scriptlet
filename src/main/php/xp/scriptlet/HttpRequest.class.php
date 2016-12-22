@@ -62,7 +62,7 @@ class HttpRequest extends HttpScriptletRequest {
     $this->env['QUERY_STRING']= substr($uri, strpos($uri, '?')+ 1);
     $this->env['HTTP_HOST']= $host;
     if (isset($this->headerlookup['authorization'])) {
-      $header= $this->headers[$this->headerlookup['content-type']];
+      $header= $this->headers[$this->headerlookup['authorization']];
       if (0 === strncmp('Basic', $header, 5)) {
         $credentials= explode(':', base64_decode(substr($header, 6)));
         $this->env['PHP_AUTH_USER']= $credentials[0];
