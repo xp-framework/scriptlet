@@ -145,7 +145,6 @@ class WrapperTest extends \unittest\TestCase {
     foreach ($params as $key => $value) {
       $r->setParam($key, $value);
     }
-
     $this->wrapper->load($r, $this->handler);
   }
 
@@ -597,14 +596,36 @@ class WrapperTest extends \unittest\TestCase {
 
     $this->loadFromRequest([
       'attachments' => [
-        'name'     => ["test.txt", "test2.txt"],
-        'type'     => ["text/plain", "text/plain"],
-        'tmp_name' => ["/tmp/phpKLEGHj", "/tmp/phpKLEGew"],
+        'name'     => ['test.txt', 'test2.txt'],
+        'type'     => ['text/plain', 'text/plain'],
+        'tmp_name' => ['/tmp/phpKLEGHj', '/tmp/phpKLEGew'],
         'error'    => [0,0],
         'size'     => [0,0]
       ]
     ]);
     $this->assertInstanceOf('array', $this->wrapper->getValue('attachments'));
-    $this->assertInstanceOf('scriptlet\xml\workflow\FileData', $this->wrapper->getValue('attachments')[0]);
+    $this->assertInstanceOf(
+      'scriptlet\xml\workflow\FileData', $this->wrapper->getValue('attachments')[0]
+    );
+  }
+
+  #[@test]
+  public function deepArrays() {
+    $this->wrapper->registerParamInfo(
+      'array',
+      Wrapper::OCCURRENCE_MULTIPLE,
+      null,
+      [],
+      [],
+      null
+    );
+    $val= [
+      'foo' => [1, 2, 3],
+      'bar' => [4, 5, 6]
+    ];
+    $this->loadFromRequest([
+      'array' => $val
+    ]);
+    $this->assertEquals($val, $this->wrapper->getValue('array'));
   }
 }

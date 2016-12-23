@@ -233,7 +233,7 @@ class Wrapper extends \lang\Object {
       // accessibility easy.
       if (
         (self::isFileUpload($value) && self::isEmptyFileUpload($value)) ||
-        (!self::isFileUpload($value) && (empty($value) || 0 == strlen(implode($value))))
+        (!self::isFileUpload($value) && static::isEmptyValue($value))
       ) {
         if (!($definitions[self::PARAM_OCCURRENCE] & self::OCCURRENCE_OPTIONAL)) {
           $handler->addError('missing', $name);
@@ -298,6 +298,25 @@ class Wrapper extends \lang\Object {
   }
 
   /**
+   * Check if the provided value is empty
+   *
+   * @param   var $value
+   * @return  bool
+   */
+  protected static function isEmptyValue($value) {
+    if (empty($value)) {
+      return true;
+    } else {
+      foreach ($value as $item) {
+        if (is_array($item) || strlen($item) > 0) {
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+
+  /**
    * Check if the provided value is an empty file upload field
    *
    * @param   var value
@@ -308,7 +327,7 @@ class Wrapper extends \lang\Object {
       isset($value['name'])     && '' === $value['name'] &&
       isset($value['type'])     && '' === $value['type'] &&
       isset($value['tmp_name']) && '' === $value['tmp_name'] &&
-      isset($value['error'])    && UPLOAD_ERR_NO_FILE  === $value['error'] &&
+      isset($value['error'])    && UPLOAD_ERR_NO_FILE === $value['error'] &&
       isset($value['size'])     && 0 === $value['size']
     );
   }
