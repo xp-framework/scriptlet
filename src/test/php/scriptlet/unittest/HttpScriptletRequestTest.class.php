@@ -87,6 +87,29 @@ class HttpScriptletRequestTest extends \unittest\TestCase {
     $this->assertEquals(['Über'], $r->getParam('coder'));
   }
 
+  #[@test, @values(['%DCber', '%C3%9Cber'])]
+  public function get_deep_array_param_encoded_as($encoded) {
+    $r= $this->newRequest('GET', 'http://localhost/?coder[foo][]='.$encoded, []);
+    $this->assertEquals(['foo' => ['Über']], $r->getParam('coder'));
+  }
+
+  #[@test, @values(['5Pb8', 'w6TDtsO8'])]
+  public function encode_to_xp_framework_charset($value) {
+    $value= base64_decode($value);
+
+    // String
+    $r= $this->newRequest('GET', 'http://localhost/?coder='.$value, []);
+    $this->assertEquals('äöü', $r->getParam('coder'));
+
+    // Array
+    $r= $this->newRequest('GET', 'http://localhost/?coder[]='.$value, []);
+    $this->assertEquals(['äöü'], $r->getParam('coder'));
+
+    // Deep Array
+    $r= $this->newRequest('GET', 'http://localhost/?coder[foo][]='.$value, []);
+    $this->assertEquals(['foo' => ['äöü']], $r->getParam('coder'));
+  }
+
   #[@test]
   public function has_param_and_get_param_with_hash_params() {
     $r= $this->newRequest('GET', 'http://localhost/?a[one]=1&a[two]=2', []);
