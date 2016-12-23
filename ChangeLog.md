@@ -1,7 +1,11 @@
 Scriptlets for the XP Framework ChangeLog
 ========================================================================
 
-## ?.?.? / ????-??-??
+## 8.4.4 / 2016-12-23
+
+* Merge pull request #20 from johannes85/array-val - added support for
+  array values as parameter.
+  (@johannes85)
 
 ## 8.4.3 / 2016-11-06
 
