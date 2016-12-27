@@ -49,7 +49,7 @@ class HttpRequest extends HttpScriptletRequest {
     $this->readData= function() { return new MemoryInputStream($this->data); };
 
     // Merge POST and GET parameters
-    if (isset($this->headerlookup['content-type']) && 'application/x-www-form-urlencoded' === $this->headers[$this->headerlookup['content-type']]) {
+    if (isset($this->headerlookup['content-type']) && 0 === strncmp($this->headers[$this->headerlookup['content-type']], 'application/x-www-form-urlencoded', 33)) {
       parse_str($this->data, $params);
       $this->setParams(array_merge($this->url->getParams(), $params));
     } else {
