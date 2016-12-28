@@ -39,7 +39,7 @@ class HttpRequest extends HttpScriptletRequest {
     // Read data
     if (isset($this->headerlookup['content-length'])) {
       $this->data= substr($header, $p+ 4);
-      $length= (int)$this->headerlookup['content-length'];
+      $length= (int)$this->headers[$this->headerlookup['content-length']];
       while (strlen($this->data) < $length && !$socket->eof()) {
         $this->data.= $socket->readBinary(1024);
       }
