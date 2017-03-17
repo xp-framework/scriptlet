@@ -1,6 +1,11 @@
 Scriptlets for the XP Framework ChangeLog
 ========================================================================
 
+## 8.4.5 / 2017-03-17
+
+* Merged pull request #22: Fix for global exception handling
+  (@johannes85)
+
 ## 8.4.4 / 2016-12-23
 
 * Merge pull request #20 from johannes85/array-val - added support for
