@@ -1,6 +1,12 @@
 Scriptlets for the XP Framework ChangeLog
 ========================================================================
 
+## 8.4.6 / 2017-05-20
+
+* Refactored code to use `typeof()` instead of `xp::typeOf()`, see
+  https://github.com/xp-framework/rfc/issues/323
+  (@thekid)
+
 ## 8.4.5 / 2017-03-17
 
 * Merged pull request #22: Fix for global exception handling
