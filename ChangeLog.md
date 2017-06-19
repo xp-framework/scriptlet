@@ -3,7 +3,7 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
-## 8.0.0 / 2017-06-19
+## 9.0.0 / 2017-06-20
 
 * **Heads up:** Drop PHP 5.5 support - @thekid
 * Added forward compatibility with XP 9.0.0 - @thekid
