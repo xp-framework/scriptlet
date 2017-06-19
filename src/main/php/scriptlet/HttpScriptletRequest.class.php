@@ -12,7 +12,7 @@ use io\streams\ChannelInputStream;
  * @test  xp://scriptlet.unittest.HttpScriptletRequestTest
  * @see   xp://scriptlet.HttpScriptlet
  */  
-class HttpScriptletRequest extends \lang\Object implements Request {
+class HttpScriptletRequest implements Request {
   public
     $url=             null,
     $env=             [],

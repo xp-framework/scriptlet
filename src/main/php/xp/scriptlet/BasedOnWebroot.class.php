@@ -11,7 +11,7 @@ use io\Path;
  *
  * @see   xp://xp.scriptlet.WebApplication
  */
-class BasedOnWebroot extends \lang\Object implements WebLayout {
+class BasedOnWebroot implements WebLayout {
   private $webroot, $config;
   private $layout= null;
 

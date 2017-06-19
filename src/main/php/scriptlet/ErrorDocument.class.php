@@ -44,7 +44,7 @@ use io\File;
  * @deprecated  Now handled by scriptlet runner
  * @see scriptlet.HttpScriptlet
  */
-class ErrorDocument extends \lang\Object {
+class ErrorDocument {
   public 
     $statusCode,
     $language,

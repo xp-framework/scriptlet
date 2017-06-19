@@ -19,7 +19,7 @@ new import('lang.ResourceProvider');
  *
  * @test   xp://scriptlet.unittest.RunnerTest
  */
-class Runner extends \lang\Object {
+class Runner {
   protected
     $webroot    = null,
     $profile    = null,
@@ -303,7 +303,7 @@ class Runner extends \lang\Object {
    * @return  scriptlet.HttpScriptletResponse
    */
   protected function error($response, \lang\Throwable $t, $status, $trace) {
-    $package= $this->getClass()->getPackage();
+    $package= typeof($this)->getPackage();
     $errorPage= $package->getResource($package->providesResource('error'.$status.'.html')
       ? 'error'.$status.'.html'
       : 'error500.html'

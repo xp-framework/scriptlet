@@ -5,7 +5,7 @@
  *
  * @purpose  Context
  */
-class Context extends \lang\Object {
+class Context {
   public
     $_changed  = false;
 

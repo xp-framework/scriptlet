@@ -9,7 +9,7 @@ use lang\IllegalStateException;
  * @see   xp://xp.scriptlet.WebApplication
  * @test  xp://scriptlet.unittest.WebConfigurationTest
  */
-class WebConfiguration extends \lang\Object implements WebLayout {
+class WebConfiguration implements WebLayout {
   const INI = 'web.ini';
 
   private $prop, $config;

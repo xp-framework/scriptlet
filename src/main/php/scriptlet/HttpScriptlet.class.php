@@ -31,7 +31,7 @@ use peer\http\HttpConstants;
  * @test   xp://scriptlet.unittest.HttpScriptletTest
  * @test   xp://scriptlet.unittest.HttpScriptletProcessTest
  */
-class HttpScriptlet extends \lang\Object {
+class HttpScriptlet {
   private $filters= [];
   
   /**

@@ -5,7 +5,7 @@
  *
  * @see   xp://xp.scriptlet.WebApplication
  */
-class ServeDocumentRootStatically extends \lang\Object implements WebLayout {
+class ServeDocumentRootStatically implements WebLayout {
 
   /**
    * Gets all mapped applications

@@ -12,7 +12,7 @@ use lang\IllegalArgumentException;
  * @see      xp://xp.scriptlet.WebDebug
  * @see      xp://xp.scriptlet.Runner
  */
-class WebApplication extends \lang\Object {
+class WebApplication {
   protected $name;
   protected $config = null;
   protected $scriptlet = null;

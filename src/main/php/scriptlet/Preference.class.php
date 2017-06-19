@@ -22,7 +22,7 @@
  *
  * @test     xp://scriptlet.unittest.PreferenceTest
  */
-class Preference extends \lang\Object {
+class Preference {
   protected $list= [];
 
   /**
