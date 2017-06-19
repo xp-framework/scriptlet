@@ -28,7 +28,7 @@ define('SESS_CREATE',    '__PHP_SessionCreatedAt');
  * @test    xp://scriptlet.unittest.HttpSessionTest
  * @purpose Session implementation                                                    
  */
-class HttpSession extends \lang\Object implements Session {
+class HttpSession implements Session {
   public 
     $id    = '',
     $isNew = false;

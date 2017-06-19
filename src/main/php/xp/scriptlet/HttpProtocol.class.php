@@ -7,7 +7,7 @@ use peer\Socket;
 /**
  * HTTP protocol implementation
  */
-class HttpProtocol extends \lang\Object implements \peer\server\ServerProtocol {
+class HttpProtocol implements \peer\server\ServerProtocol {
   protected $handlers = [];
   private $logging;
   public $server = null;

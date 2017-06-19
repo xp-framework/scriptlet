@@ -13,7 +13,7 @@ use peer\http\HttpConstants;
  * @see      xp://scriptlet.HttpScriptlet
  * @purpose  Provide a way to access the HTTP response
  */  
-class HttpScriptletResponse extends \lang\Object implements Response {
+class HttpScriptletResponse implements Response {
   protected
     $uri=             null,
     $committed=       false,

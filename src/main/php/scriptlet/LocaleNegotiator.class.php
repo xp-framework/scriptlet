@@ -49,7 +49,7 @@ use util\Locale;
  * @test   xp://scriptlet.unittest.LocaleNegotiatorTest
  * @see    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
  */
-class LocaleNegotiator extends \lang\Object {
+class LocaleNegotiator {
   public $languages;
   public $charsets;
 

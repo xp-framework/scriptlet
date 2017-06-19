@@ -9,7 +9,7 @@ use util\log\Traceable;
  * @see      xp://scriptlet.xml.workflow.AbstractXMLScriptlet
  * @purpose  Base class
  */
-class AbstractState extends \lang\Object implements Traceable {
+class AbstractState implements Traceable {
   public
     $cat      = null,
     $handlers = [];

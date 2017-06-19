@@ -9,7 +9,7 @@ use peer\http\HttpConstants;
  * @see   xp://scriptlet.HttpScriptlet#getAuthenticator
  * @test  xp://scriptlet.unittest.RequestAuthenticatorTest
  */
-class AuthenticationFilter extends \lang\Object implements Filter {
+class AuthenticationFilter implements Filter {
   private $auth;
 
   /**

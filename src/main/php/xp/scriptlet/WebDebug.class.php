@@ -5,7 +5,7 @@
  *
  * @see    xp://xp.scriptlet.WebApplication#setDebug
  */
-abstract class WebDebug extends \lang\Object {
+abstract class WebDebug {
   const
     NONE        = 0x0000,
     XML         = 0x0001,

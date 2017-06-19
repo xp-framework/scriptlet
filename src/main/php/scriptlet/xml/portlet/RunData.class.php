@@ -6,7 +6,7 @@
  * @see      xp://scriptlet.xml.portlet.Portlet
  * @purpose  purpose
  */
-class RunData extends \lang\Object {
+class RunData {
   public
     $request  = null,
     $context  = null;

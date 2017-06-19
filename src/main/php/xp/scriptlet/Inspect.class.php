@@ -6,7 +6,7 @@ use util\cmd\Console;
 /**
  * Inspect scriptlet coniguration
  */
-class Inspect extends \lang\Object {
+class Inspect {
 
   /**
    * Entry point method. Gets passed the following arguments from "xpws -i":

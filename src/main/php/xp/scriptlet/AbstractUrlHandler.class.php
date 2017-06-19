@@ -5,7 +5,7 @@ use peer\Socket;
 /**
  * Base class for all URL handlers
  */
-abstract class AbstractUrlHandler extends \lang\Object {
+abstract class AbstractUrlHandler {
 
   /**
    * Send a HTTP header message
@@ -35,7 +35,7 @@ abstract class AbstractUrlHandler extends \lang\Object {
    * @param   string reason the reason
    */
   protected function sendErrorMessage(Socket $socket, $sc, $message, $reason) {
-    $package= $this->getClass()->getPackage();
+    $package= typeof($this)->getPackage();
     $errorPage= ($package->providesResource('error'.$sc.'.html')
       ? $package->getResource('error'.$sc.'.html')
       : $package->getResource('error500.html')

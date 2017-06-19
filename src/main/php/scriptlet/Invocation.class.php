@@ -3,7 +3,7 @@
 /**
  * HTTP service handler invocation
  */  
-class Invocation extends \lang\Object {
+class Invocation {
   private $handler;
   private $chain;
 

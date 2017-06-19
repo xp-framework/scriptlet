@@ -7,7 +7,7 @@
  *
  * @purpose  Container class
  */
-class PortletContainer extends \lang\Object {
+class PortletContainer {
   public
     $portlets= [];
 
