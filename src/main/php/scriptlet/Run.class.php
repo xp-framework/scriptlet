@@ -44,13 +44,14 @@ class Run implements \web\Handler {
       $req->setParams($request->params());
       $req->setHeaders(array_merge($request->headers(), $request->values()));
       $req->readData= function() use($request) {
-        // TBI
+        return $request->read(-1);
       };
 
       // Proxy response
       $stream= null;
       $res->sendHeaders= function($version, $statusCode, $headers) use($response, &$stream) {
         $response->answer($statusCode);
+
         foreach ($headers as $header) {
           sscanf($header, "%[^:]: %[^\r]", $name, $value);
           if (0 === strcasecmp('Content-Length', $name)) {
