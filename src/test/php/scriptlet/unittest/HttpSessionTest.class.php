@@ -101,10 +101,10 @@ class HttpSessionTest extends TestCase {
   #[@test]
   public function putDoesNotOverwriteValue() {
     $this->session->initialize(null);
-    $fixture= new \lang\Object();
+    $fixture= new Date();
     $hash= $fixture->hashCode();
     $this->session->putValue('foo', $fixture);
-    $this->assertInstanceOf('lang.Object', $fixture);
+    $this->assertInstanceOf(Date::class, $fixture);
     $this->assertEquals($hash, $fixture->hashCode());
   }
   
