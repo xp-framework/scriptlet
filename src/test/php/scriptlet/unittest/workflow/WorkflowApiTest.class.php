@@ -20,7 +20,7 @@ class WorkflowApiTest extends TestCase {
    *
    */
   public function setUp() {
-    $this->scriptlet= new AbstractXMLScriptlet($this->getClass()->getPackage()->getName());
+    $this->scriptlet= new AbstractXMLScriptlet(typeof($this)->getPackage()->getName());
     $this->scriptlet->init();
   }
 

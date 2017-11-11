@@ -2,9 +2,8 @@
 
 use util\log\Traceable;
 
-
 // Handler stati
-  define('HANDLER_SETUP',       'setup');
+define('HANDLER_SETUP',       'setup');
 define('HANDLER_FAILED',      'failed');
 define('HANDLER_INITIALIZED', 'initialized');
 define('HANDLER_ERRORS',      'errors');
@@ -13,7 +12,7 @@ define('HANDLER_RELOADED',    'reloaded');
 define('HANDLER_CANCELLED',   'cancelled');
 
 // Value storages
-  define('HVAL_PERSISTENT',  0x0000);
+define('HVAL_PERSISTENT',  0x0000);
 define('HVAL_FORMPARAM',   0x0001);
 
 /**
@@ -22,7 +21,7 @@ define('HVAL_FORMPARAM',   0x0001);
  * @see      xp://scriptlet.xml.workflow.AbstractState#addHandler
  * @purpose  Base class
  */
-class AbstractHandler extends \lang\Object implements Traceable {
+class AbstractHandler implements Traceable {
   public
     $cat              = null,
     $wrapper          = null,
@@ -37,7 +36,7 @@ class AbstractHandler extends \lang\Object implements Traceable {
    *
    */
   public function __construct() {
-    $this->name= strtolower($this->getClass()->getSimpleName());
+    $this->name= strtolower(typeof($this)->getSimpleName());
   }
 
   /**
@@ -67,7 +66,7 @@ class AbstractHandler extends \lang\Object implements Traceable {
       $this->wrapper ? nameof($this->wrapper) : '(null)'
     );
     foreach (array_keys($this->values[HVAL_PERSISTENT]) as $key) {
-      $s.= sprintf("  [%-20s] %s\n", $key, \xp::typeOf($this->values[$key]));
+      $s.= sprintf("  [%-20s] %s\n", $key, typeof($this->values[$key])->getName());
     }
     return $s.'}';
   }

@@ -7,7 +7,7 @@ use util\ResourcePropertySource;
 use util\FilesystemPropertySource;
 use rdbms\ConnectionManager;
 
-abstract class Standalone extends \lang\Object {
+abstract class Standalone {
   private $server, $url;
 
   public function __construct($server, $url) {

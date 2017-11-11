@@ -5,7 +5,7 @@
  *
  * @see  xp://scriptlet.Reponse#out
  */
-class ScriptletOutputStream extends \lang\Object implements \io\streams\OutputStream {
+class ScriptletOutputStream implements \io\streams\OutputStream {
   protected $response;
 
   /**

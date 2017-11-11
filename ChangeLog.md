@@ -1,6 +1,24 @@
 Scriptlets for the XP Framework ChangeLog
 ========================================================================
 
+## ?.?.? / ????-??-??
+
+## 9.0.0 / 2017-06-20
+
+* **Heads up:** Drop PHP 5.5 support - @thekid
+* Added forward compatibility with XP 9.0.0 - @thekid
+
+## 8.4.6 / 2017-05-20
+
+* Refactored code to use `typeof()` instead of `xp::typeOf()`, see
+  https://github.com/xp-framework/rfc/issues/323
+  (@thekid)
+
+## 8.4.5 / 2017-03-17
+
+* Merged pull request #22: Fix for global exception handling
+  (@johannes85)
+
 ## 8.4.4 / 2016-12-23
 
 * Merge pull request #20 from johannes85/array-val - added support for

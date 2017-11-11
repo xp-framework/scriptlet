@@ -22,7 +22,7 @@ define('PARAM_VALUES',     'values');
  * @test     xp://scriptlet.unittest.workflow.WrapperTest
  * @purpose  Base class
  */
-class Wrapper extends \lang\Object {
+class Wrapper {
   const
     OCCURRENCE_UNDEFINED  = 0x0000,
     OCCURRENCE_OPTIONAL   = 0x0001,

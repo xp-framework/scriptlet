@@ -5,7 +5,7 @@
  *
  * @see   xp://xp.scriptlet.WebApplication
  */
-class SingleScriptlet extends \lang\Object implements WebLayout {
+class SingleScriptlet implements WebLayout {
   private $scriptlet, $config;
 
   /**

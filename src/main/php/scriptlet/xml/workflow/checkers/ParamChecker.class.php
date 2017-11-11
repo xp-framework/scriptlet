@@ -5,7 +5,7 @@
  *
  * @purpose  Abstract base class
  */
-abstract class ParamChecker extends \lang\Object {
+abstract class ParamChecker {
 
   /**
    * Check a given value

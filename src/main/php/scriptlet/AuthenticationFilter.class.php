@@ -9,7 +9,7 @@ use peer\http\HttpConstants;
  * @see   xp://scriptlet.HttpScriptlet#getAuthenticator
  * @test  xp://scriptlet.unittest.RequestAuthenticatorTest
  */
-class AuthenticationFilter extends \lang\Object implements Filter {
+class AuthenticationFilter implements Filter {
   private $auth;
 
   /**
@@ -34,11 +34,11 @@ class AuthenticationFilter extends \lang\Object implements Filter {
   public function filter($request, $response, $invocation) {
     try {
       $r= $this->auth->authenticate($request, $response, null);
-      return false === $r ? $r : $invocation->proceed($request, $response);
     } catch (ScriptletException $e) {
       throw $e;
     } catch (Throwable $e) {
       throw new ScriptletException('Authentication failed: '.$e->getMessage(), HttpConstants::STATUS_FORBIDDEN, $e);
     }
+    return false === $r ? $r : $invocation->proceed($request, $response);
   }
 }

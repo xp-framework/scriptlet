@@ -1,7 +1,7 @@
 <?php namespace scriptlet\xml;
 
 use scriptlet\HttpScriptletRequest;
-
+use lang\IllegalArgumentException;
 
 /**
  * Wraps XML request
@@ -35,11 +35,12 @@ class XMLScriptletRequest extends HttpScriptletRequest {
   /**
    * Sets request's URL
    *
-   * @param   scriptlet.xml.XMLScriptletURL url
+   * @param  scriptlet.xml.XMLScriptletURL $url
+   * @throws lang.IllegalArgumentException
    */
   public function setURL(\scriptlet\HttpScriptletURL $url) {
-    if (!$url instanceof XMLScriptletURL) throw new \lang\IllegalArgumentException(
-      __METHOD__.' expects instanceof scriptlet.xml.XMLScriptletURL, '.\xp::typeof($url).' given.'
+    if (!$url instanceof XMLScriptletURL) throw new IllegalArgumentException(
+      'Expecting an scriptlet.xml.XMLScriptletURL, '.typeof($url)->getName().' given'
     );
 
     with ($this->url= $url); {

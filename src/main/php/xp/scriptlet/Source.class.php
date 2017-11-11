@@ -13,7 +13,7 @@ use lang\ClassLoadingException;
  *
  * @test  xp://scriptlet.unittest.SourceTest
  */
-class Source extends \lang\Object {
+class Source {
   private $layout;
 
   /**

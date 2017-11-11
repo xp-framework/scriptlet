@@ -8,7 +8,7 @@ use io\File;
  *
  * @purpose  Wrapper
  */
-class FileData extends \lang\Object {
+class FileData {
   public
     $name = '',
     $type = '',

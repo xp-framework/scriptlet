@@ -25,7 +25,7 @@ use util\Date;
  * @test     xp://scriptlet.unittest.CookieTest
  * @purpose  Cookie header
  */
-class Cookie extends \lang\Object {
+class Cookie {
   public 
     $name         = '',
     $value        = '',

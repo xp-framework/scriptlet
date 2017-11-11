@@ -12,7 +12,7 @@ use lang\archive\ArchiveClassLoader;
  *
  * @see   http://php.net/manual/en/features.commandline.webserver.php
  */
-class Develop extends \lang\Object {
+class Develop {
   private $host, $port, $url;
   
   /**

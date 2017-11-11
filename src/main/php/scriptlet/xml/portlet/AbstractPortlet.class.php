@@ -1,14 +1,12 @@
 <?php namespace scriptlet\xml\portlet;
 
-
-
 /**
  * Abstract portlet
  *
  * @see      xp://scriptlet.xml.portlet.Portlet
  * @purpose  Abstract base class
  */
-class AbstractPortlet extends \lang\Object implements Portlet {
+class AbstractPortlet implements Portlet {
   public
     $name       = '',
     $properties = null,
@@ -20,7 +18,7 @@ class AbstractPortlet extends \lang\Object implements Portlet {
    *
    */
   public function __construct() {
-    $this->setName(substr($this->getClass()->getSimpleName(), 0, -1* strlen('Portlet')));
+    $this->setName(substr(typeof($this)->getSimpleName(), 0, -1* strlen('Portlet')));
   }
 
   /**

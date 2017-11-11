@@ -3,7 +3,7 @@
 /**
  * Scriptlet usage
  */
-class Usage extends \lang\Object {
+class Usage {
 
   /**
    * Entry point method

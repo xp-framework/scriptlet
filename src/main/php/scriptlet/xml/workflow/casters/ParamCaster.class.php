@@ -5,7 +5,7 @@
  *
  * @purpose  Abstract base class
  */
-abstract class ParamCaster extends \lang\Object {
+abstract class ParamCaster {
 
   /**
    * Cast a given value
