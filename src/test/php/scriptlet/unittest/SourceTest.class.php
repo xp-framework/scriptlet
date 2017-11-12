@@ -10,7 +10,6 @@ use xp\scriptlet\BasedOnWebroot;
 use scriptlet\HttpScriptlet;
 use lang\ClassLoader;
 use lang\System;
-use lang\Object;
 
 class SourceTest extends \unittest\TestCase {
   private static $scriptlet, $layout, $dir, $file;
@@ -22,7 +21,7 @@ class SourceTest extends \unittest\TestCase {
 
   #[@beforeClass]
   public static function defineLayout() {
-    self::$layout= ClassLoader::defineClass(self::class.'_Layout', Object::class, [WebLayout::class], '{
+    self::$layout= ClassLoader::defineClass(self::class.'_Layout', Layout::class, [], '{
       public function mappedApplications($profile= null) { /* Intentionally empty */ }
       public function staticResources($profile= null) { /* Intentionally empty */ }
     }');
@@ -83,7 +82,7 @@ class SourceTest extends \unittest\TestCase {
     $this->assertInstanceOf(self::$layout, (new Source(':'.self::$layout->getName()))->layout());
   }
 
-  #[@test, @expect(IllegalArgumentException::class), @values(['lang.Object', ':lang.Object'])]
+  #[@test, @expect(IllegalArgumentException::class), @values(['lang.Value', ':lang.Value'])]
   public function cannot_create_when_passed_class_which_is_neither_scriptlet_nor_layout($name) {
     (new Source($name))->layout();
   }
