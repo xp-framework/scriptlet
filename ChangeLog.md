@@ -3,6 +3,10 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.1.1 / 2017-11-13
+
+* Fixed HTTP POST data processing in xp-forge/web adapter - @thekid
+
 ## 9.1.0 / 2017-11-12
 
 * Merged PR #21: Add xp-forge/web adapter - @thekid

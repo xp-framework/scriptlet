@@ -44,7 +44,7 @@ class Run implements \web\Handler {
       $req->setParams($request->params());
       $req->setHeaders(array_merge($request->headers(), $request->values()));
       $req->readData= function() use($request) {
-        return $request->read(-1);
+        return $request->stream();
       };
 
       // Proxy response
