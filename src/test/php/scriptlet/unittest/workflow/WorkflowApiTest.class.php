@@ -130,4 +130,27 @@ class WorkflowApiTest extends TestCase {
       $this->assertInstanceOf('lang.IllegalArgumentException', $expected->getCause());
     }
   }
+
+  #[@test]
+  public function cancelFurtherProcessingInSetup() {
+    $request= new MockRequest($this->scriptlet->package, ucfirst($this->name), '{
+      public $called= [
+        "setup" => false,
+        "process" => false
+      ];
+      
+      public function setup($request, $response, $context) {
+        parent::setup($request, $response, $context);
+        $this->called["setup"]= TRUE;
+        return false;
+      }
+
+      public function process($request, $response, $context) {
+        $this->called["process"]= TRUE;
+      }
+    }');
+    $this->process($request);      
+    $this->assertTrue($request->state->called['setup']);
+    $this->assertFalse($request->state->called['process']);
+  }
 }
