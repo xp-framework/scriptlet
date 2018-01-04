@@ -125,7 +125,13 @@ class AbstractXMLScriptlet extends XMLScriptlet {
     
     // Call state's setup() method
     try {
-      $request->state->setup($request, $response, $context);
+
+      // Call state's setup() method. In case it returns FALSE, the
+      // state's process() and context's insertStatus() method will not be called. 
+      // This, for example, is useful when setup() wants to send a redirect.
+      if ($request->state->setup($request, $response, $context) === false) {
+        return false;
+      }
     } catch (\lang\IllegalStateException $e) {
       throw new \scriptlet\ScriptletException($e->getMessage(), HttpConstants::STATUS_INTERNAL_SERVER_ERROR, $e);
     } catch (\lang\IllegalArgumentException $e) {
