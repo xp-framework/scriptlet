@@ -1,6 +1,12 @@
 Scriptlets for the XP Framework ChangeLog
 ========================================================================
 
+## ?.?.? / ????-??-??
+
+## 8.5.0 / 2018-01-05
+
+* Allows to cancel further handling of state after setup - @johannes85
+
 ## 8.4.6 / 2017-05-20
 
 * Refactored code to use `typeof()` instead of `xp::typeOf()`, see
