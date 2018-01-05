@@ -3,6 +3,10 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.1.0 / 2018-01-05
+
+* Allows to cancel further handling of state after setup (backport from 9.x.x) - @johannes85
+
 ## 7.0.1 / 2016-02-12
 
 * Fixed problem delivering files with an incorrect content length when
