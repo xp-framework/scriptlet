@@ -3,6 +3,10 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.2.0 / 2018-01-05
+
+* Allows to cancel further handling of state after setup - @johannes85
+
 ## 9.1.1 / 2017-11-13
 
 * Fixed HTTP POST data processing in xp-forge/web adapter - @thekid
