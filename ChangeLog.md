@@ -3,6 +3,10 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.2.1 / 2018-07-15
+
+* Made library compatible with xp-framework/rdbms 11.0 - @thekid
+
 ## 9.2.0 / 2018-01-05
 
 * Allows to cancel further handling of state after setup - @johannes85
