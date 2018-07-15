@@ -1,18 +1,18 @@
 <?php namespace scriptlet\unittest;
 
 use lang\ClassLoader;
-use peer\http\HttpConstants;
-use unittest\TestCase;
-use util\log\Logger;
-use xp\scriptlet\Runner;
-use xml\Stylesheet;
-use xml\Node;
-use util\log\Traceable;
-use util\log\BufferedAppender;
-use scriptlet\HttpScriptlet;
-use scriptlet\xml\XMLScriptlet;
 use lang\Runtime;
 use lang\System;
+use peer\http\HttpConstants;
+use scriptlet\HttpScriptlet;
+use scriptlet\xml\XMLScriptlet;
+use unittest\TestCase;
+use util\log\BufferedAppender;
+use util\log\Logger;
+use util\log\Traceable;
+use xml\Node;
+use xml\Stylesheet;
+use xp\scriptlet\Runner;
 use xp\scriptlet\WebApplication;
 
 /**
@@ -99,7 +99,8 @@ class RunnerTest extends TestCase {
 
   #[@beforeClass]
   public static function createLayout() {
-    self::$layout= \lang\ClassLoader::defineClass('Layout', 'lang.Object', ['xp.scriptlet.WebLayout'], '{
+    $parent= class_exists('\\lang\\Object', false) ? 'lang.Object' : null;
+    self::$layout= \lang\ClassLoader::defineClass('Layout', $parent, ['xp.scriptlet.WebLayout'], '{
       private $config;
 
       public function __construct($config) {

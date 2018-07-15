@@ -1,7 +1,6 @@
 <?php namespace scriptlet\xml\workflow\checkers;
 
 use lang\IllegalArgumentException;
-use lang\Object;
 use util\Date;
 
 /**
@@ -11,10 +10,8 @@ use util\Date;
  * <ul>
  *   <li>invalid - if the given value is no valid date</li>
  * </ul>
- *
- * @purpose  Checker
  */
-class DateChecker extends Object {
+class DateChecker extends ParamChecker {
 
   /**
    * Check a given value

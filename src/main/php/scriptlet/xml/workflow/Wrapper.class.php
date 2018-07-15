@@ -75,7 +75,7 @@ class Wrapper {
    * Retrieve a checker instance
    *
    * @param   array defines
-   * @return  lang.Object
+   * @return  object
    */
   public function checkerInstanceFor($defines) {
     static $class= [];
