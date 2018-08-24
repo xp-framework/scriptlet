@@ -1,13 +1,13 @@
 <?php namespace xp\scriptlet;
 
-use util\PropertySource;
-use util\FilesystemPropertySource;
-use util\ResourcePropertySource;
-use util\CompositeProperties;
-use util\Objects;
 use lang\ElementNotFoundException;
 use lang\FunctionType;
 use lang\Primitive;
+use util\CompositeProperties;
+use util\FilesystemPropertySource;
+use util\Objects;
+use util\PropertySource;
+use util\ResourcePropertySource;
 new import('lang.ResourceProvider');
 
 /**
@@ -109,6 +109,10 @@ class Config implements \lang\Value {
 
   /** @return string */
   public function toString() {
-    return nameof($this).($this->sources ? Objects::stringOf($this->sources) : '[]');
+    $s= '';
+    foreach ($this->sources as $source) {
+      $s.= ', '.$source->toString();
+    }
+    return nameof($this).'['.substr($s, 2).']';
   }
 }
