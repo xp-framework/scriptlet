@@ -3,6 +3,11 @@ Scriptlets for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.2.2 / 2018-08-25
+
+* Made library compatible with xp-framework/rdbms 12.0 - @thekid
+* Made library compatible with xp-framework/logging 9.0 - @thekid
+
 ## 9.2.1 / 2018-07-15
 
 * Added compatiblity with PHP 7.2 - @thekid
