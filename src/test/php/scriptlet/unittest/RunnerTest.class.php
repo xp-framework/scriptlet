@@ -8,7 +8,6 @@ use scriptlet\HttpScriptlet;
 use scriptlet\xml\XMLScriptlet;
 use unittest\TestCase;
 use util\log\BufferedAppender;
-use util\log\Logger;
 use util\log\Traceable;
 use xml\Node;
 use xml\Stylesheet;
@@ -125,6 +124,7 @@ class RunnerTest extends TestCase {
     self::$propertySource= \util\PropertyManager::getInstance()->appendSource(newinstance('util.PropertySource', [], '{
       public function provides($name) { return "debug" === $name; }
       public function fetch($name) { return new Properties("/var/www/etc/dev/debug.ini"); }
+      public function hashCode() { return "debug"; }
     }'));
   }
 
@@ -416,60 +416,6 @@ class RunnerTest extends TestCase {
       'Request processing failed [doGet]: No shoes, no shorts, no service', 
       $matches[1]
     );
-  }
-
-  #[@test]
-  public function errorPageLoggingInProdMode() {
-    with ($cat= \util\log\Logger::getInstance()->getCategory('scriptlet')); {
-      $appender= $cat->addAppender(new BufferedAppender());
-      $this->runWith('prod', '/error');
-      $buffer= $appender->getBuffer();
-      $cat->removeAppender($appender);
-      
-      $this->assertNotContained(
-        'Injected util.log.LogCategory',
-        $buffer
-      );
-      $this->assertContained(
-        'Exception scriptlet.ScriptletException (500:Request processing failed [doGet]: No shoes, no shorts, no service)', 
-        $buffer
-      );
-    }
-  }
-
-  #[@test]
-  public function errorPageLoggingInDevMode() {
-    with ($cat= \util\log\Logger::getInstance()->getCategory('scriptlet')); {
-      $appender= $cat->addAppender(new BufferedAppender());
-      $this->runWith('dev', '/error');
-      $buffer= $appender->getBuffer();
-      $cat->removeAppender($appender);
-      
-      $this->assertContained(
-        'Injected util.log.LogCategory',
-        $buffer
-      );
-      $this->assertContained(
-        'Exception scriptlet.ScriptletException (500:Request processing failed [doGet]: No shoes, no shorts, no service)', 
-        $buffer
-      );
-    }
-  }
-
-  #[@test]
-  public function notFoundExceptionLevelConfigure() {
-    $cat= Logger::getInstance()->getCategory('scriptlet');
-    $appender= $cat->addAppender(new BufferedAppender());
-
-    $this->runWith('dev', '/notfounderror');
-    $buffer= $appender->getBuffer();
-    $this->assertContained('error] Exception', $buffer);
-
-    $this->runWith('dev', '/notfoundwarn');
-    $buffer= $appender->getBuffer();
-    $this->assertContained('warn] Exception', $buffer);
-
-    $cat->removeAppender($appender);
   }
 
   #[@test]

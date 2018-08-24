@@ -1,17 +1,19 @@
 <?php namespace xp\scriptlet;
 
-use scriptlet\ScriptletException;
-use util\Properties;
-use util\PropertyManager;
-use util\RegisteredPropertySource;
-use util\log\Logger;
-use util\log\context\EnvironmentAware;
+use lang\IllegalStateException;
+use peer\http\HttpConstants;
 use rdbms\ConnectionManager;
 use scriptlet\HttpScriptlet;
 use scriptlet\HttpScriptletRequest;
 use scriptlet\HttpScriptletResponse;
-use peer\http\HttpConstants;
-use lang\IllegalStateException;
+use scriptlet\ScriptletException;
+use util\Properties;
+use util\PropertyManager;
+use util\RegisteredPropertySource;
+use util\log\LogCategory;
+use util\log\LogConfiguration;
+use util\log\Logger;
+use util\log\context\EnvironmentAware;
 new import('lang.ResourceProvider');
 
 /**
@@ -177,15 +179,27 @@ class Runner {
     foreach ($application->config()->sources() as $source) {
       $pm->appendSource($source);
     }
-    
-    $l= Logger::getInstance();
-    $pm->hasProperties('log') && $l->configure($pm->getProperties('log'));
+
+    // xp-framework/logging 9.0.0 does not have Logger anymore!
+    if (!$pm->hasProperties('log')) {
+      $categories= [];
+      $cat= new LogCategory('scriptlet');
+    } else if (class_exists(LogConfiguration::class)) {
+      $l= new LogConfiguration($pm->getProperties('log'));
+      $categories= $l->categories();
+      $cat= $l->provides('scriptlet') ? $l->category('scriptlet') : new LogCategory('scriptlet');
+    } else {
+      $l= Logger::getInstance();
+      $pm->hasProperties('log') && $l->configure($pm->getProperties('log'));
+      $categories= $l->getCategories();
+      $cat= $l->getCategory('scriptlet');
+    }
 
     $cm= ConnectionManager::getInstance();
     $pm->hasProperties('database') && $cm->configure($pm->getProperties('database'));
 
     // Setup logger context for all registered log categories
-    foreach (Logger::getInstance()->getCategories() as $category) {
+    foreach ($categories as $category) {
       if (null === ($context= $category->getContext()) || !($context instanceof EnvironmentAware)) continue;
       $context->setHostname($_SERVER['SERVER_NAME']);
       $context->setRunner(nameof($this));
@@ -200,7 +214,6 @@ class Runner {
     }
 
     // Instantiate and initialize
-    $cat= $l->getCategory('scriptlet');
     $instance= null;
     $e= null;
     try {
